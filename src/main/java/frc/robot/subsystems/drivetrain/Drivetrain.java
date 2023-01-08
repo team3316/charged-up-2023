@@ -3,16 +3,10 @@ package frc.robot.subsystems.drivetrain;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DrivetrainConstants;
@@ -26,11 +20,6 @@ public class Drivetrain extends SubsystemBase {
 
     private PigeonIMU _pigeon;
 
-    private SwerveDriveOdometry _odometry;
-    private DoubleLogEntry m_logX, m_logY, m_logR;
-    private int m_counter = 0;
-    private static final int LOG_EVERY = 10;
-
     public Drivetrain() {
         this._modules = new SwerveModule[] {
                 new SwerveModule(DrivetrainConstants.TRModule),
@@ -40,13 +29,6 @@ public class Drivetrain extends SubsystemBase {
         };
         _pigeon = new PigeonIMU(DrivetrainConstants.pigeonId); // We need the talon; not anymore
 
-        this._odometry = new SwerveDriveOdometry(DrivetrainConstants.kinematics, getRotation2d(),
-                getSwerveModulePositions());
-
-        DataLog log = DataLogManager.getLog();
-        m_logX = new DoubleLogEntry(log, "/drivetrain/position/x");
-        m_logY = new DoubleLogEntry(log, "/drivetrain/position/y");
-        m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -55,7 +37,7 @@ public class Drivetrain extends SubsystemBase {
 
         ChassisSpeeds speeds;
         if (fieldRelative) {
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getPose().getRotation());
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getRotation2d());
         } else {
             speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
         }
@@ -75,18 +57,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void periodic() {
-        // Update the odometry in the periodic block
-        this._odometry.update(getRotation2d(), getSwerveModulePositions());
         // updateSDB();
-
-        if (m_counter++ == LOG_EVERY) {
-            Pose2d pose = _odometry.getPoseMeters();
-            m_logX.append(pose.getX());
-            m_logY.append(pose.getY());
-            m_logR.append(pose.getRotation().getDegrees());
-            m_counter = 0;
-        }
-
     }
 
     public void disabledInit() {
@@ -104,10 +75,6 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("rotation", getRotation2d().getRadians());
     }
 
-    public Pose2d getPose() {
-        return this._odometry.getPoseMeters();
-    }
-
     public double getHeading() {
         return this._pigeon.getFusedHeading();
     }
@@ -116,29 +83,10 @@ public class Drivetrain extends SubsystemBase {
         return Rotation2d.fromDegrees(getHeading());
     }
 
-    public void resetYaw() {
-        Pose2d pose = getPose();
-        this._odometry.resetPosition(getRotation2d(), getSwerveModulePositions(),
-                new Pose2d(pose.getTranslation(), new Rotation2d()));
-    }
-
-    public void resetOdometry(Pose2d pose) {
-        this._odometry.resetPosition(getRotation2d(), getSwerveModulePositions(), pose);
-    }
-
     public void calibrateSteering() {
         for (SwerveModule swerveModule : _modules) {
             swerveModule.calibrateSteering();
         }
     }
 
-    private SwerveModulePosition[] getSwerveModulePositions() {
-        SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[this._modules.length];
-
-        for (int i = 0; i < swerveModulePositions.length; i++) {
-            swerveModulePositions[i] = this._modules[i].getSwerveModulePosition();
-        }
-
-        return swerveModulePositions;
-    }
 }
