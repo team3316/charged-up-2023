@@ -83,6 +83,10 @@ public class Drivetrain extends SubsystemBase {
         return Rotation2d.fromDegrees(getHeading());
     }
 
+    public void resetYaw() {
+        this._pigeon.setFusedHeading(0);
+    }
+
     public void calibrateSteering() {
         for (SwerveModule swerveModule : _modules) {
             swerveModule.calibrateSteering();

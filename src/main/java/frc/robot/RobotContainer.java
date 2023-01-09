@@ -67,6 +67,9 @@ public class RobotContainer {
     private void configureBindings() {
         _driverController.options().onTrue(
                 new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative mode
+
+        _driverController.share().onTrue(
+                new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
     }
 
     /**
