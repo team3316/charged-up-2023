@@ -4,12 +4,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
+import frc.robot.commandGroup.backward;
+import frc.robot.commandGroup.moveFoward;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -33,10 +37,14 @@ public class RobotContainer {
 
     private boolean _fieldRelative = true;
 
+    private SendableChooser<Command> chooser;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        this.chooser = new SendableChooser<Command>();
+        initChooser();
         // Configure the trigger bindings
         configureBindings();
 
@@ -72,6 +80,12 @@ public class RobotContainer {
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
     }
 
+    public void initChooser() {
+        this.chooser.setDefaultOption("forward", new moveFoward(m_drivetrain));
+        this.chooser.addOption("backward", new backward(m_drivetrain));
+        SmartDashboard.putData("autonomous", this.chooser);
+    }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
@@ -79,6 +93,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
-        return new InstantCommand();
+        return this.chooser.getSelected();
     }
 }
