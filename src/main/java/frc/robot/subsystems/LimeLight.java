@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import org.opencv.core.Point;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -14,7 +12,6 @@ import frc.robot.constants.LimelightConstants;
 
 public class LimeLight extends SubsystemBase {
     NetworkTable limeLightTable;
-    private NetworkTableEntry ta;
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
 
@@ -23,7 +20,6 @@ public class LimeLight extends SubsystemBase {
         limeLightTable = NetworkTableInstance.getDefault().getTable("limelight");
         tx = limeLightTable.getEntry("tx");
         ty = limeLightTable.getEntry("ty");
-        ta = limeLightTable.getEntry("ta");
     }
 
     public double getAngle() {
