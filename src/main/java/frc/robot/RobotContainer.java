@@ -6,9 +6,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.commandGroup.backward;
+import frc.robot.commandGroup.moveFoward;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
@@ -30,21 +34,28 @@ public class RobotContainer {
 
     private boolean _fieldRelative = true;
 
+    private SendableChooser<Command> chooser;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
         m_compressor.enableDigital();
 
+        this.chooser = new SendableChooser<Command>();
+        initChooser();
         // Configure the trigger bindings
         configureBindings();
 
         m_drivetrain.setDefaultCommand(
                 new RunCommand(
                         () -> m_drivetrain.drive(
-                                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
+                                _driverController.getLeftY()
+                                        * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                                _driverController.getLeftX()
+                                        * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                                _driverController.getCombinedAxis()
+                                        * DrivetrainConstants.maxRotationSpeedRadPerSec,
                                 _fieldRelative),
                         m_drivetrain));
     }
@@ -54,7 +65,8 @@ public class RobotContainer {
      */
     private void configureBindings() {
         _driverController.options().onTrue(
-                new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative mode
+                new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative
+                                                                             // mode
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
@@ -67,12 +79,18 @@ public class RobotContainer {
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
     }
 
+    public void initChooser() {
+        this.chooser.setDefaultOption("forward", new moveFoward(m_drivetrain));
+        this.chooser.addOption("backward", new backward(m_drivetrain));
+        SmartDashboard.putData("autonomous", this.chooser);
+    }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new InstantCommand();
+        return this.chooser.getSelected();
     }
 }
