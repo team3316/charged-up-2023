@@ -43,8 +43,8 @@ public class RobotContainer {
         m_drivetrain.setDefaultCommand(
                 new RunCommand(
                         () -> m_drivetrain.drive(
-                                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
                                 _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
                                 _driverController.getCombinedAxis() * 11.5,
                                 _fieldRelative),
                         m_drivetrain));
