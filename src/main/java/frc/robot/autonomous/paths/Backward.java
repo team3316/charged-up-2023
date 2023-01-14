@@ -13,7 +13,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class Backward extends SequentialCommandGroup {
   /** Creates a new backward. */
-  public backward(Drivetrain drivetrain) {
+  public Backward(Drivetrain drivetrain) {
     FollowTrajectory followTrajectory = new FollowTrajectory(drivetrain, "backward");
 
     // Add your commands in the addCommands() call, e.g.
