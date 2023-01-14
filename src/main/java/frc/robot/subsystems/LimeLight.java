@@ -28,8 +28,11 @@ public class LimeLight extends SubsystemBase {
 
     //height dif between goal and limelight devided by tan of limelight y angle.
     public double getDist() {
-      return (LimelightConstants.lowGoalTargetHeightMeters-LimelightConstants.limelightHeightMeters)
-      /Math.tan(Math.toRadians(ty.getDouble(0)));
+      return LimelightConstants.limeLightToLowGoalMeters
+      /Math.tan(Math.toRadians(
+        ty.getDouble(0)+LimelightConstants.limelightAngleFromFloorDegs
+        )
+      );
     }
 
     

@@ -11,11 +11,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.commandGroup.backward;
 import frc.robot.commandGroup.moveFoward;
+import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
+import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /**
@@ -30,6 +31,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final Drivetrain m_drivetrain = new Drivetrain();
+    private final LimeLight m_LimeLight = new LimeLight();
 
     // Replace with CommandPS4Controller or CommandJoystick if needed
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
@@ -78,6 +80,12 @@ public class RobotContainer {
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
+
+        _driverController.circle().onTrue(
+                new InstantCommand(
+                        () -> SmartDashboard.putNumber("dist", m_LimeLight.getAngle())
+                        )
+                );
     }
 
     public void initChooser() {
