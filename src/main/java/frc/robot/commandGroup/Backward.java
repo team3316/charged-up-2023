@@ -11,10 +11,10 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class moveFoward extends SequentialCommandGroup {
-  /** Creates a new moveFoward. */
-  public moveFoward(Drivetrain drivetrain) {
-    FollowTrajectory followTrajectory = new FollowTrajectory(drivetrain, "forward");
+public class Backward extends SequentialCommandGroup {
+  /** Creates a new backward. */
+  public backward(Drivetrain drivetrain) {
+    FollowTrajectory followTrajectory = new FollowTrajectory(drivetrain, "backward");
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
