@@ -4,6 +4,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.constants.DrivetrainConstants;
@@ -165,10 +167,22 @@ public class Drivetrain extends SubsystemBase {
             ),
             (State state) -> this.driveAndSpinByState(state,SmartDashboard.getNumber("kP", 0)),
             this
-        );
+        ).andThen(getHighAccuracySpinCommand(goal));
     }
 
     public Command getSpinByAngleCommand(Rotation2d delta) {
         return getSpinToAngleCommand(delta.plus(getRotation2d()));
     }
+
+    public Command getHighAccuracySpinCommand(Rotation2d goal) {
+        PIDController controller = new PIDController(SmartDashboard.getNumber("high kP", 0), 0, 0);
+        controller.enableContinuousInput(-Math.PI, Math.PI);
+        controller.setTolerance(0.5);
+        return new PIDCommand(controller,
+         () -> getRotation2d().getRadians(),
+          goal.getRadians(),
+           (double rot) -> drive(0, 0, rot, true),
+            this);
+    }
+
 }

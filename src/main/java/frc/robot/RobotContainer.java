@@ -52,6 +52,7 @@ public class RobotContainer {
         configureBindings();
         SmartDashboard.putNumber("target angle", 0);
         SmartDashboard.putNumber("kP", 0);
+        SmartDashboard.putNumber("high kP", 0);
         
 
         m_drivetrain.setDefaultCommand(
