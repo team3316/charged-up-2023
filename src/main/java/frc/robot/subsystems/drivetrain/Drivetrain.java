@@ -167,4 +167,8 @@ public class Drivetrain extends SubsystemBase {
             this
         );
     }
+
+    public Command getSpinByAngleCommand(Rotation2d delta) {
+        return getSpinToAngleCommand(delta.plus(getRotation2d()));
+    }
 }

@@ -84,12 +84,15 @@ public class RobotContainer {
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
+
         _driverController.cross().onTrue(
                 new InstantCommand(
-                () -> m_drivetrain.getSpinToAngleCommand(Rotation2d.fromDegrees(
-                        SmartDashboard.getNumber("target angle", 0))).schedule()
-                )
-        );
+                () -> m_drivetrain.getSpinByAngleCommand(Rotation2d.fromDegrees(m_LimeLight.getAngle())).schedule())
+                .andThen(new InstantCommand(() -> 
+                                SmartDashboard.putNumber("limeangle",m_LimeLight.getAngle())))
+                
+        );     
+
         _driverController.L3().onTrue(
                 new InstantCommand(() -> m_drivetrain.getCurrentCommand().cancel()).
                 andThen(new InstantCommand(
