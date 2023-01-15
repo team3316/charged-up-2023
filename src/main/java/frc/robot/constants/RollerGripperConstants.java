@@ -9,5 +9,7 @@ public class RollerGripperConstants {
     public final static int kTalonLeaderPort;
     public final static int kTalonFollowerPort;
     public final static int kSparkMaxFolderPort;
-    
+
+    public final static double kEjectDuration = 0.02;
+
 }
