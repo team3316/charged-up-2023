@@ -38,8 +38,8 @@ public class Funnel extends SubsystemBase {
   /** Creates a new Funnel. */
   private DoubleSolenoid _funnelSolenoid;
   public Funnel() {
-    _funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 2);
-    _rollers = new CANSparkMax(20, MotorType.kBrushless);
+    _funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.SolenoidForwardPort, FunnelConstants.SolenoidReversePort);
+    _rollers = new CANSparkMax(FunnelConstants.sparkMaxPort, MotorType.kBrushless);
 
   }
 
