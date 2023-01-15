@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -49,6 +50,9 @@ public class RobotContainer {
         initChooser();
         // Configure the trigger bindings
         configureBindings();
+        SmartDashboard.putNumber("target angle", 0);
+        SmartDashboard.putNumber("kP", 0);
+        
 
         m_drivetrain.setDefaultCommand(
                 new RunCommand(
@@ -80,12 +84,19 @@ public class RobotContainer {
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
-
-        _driverController.circle().onTrue(
+        _driverController.cross().onTrue(
                 new InstantCommand(
-                        () -> SmartDashboard.putNumber("dist", m_LimeLight.getAngle())
-                        )
-                );
+                () -> m_drivetrain.getSpinToAngleCommand(Rotation2d.fromDegrees(
+                        SmartDashboard.getNumber("target angle", 0))).schedule()
+                )
+        );
+        _driverController.L3().onTrue(
+                new InstantCommand(() -> m_drivetrain.getCurrentCommand().cancel()).
+                andThen(new InstantCommand(
+                        () -> SmartDashboard.putNumber("target angle", 0)
+                ))
+        );
+
     }
 
     public void initChooser() {
