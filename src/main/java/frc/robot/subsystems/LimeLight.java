@@ -23,7 +23,7 @@ public class LimeLight extends SubsystemBase {
     }
 
     public double getAngle() {
-      return tx.getDouble(0);
+      return -1*tx.getDouble(0); //negative because LL and pigeon have opposite sensor fazzes
     }
 
     //height dif between goal and limelight devided by tan of limelight y angle.

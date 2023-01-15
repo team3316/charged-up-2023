@@ -1,7 +1,5 @@
 package frc.robot.constants;
 
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-
 /**
  * LimelightConstants
  */
