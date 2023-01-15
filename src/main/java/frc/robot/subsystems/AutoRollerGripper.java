@@ -4,31 +4,60 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.RollerGripperConstants;
 
 public class AutoRollerGripper extends SubsystemBase {
-    DigitalInput isEquipped;
-    TalonFX leaderT, followerT;
-    CANSparkMax folderSM;
 
-    double _speed, _ms;
+    private DigitalInput _rollerGripperLS;
+    private TalonSRX _talonLeader, _talonFollower;
+    private CANSparkMax _folderSM;
+    private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
 
-    public AutoRollerGripper(double voltage, double ms, int talonPort) {
-        leaderT = new TalonFX(talonPort);
-        followerT.setInverted(true);
-
+    public enum StateList {
+        FOLDS_OUT,
+        COLLECTING,
+        RELEASE,
+        FOLDS_IN
     }
 
-    public CommandBase getCollectCommand() {
-        return new CommandBase() {
+    public enum RollersState {
+        INTAKE(0.70),
+        EJECT(-0.70),
+        OFF(0);
 
-        };
+        private final double speed;
+
+        RollersState(double speed) {
+            this.speed = speed;
+        }
+    }
+
+    public AutoRollerGripper() {
+        _talonLeader = new TalonSRX(RollerGripperConstants.kTalonLeaderPort);
+        _talonFollower = new TalonSRX(RollerGripperConstants.kTalonFollowerPort);
+        _talonFollower.follow(_talonLeader);
+        _talonFollower.setInverted(InvertType.OpposeMaster);
+
+        _folderSM = new CANSparkMax(RollerGripperConstants.kSparkMaxFolderPort, MotorType.kBrushless);
+        _folderInLS.enableLimitSwitch(true);
+        _folderOutLS.enableLimitSwitch(true);
+    }
+
+    void folds(RollersState state) {
+        _folderSM.set(state.speed);
+    }
+
+    public void setRollersSpeed(RollersState state) {
+        _talonLeader.set(TalonSRXControlMode.PercentOutput, state.speed);
     }
 
     @Override
