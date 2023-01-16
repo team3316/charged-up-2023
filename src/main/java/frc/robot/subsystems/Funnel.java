@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.constants.FunnelConstants;
 
 public class Funnel extends SubsystemBase {
@@ -38,8 +37,8 @@ public class Funnel extends SubsystemBase {
   /** Creates a new Funnel. */
   private DoubleSolenoid _funnelSolenoid;
   public Funnel() {
-    _funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.SolenoidForwardPort, FunnelConstants.SolenoidReversePort);
-    _rollers = new CANSparkMax(FunnelConstants.sparkMaxPort, MotorType.kBrushless);
+    this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort, FunnelConstants.solenoidReversePort);
+    this._rollers = new CANSparkMax(FunnelConstants.sparkMaxPort, MotorType.kBrushless);
 
   }
 
@@ -49,6 +48,7 @@ public class Funnel extends SubsystemBase {
   }
   
   public void setFunnelState(FunnelState state){
+    System.out.println("hi i am running :)");
     if(state == getFunnelState()){
       return;
     }
