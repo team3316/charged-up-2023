@@ -74,11 +74,6 @@ public class AutoRollerGripper extends SubsystemBase {
         return _rollerLimitSwitch.get();
     }
 
-    @Override
-    public void periodic() {
-
-    }
-
     public CommandBase getIntakeCommand() {
         return new InstantCommand(() -> setFolderState(FolderState.OUT))
         .andThen(new StartEndCommand(
@@ -97,10 +92,5 @@ public class AutoRollerGripper extends SubsystemBase {
                 setFolderState(FolderState.IN);
             }))
         );
-    }
-
-    @Override
-    public void simulationPeriodic() {
-        // This method will be called once per scheduler run during simulation
     }
 }
