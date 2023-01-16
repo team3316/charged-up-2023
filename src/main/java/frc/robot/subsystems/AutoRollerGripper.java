@@ -4,20 +4,15 @@
 
 package frc.robot.subsystems;
 
-import java.time.Instant;
-
-import javax.management.InstanceAlreadyExistsException;
-
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -32,17 +27,15 @@ public class AutoRollerGripper extends SubsystemBase {
     private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
     private DigitalInput _rollerLimitSwitch;
 
-    WaitCommand wait;
-
     public enum FolderState {
         IN(-0.3),
         OUT(0.3),
         OFF(0.0);
 
-        private final double speed;
+        private final double percentOutput;
 
-        FolderState(double speed) {
-            this.speed = speed;
+        FolderState(double percentOutput) {
+            this.percentOutput = percentOutput;
         }
     }
 
@@ -51,10 +44,10 @@ public class AutoRollerGripper extends SubsystemBase {
         EJECT(-0.70),
         OFF(0);
 
-        private final double speed;
+        private final double percentOutput;
 
-        RollersState(double speed) {
-            this.speed = speed;
+        RollersState(double percentOutput) {
+            this.percentOutput = percentOutput;
         }
     }
 
@@ -69,12 +62,12 @@ public class AutoRollerGripper extends SubsystemBase {
         _folderOutLS.enableLimitSwitch(true);
     }
 
-    public void folds(FolderState state) {
-        _folderSM.set(state.speed);
+    public void setFolderState(FolderState state) {
+        _folderSM.set(state.percentOutput);
     }
 
     public void setRollersSpeed(RollersState state) {
-        _talonLeader.set(TalonSRXControlMode.PercentOutput, state.speed);
+        _talonLeader.set(TalonSRXControlMode.PercentOutput, state.percentOutput);
     }
 
     public boolean hasCone() {
@@ -87,7 +80,7 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public CommandBase getIntakeCommand() {
-        return new InstantCommand(() -> folds(FolderState.OUT))
+        return new InstantCommand(() -> setFolderState(FolderState.OUT))
         .andThen(new StartEndCommand(
                 () -> setRollersSpeed(RollersState.INTAKE),
                 () -> setRollersSpeed(RollersState.OFF),
@@ -98,9 +91,10 @@ public class AutoRollerGripper extends SubsystemBase {
         return new SequentialCommandGroup(
             new InstantCommand(() -> {
                 setRollersSpeed(RollersState.EJECT);
-            }).andThen(new InstantCommand(() -> {
+            }).andThen(new WaitCommand(0.05),
+                new InstantCommand(() -> {
                 setRollersSpeed(RollersState.OFF);
-                folds(FolderState.IN);
+                setFolderState(FolderState.IN);
             }))
         );
     }
