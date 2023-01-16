@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -24,11 +26,14 @@ public class RobotContainer {
             JoysticksConstants.driverPort);
 
     private boolean _fieldRelative = true;
-
+    
+  
+  private final Compressor _compressor = new Compressor(PneumaticsModuleType.REVPH);
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        _compressor.enableDigital();
         // Configure the trigger bindings
         configureBindings();
 
@@ -41,6 +46,7 @@ public class RobotContainer {
                                 _fieldRelative),
                         m_drivetrain));
     }
+  
 
     /**
      * Use this method to define your trigger->command mappings.
