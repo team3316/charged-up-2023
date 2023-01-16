@@ -28,21 +28,21 @@ public class AutoRollerGripper extends SubsystemBase {
     private DigitalInput _rollerLimitSwitch;
 
     public enum FolderState {
-        IN(-0.3),
-        OUT(0.3),
-        OFF(0.0);
+        IN(RollerGripperConstants.kfolderInValue),
+        OUT(RollerGripperConstants.kfolderOutValue),
+        OFF(RollerGripperConstants.kfolderOffValue);
 
         private final double percentOutput;
 
         FolderState(double percentOutput) {
-            this.percentOutput = percentOutput;
-        }
+                this.percentOutput = percentOutput;
+            }
     }
 
     public enum RollersState {
-        INTAKE(0.70),
-        EJECT(-0.70),
-        OFF(0);
+        INTAKE(RollerGripperConstants.krollerIntakeValue),
+        EJECT(RollerGripperConstants.krollerEjectValue),
+        OFF(RollerGripperConstants.krollerOffValue);
 
         private final double percentOutput;
 
