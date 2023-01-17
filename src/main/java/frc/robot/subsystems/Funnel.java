@@ -48,7 +48,6 @@ public class Funnel extends SubsystemBase {
   }
   
   public void setFunnelState(FunnelState state){
-    System.out.println("hi i am running :)");
     if(state == getFunnelState()){
       return;
     }
