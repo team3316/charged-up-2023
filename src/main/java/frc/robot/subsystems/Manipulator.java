@@ -21,7 +21,7 @@ public class Manipulator extends SubsystemBase {
     private DoubleSolenoid _leftSolenoid;
     private DoubleSolenoid _rightSolenoid;
 
-    public enum ManipulatorState {
+    public static enum ManipulatorState {
         OPEN(ManipulatorConstants.leftSolenoidOpenState, ManipulatorConstants.rightSolenoidOpenState),
         CUBE_HOLD(ManipulatorConstants.leftSolenoidCubeClosedState, ManipulatorConstants.rightSolenoidCubeClosedState),
         CONE_HOLD(ManipulatorConstants.leftSolenoidConeClosedState, ManipulatorConstants.rightSolenoidConeClosedState);
