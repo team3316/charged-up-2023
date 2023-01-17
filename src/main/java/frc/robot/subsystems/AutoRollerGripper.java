@@ -7,11 +7,13 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -27,22 +29,24 @@ public class AutoRollerGripper extends SubsystemBase {
     private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
     private DigitalInput _rollerLimitSwitch;
 
+    private TalonSRXConfiguration _talonConfig = new TalonSRXConfiguration();
+
     public enum FolderState {
-        IN(RollerGripperConstants.kfolderInValue),
-        OUT(RollerGripperConstants.kfolderOutValue),
-        OFF(RollerGripperConstants.kfolderOffValue);
+        IN(RollerGripperConstants.kFolderInValue),
+        OUT(RollerGripperConstants.kFolderOutValue),
+        OFF(RollerGripperConstants.kFolderOffValue);
 
         private final double percentOutput;
 
         FolderState(double percentOutput) {
-                this.percentOutput = percentOutput;
-            }
+            this.percentOutput = percentOutput;
+        }
     }
 
     public enum RollersState {
-        INTAKE(RollerGripperConstants.krollerIntakeValue),
-        EJECT(RollerGripperConstants.krollerEjectValue),
-        OFF(RollerGripperConstants.krollerOffValue);
+        INTAKE(RollerGripperConstants.kRollerIntakeValue),
+        EJECT(RollerGripperConstants.kRollerEjectValue),
+        OFF(RollerGripperConstants.kRollerOffValue);
 
         private final double percentOutput;
 
@@ -60,13 +64,21 @@ public class AutoRollerGripper extends SubsystemBase {
         _folderSM = new CANSparkMax(RollerGripperConstants.kSparkMaxFolderPort, MotorType.kBrushless);
         _folderInLS.enableLimitSwitch(true);
         _folderOutLS.enableLimitSwitch(true);
+
+        _talonLeader.getAllConfigs(_talonConfig);
+        _talonFollower.getAllConfigs(_talonConfig);
+
+    }
+
+    public void periodic() {
+        SmartDashboard.putBoolean("hasCone", hasCone());
     }
 
     public void setFolderState(FolderState state) {
         _folderSM.set(state.percentOutput);
     }
 
-    public void setRollersSpeed(RollersState state) {
+    public void setRollersState(RollersState state) {
         _talonLeader.set(TalonSRXControlMode.PercentOutput, state.percentOutput);
     }
 
@@ -76,21 +88,24 @@ public class AutoRollerGripper extends SubsystemBase {
 
     public CommandBase getIntakeCommand() {
         return new InstantCommand(() -> setFolderState(FolderState.OUT))
-        .andThen(new StartEndCommand(
-                () -> setRollersSpeed(RollersState.INTAKE),
-                () -> setRollersSpeed(RollersState.OFF),
-                this).until(this::hasCone));
+                .andThen(new StartEndCommand(
+                        () -> setRollersState(RollersState.INTAKE),
+                        () -> {
+                            new SequentialCommandGroup(
+                                    new WaitCommand(RollerGripperConstants.kGrippingSleepDuration),
+                                    new InstantCommand(() -> setRollersState(RollersState.OFF)));
+                        }).until(this::hasCone));
+
     }
 
     public CommandBase getEjectCommand() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                setRollersSpeed(RollersState.EJECT);
-            }).andThen(new WaitCommand(0.05),
                 new InstantCommand(() -> {
-                setRollersSpeed(RollersState.OFF);
-                setFolderState(FolderState.IN);
-            }))
-        );
+                    setRollersState(RollersState.EJECT);
+                }).andThen(new WaitCommand(RollerGripperConstants.kFoldingSleepDuraion),
+                        new InstantCommand(() -> {
+                            setRollersState(RollersState.OFF);
+                            setFolderState(FolderState.IN);
+                        })));
     }
 }
