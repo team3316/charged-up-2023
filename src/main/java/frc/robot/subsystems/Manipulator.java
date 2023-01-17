@@ -69,7 +69,7 @@ public class Manipulator extends SubsystemBase {
 
     }
 
-    public CommandBase setFunnelStateCommand(ManipulatorState state) {
+    public CommandBase setManipulatorStateCommand(ManipulatorState state) {
         return new InstantCommand(() -> {
             setManipulatorState(state);
         }, this);
