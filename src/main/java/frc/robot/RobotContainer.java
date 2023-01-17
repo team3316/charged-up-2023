@@ -53,7 +53,14 @@ public class RobotContainer {
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
-    }
+
+        
+        // Square button: intake
+        _driverController.square().whileTrue(m_autoRollerGripper.getIntakeCommand());
+
+        // Cross button: eject
+        _driverController.cross().whileTrue(m_autoRollerGripper.getEjectCommand());
+        }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
