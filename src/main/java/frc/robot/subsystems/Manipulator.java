@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -58,7 +57,6 @@ public class Manipulator extends SubsystemBase {
         this._leftSolenoid.set(requiredState.leftSolenoidState);
         this._rightSolenoid.set(requiredState.rightSolenoidState);
 
-        SmartDashboard.putString("Current State", requiredState.toString());
         this._currentState = requiredState;
     }
 
@@ -68,7 +66,7 @@ public class Manipulator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Is holding game piece", this.isHoldingGamePiece());
+
     }
 
     public CommandBase setManipulatorStateCommand(ManipulatorState state) {
