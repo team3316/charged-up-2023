@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
@@ -36,7 +37,7 @@ public class RobotContainer {
                         () -> m_drivetrain.drive(
                                 _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
                                 _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getCombinedAxis() * 11.5,
+                                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
                                 _fieldRelative),
                         m_drivetrain));
     }
