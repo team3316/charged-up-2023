@@ -58,6 +58,13 @@ public class RobotContainer {
 
     _driverController.share().onTrue(
         new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
+
+    _driverController.triangle().onTrue(
+        m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CONE_HOLD));
+    _driverController.square().onTrue(
+        m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
+    _driverController.cross().onTrue(
+        m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
   }
 
   /**
