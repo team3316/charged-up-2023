@@ -37,21 +37,29 @@ public class AutoRollerGripper extends SubsystemBase {
 
     private TalonSRXConfiguration _talonConfig = new TalonSRXConfiguration();
 
+    /**
+     * TODO: set all states from percentOutput to Position ControlMode
+     * examples in:
+     */
+
     public enum FolderState {
-        IN(RollerGripperConstants.kFolderInValue),
-        OUT(RollerGripperConstants.kFolderOutValue),
-        OFF(RollerGripperConstants.kFolderOffValue);
+        IN(RollerGripperConstants.kFolderInValue, PneumaticFolderState.IN),
+        OUT(RollerGripperConstants.kFolderOutValue, PneumaticFolderState.OUT),
+        OFF(RollerGripperConstants.kFolderOffValue, PneumaticFolderState.OFF);
 
         private final double percentOutput;
+        private final PneumaticFolderState pneumaticState;
 
-        FolderState(double percentOutput) {
+        FolderState(double percentOutput, PneumaticFolderState pneumaticState) {
             this.percentOutput = percentOutput;
+            this.pneumaticState = pneumaticState;
         }
     }
 
     public enum PneumaticFolderState {
         OUT(RollerGripperConstants.kStateWhenFoldedOut),
-        IN(RollerGripperConstants.kStateWhenFoldedIn);
+        IN(RollerGripperConstants.kStateWhenFoldedIn),
+        OFF(null);
 
         private DoubleSolenoid.Value solenoidValue;
 
@@ -101,6 +109,7 @@ public class AutoRollerGripper extends SubsystemBase {
             setFolderState(FolderState.OFF);
     }
 
+    // TODO: merge the setFolderStates for double actions
     public void setFolderState(FolderState state) {
         _folderSM.set(state.percentOutput);
     }
@@ -130,7 +139,7 @@ public class AutoRollerGripper extends SubsystemBase {
     public CommandBase getEjectCommand() {
         return new InstantCommand(() -> {
             setRollersState(RollersState.EJECT);
-        }).andThen(new WaitCommand(RollerGripperConstants.kFoldingSleepDuraion),
+        }).andThen(new WaitCommand(RollerGripperConstants.kFoldingSleepDuration),
                 new InstantCommand(() -> {
                     setRollersState(RollersState.OFF);
                     setFolderState(FolderState.IN);

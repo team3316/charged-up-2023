@@ -21,7 +21,7 @@ public class RollerGripperConstants {
     public final static double kRollerEjectValue = -0.70;
     public final static double kRollerOffValue = 0;
 
-    public final static double kFoldingSleepDuraion = 0.05;
+    public final static double kFoldingSleepDuration = 0.05;
     public final static double kGrippingSleepDuration = 0.5;
 
     public final static double kEjectDuration = 0.02;
