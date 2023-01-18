@@ -12,7 +12,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch;
 
+import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
+
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -29,6 +33,8 @@ public class AutoRollerGripper extends SubsystemBase {
     private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
     private DigitalInput _rollerLimitSwitch;
 
+    private DoubleSolenoid _doubleSolenoid;
+
     private TalonSRXConfiguration _talonConfig = new TalonSRXConfiguration();
 
     public enum FolderState {
@@ -40,6 +46,17 @@ public class AutoRollerGripper extends SubsystemBase {
 
         FolderState(double percentOutput) {
             this.percentOutput = percentOutput;
+        }
+    }
+
+    public enum PneumaticFolderState {
+        OUT(RollerGripperConstants.kStateWhenFoldedOut),
+        IN(RollerGripperConstants.kStateWhenFoldedIn);
+
+        private DoubleSolenoid.Value solenoidValue;
+
+        private PneumaticFolderState(DoubleSolenoid.Value value) {
+            this.solenoidValue = value;
         }
     }
 
@@ -68,6 +85,13 @@ public class AutoRollerGripper extends SubsystemBase {
         _talonLeader.getAllConfigs(_talonConfig);
         _talonFollower.getAllConfigs(_talonConfig);
 
+        _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+            RollerGripperConstants.kSolenoidForwardChannel,
+            RollerGripperConstants.kSolenoidReverseChannel
+        );
+
+        
+
     }
 
     public void periodic() {
@@ -76,6 +100,10 @@ public class AutoRollerGripper extends SubsystemBase {
 
     public void setFolderState(FolderState state) {
         _folderSM.set(state.percentOutput);
+    }
+
+    public void setFolderState(PneumaticFolderState pneumaticState) {
+        _doubleSolenoid.set(pneumaticState.solenoidValue);
     }
 
     public void setRollersState(RollersState state) {
@@ -95,17 +123,15 @@ public class AutoRollerGripper extends SubsystemBase {
                                     new WaitCommand(RollerGripperConstants.kGrippingSleepDuration),
                                     new InstantCommand(() -> setRollersState(RollersState.OFF)));
                         }).until(this::hasCone));
-
     }
 
     public CommandBase getEjectCommand() {
-        return new SequentialCommandGroup(
+        return new InstantCommand(() -> {
+            setRollersState(RollersState.EJECT);
+        }).andThen(new WaitCommand(RollerGripperConstants.kFoldingSleepDuraion),
                 new InstantCommand(() -> {
-                    setRollersState(RollersState.EJECT);
-                }).andThen(new WaitCommand(RollerGripperConstants.kFoldingSleepDuraion),
-                        new InstantCommand(() -> {
-                            setRollersState(RollersState.OFF);
-                            setFolderState(FolderState.IN);
-                        })));
+                    setRollersState(RollersState.OFF);
+                    setFolderState(FolderState.IN);
+                }));
     }
 }
