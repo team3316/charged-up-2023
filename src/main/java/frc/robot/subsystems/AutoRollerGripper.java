@@ -9,10 +9,10 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch;
-
-import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
+import com.revrobotics.SparkMaxRelativeEncoder;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -29,9 +29,11 @@ import frc.robot.constants.RollerGripperConstants;
 public class AutoRollerGripper extends SubsystemBase {
 
     private TalonSRX _talonLeader, _talonFollower;
-    private CANSparkMax _folderSM;
-    private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
     private DigitalInput _rollerLimitSwitch;
+
+    private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
+    private CANSparkMax _folderSM;
+    private SparkMaxRelativeEncoder _encoder;
 
     private DoubleSolenoid _doubleSolenoid;
 
@@ -86,16 +88,19 @@ public class AutoRollerGripper extends SubsystemBase {
         _talonFollower.getAllConfigs(_talonConfig);
 
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-            RollerGripperConstants.kSolenoidForwardChannel,
-            RollerGripperConstants.kSolenoidReverseChannel
-        );
+                RollerGripperConstants.kSolenoidForwardChannel,
+                RollerGripperConstants.kSolenoidReverseChannel);
 
-        
+        _encoder.setPosition(0);
 
     }
 
     public void periodic() {
         SmartDashboard.putBoolean("hasCone", hasCone());
+
+        if (_encoder.getPosition() <= RollerGripperConstants.kMaxFolderIn ||
+                _encoder.getPosition() >= RollerGripperConstants.kMaxFolderOut)
+            setFolderState(FolderState.OFF);
     }
 
     public void setFolderState(FolderState state) {
