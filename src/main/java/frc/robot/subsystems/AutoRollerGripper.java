@@ -9,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxRelativeEncoder;
@@ -20,7 +19,6 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -119,13 +117,16 @@ public class AutoRollerGripper extends SubsystemBase {
         return _rollerLimitSwitch.get();
     }
 
+    // new SequentialCommandGroup(
+    // new WaitCommand(RollerGripperConstants.kGrippingSleepDuration),
+    // new InstantCommand(() -> setRollersState(RollersState.OFF)));
+
     public CommandBase getIntakeCommand() {
         return new InstantCommand(() -> setFolderState(FolderState.OUT))
                 .andThen(new StartEndCommand(
                         () -> setRollersState(RollersState.INTAKE),
                         () -> {
-                            new SequentialCommandGroup(
-                                    new WaitCommand(RollerGripperConstants.kGrippingSleepDuration),
+                            new WaitCommand(RollerGripperConstants.kGrippingSleepDuration).andThen(
                                     new InstantCommand(() -> setRollersState(RollersState.OFF)));
                         }).until(this::hasCone));
     }
