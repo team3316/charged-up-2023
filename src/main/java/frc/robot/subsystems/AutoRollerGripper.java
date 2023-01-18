@@ -82,8 +82,8 @@ public class AutoRollerGripper extends SubsystemBase {
         _folderInLS.enableLimitSwitch(true);
         _folderOutLS.enableLimitSwitch(true);
 
-        _talonLeader.getAllConfigs(_talonConfig);
-        _talonFollower.getAllConfigs(_talonConfig);
+        _talonLeader.configAllSettings(_talonConfig);
+        _talonFollower.configAllSettings(_talonConfig);
 
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 RollerGripperConstants.kSolenoidForwardChannel,
