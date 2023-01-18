@@ -117,10 +117,6 @@ public class AutoRollerGripper extends SubsystemBase {
         return _rollerLimitSwitch.get();
     }
 
-    // new SequentialCommandGroup(
-    // new WaitCommand(RollerGripperConstants.kGrippingSleepDuration),
-    // new InstantCommand(() -> setRollersState(RollersState.OFF)));
-
     public CommandBase getIntakeCommand() {
         return new InstantCommand(() -> setFolderState(FolderState.OUT))
                 .andThen(new StartEndCommand(

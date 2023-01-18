@@ -118,6 +118,6 @@ public class SwerveModule {
     }
 
     public SwerveModulePosition getSwerveModulePosition() {
-        return new SwerveModulePosition(_driveMotor.getPosition(),Rotation2d.fromDegrees(getAbsAngle()));
+        return new SwerveModulePosition(_driveMotor.getPosition(), Rotation2d.fromDegrees(getAbsAngle()));
     }
 }

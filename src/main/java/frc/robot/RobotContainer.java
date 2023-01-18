@@ -34,14 +34,11 @@ public class RobotContainer {
         // Configure the trigger bindings
         configureBindings();
 
-        m_drivetrain.setDefaultCommand(
-                new RunCommand(
-                        () -> m_drivetrain.drive(
-                                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
-                                _fieldRelative),
-                        m_drivetrain));
+        m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.drive(
+                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
+                _fieldRelative), m_drivetrain));
     }
 
     /**
@@ -54,13 +51,12 @@ public class RobotContainer {
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
-        
         // Square button: intake
         _driverController.square().whileTrue(m_autoRollerGripper.getIntakeCommand());
 
         // Cross button: eject
         _driverController.cross().whileTrue(m_autoRollerGripper.getEjectCommand());
-        }
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
