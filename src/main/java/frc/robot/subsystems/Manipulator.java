@@ -58,7 +58,7 @@ public class Manipulator extends SubsystemBase {
         this._leftSolenoid.set(requiredState.leftSolenoidState);
         this._rightSolenoid.set(requiredState.rightSolenoidState);
 
-        SmartDashboard.putString("Current State", requiredState.toString());
+        SmartDashboard.putString("Manipulator State", requiredState.toString());
         this._currentState = requiredState;
     }
 
@@ -68,7 +68,7 @@ public class Manipulator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Is holding game piece", this.isHoldingGamePiece());
+        SmartDashboard.putBoolean("Has GP", this.isHoldingGamePiece());
     }
 
     public CommandBase setManipulatorStateCommand(ManipulatorState state) {

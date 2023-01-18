@@ -21,58 +21,58 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
  * commands, and trigger mappings).
  */
 public class RobotContainer {
-  private final Drivetrain m_drivetrain = new Drivetrain();
-  private final Manipulator m_Manipulator = new Manipulator();
-  private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+    private final Drivetrain m_drivetrain = new Drivetrain();
+    private final Manipulator m_Manipulator = new Manipulator();
+    private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
-  private final CommandPS5Controller _driverController = new CommandPS5Controller(
-      JoysticksConstants.driverPort);
+    private final CommandPS5Controller _driverController = new CommandPS5Controller(
+            JoysticksConstants.driverPort);
 
-  private boolean _fieldRelative = true;
+    private boolean _fieldRelative = true;
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    m_compressor.enableDigital();
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        m_compressor.enableDigital();
 
-    // Configure the trigger bindings
-    configureBindings();
+        // Configure the trigger bindings
+        configureBindings();
 
-    m_drivetrain.setDefaultCommand(
-        new RunCommand(
-            () -> m_drivetrain.drive(
-                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
-                _fieldRelative),
-            m_drivetrain));
-  }
+        m_drivetrain.setDefaultCommand(
+                new RunCommand(
+                        () -> m_drivetrain.drive(
+                                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
+                                _fieldRelative),
+                        m_drivetrain));
+    }
 
-  /**
-   * Use this method to define your trigger->command mappings.
-   */
-  private void configureBindings() {
-    _driverController.options().onTrue(
-        new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative mode
+    /**
+     * Use this method to define your trigger->command mappings.
+     */
+    private void configureBindings() {
+        _driverController.options().onTrue(
+                new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative mode
 
-    _driverController.share().onTrue(
-        new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
+        _driverController.share().onTrue(
+                new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
-    _driverController.triangle().onTrue(
-        m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CONE_HOLD));
-    _driverController.square().onTrue(
-        m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
-    _driverController.cross().onTrue(
-        m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
-  }
+        _driverController.triangle().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CONE_HOLD));
+        _driverController.square().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
+        _driverController.cross().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
+    }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return new InstantCommand();
-  }
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return new InstantCommand();
+    }
 }
