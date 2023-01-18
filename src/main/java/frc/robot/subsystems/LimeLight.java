@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -34,6 +36,21 @@ public class LimeLight extends SubsystemBase {
         )
       );
     }
+
+    public Pose2d getPose() {
+      return new Pose2d(
+        getDist()*Math.cos(Math.toRadians(getAngle())),
+        getDist()*Math.sin(Math.toRadians(getAngle())),
+        new Rotation2d());
+    }
+
+    public Pose2d getPose(double rotateRads) {
+      return new Pose2d(
+        getDist()*Math.cos(Math.toRadians(getAngle())+rotateRads),
+        getDist()*Math.sin(Math.toRadians(getAngle())+rotateRads),
+        new Rotation2d());
+    }
+    
 
     
 
