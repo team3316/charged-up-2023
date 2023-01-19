@@ -37,12 +37,6 @@ public class AutoRollerGripper extends SubsystemBase {
 
     private FolderState currentFolderState;
 
-    /**
-     * TODO: set all states from percentOutput to Position ControlMode
-     * examples in:
-     * https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Position%20Closed%20Loop%20Control/src/main/java/frc/robot/Robot.java
-     */
-
     public enum FolderState {
         IN(RollerGripperConstants.inAngle, PneumaticFolderState.IN),
         OUT(RollerGripperConstants.outAngle, PneumaticFolderState.OUT),
