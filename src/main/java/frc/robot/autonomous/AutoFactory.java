@@ -43,9 +43,9 @@ public class AutoFactory {
                     true, // Should the path be automatically mirrored depending on alliance color.
                     drivetrain);
         }
-        PathPlannerTrajectory pathGroup = PathPlanner.loadPath(pathName,
+        PathPlannerTrajectory path = PathPlanner.loadPath(pathName,
                 new PathConstraints(AutonomousConstants.kMaxSpeedMetersPerSecond,
                         AutonomousConstants.kMaxAccelerationMetersPerSecondSquared));
-        return _autoBuilder.fullAuto(pathGroup);
+        return _autoBuilder.fullAuto(path);
     }
 }
