@@ -19,30 +19,29 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
  */
 public class AutoFactory {
 
-    private static SwerveAutoBuilder _autoBuilder;
+    private SwerveAutoBuilder _autoBuilder;
 
-    private static HashMap<String, Command> _eventMap = new HashMap<>();
+    private HashMap<String, Command> _eventMap = new HashMap<>();
 
-    static {
-        // add event markers here
+    public AutoFactory(Drivetrain drivetrain) {
+        _autoBuilder = new SwerveAutoBuilder(
+                drivetrain::getPose,
+                drivetrain::resetPose,
+                DrivetrainConstants.kinematics,
+                new PIDConstants(AutonomousConstants.kPTranslationController, 0.0, 0.0),
+                new PIDConstants(AutonomousConstants.kPThetaController, 0.0, 0.0),
+                drivetrain::setDesiredStates,
+                _eventMap,
+                true, // Should the path be automatically mirrored depending on alliance color.
+                drivetrain);
+
+        // add event markers here (and add the subsystem to the constructor)
         // for example:
         // _eventMap.put("marker1", new PrintCommand("Passed marker 1"));
         // _eventMap.put("intakeDown", new IntakeDown());
     }
 
-    public static CommandBase createAuto(Drivetrain drivetrain, String pathName) {
-        if (_autoBuilder == null) {
-            _autoBuilder = new SwerveAutoBuilder(
-                    drivetrain::getPose,
-                    drivetrain::resetPose,
-                    DrivetrainConstants.kinematics,
-                    new PIDConstants(AutonomousConstants.kPTranslationController, 0.0, 0.0),
-                    new PIDConstants(AutonomousConstants.kPThetaController, 0.0, 0.0),
-                    drivetrain::setDesiredStates,
-                    _eventMap,
-                    true, // Should the path be automatically mirrored depending on alliance color.
-                    drivetrain);
-        }
+    public CommandBase createAuto(Drivetrain drivetrain, String pathName) {
         PathPlannerTrajectory path = PathPlanner.loadPath(pathName,
                 new PathConstraints(AutonomousConstants.kMaxSpeedMetersPerSecond,
                         AutonomousConstants.kMaxAccelerationMetersPerSecondSquared));

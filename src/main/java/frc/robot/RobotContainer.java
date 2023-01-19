@@ -28,6 +28,8 @@ public class RobotContainer {
     private final Manipulator m_Manipulator = new Manipulator();
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
+
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
 
@@ -79,8 +81,8 @@ public class RobotContainer {
     }
 
     public void initChooser() {
-        this.chooser.setDefaultOption("forward", AutoFactory.createAuto(m_drivetrain, "forward"));
-        this.chooser.addOption("backward", AutoFactory.createAuto(m_drivetrain, "backward"));
+        this.chooser.setDefaultOption("forward", _autoFactory.createAuto(m_drivetrain, "forward"));
+        this.chooser.addOption("backward", _autoFactory.createAuto(m_drivetrain, "backward"));
         SmartDashboard.putData("autonomous", this.chooser);
     }
 
