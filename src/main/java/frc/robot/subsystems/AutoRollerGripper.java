@@ -8,8 +8,8 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.SparkMaxLimitSwitch;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -116,8 +116,12 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public void setFolderState(FolderState state) {
-        _doubleSolenoid.set(state.pneumaticState.solenoidValue);
-        _folderSM.setReference(state.desiredAngle, ControlType.kPosition);
+        if (state == FolderState.OFF) {
+            _folderSM.set(0);
+        } else {
+            _doubleSolenoid.set(state.pneumaticState.solenoidValue);
+            _folderSM.setReference(state.desiredAngle, ControlType.kPosition);
+        }
 
         SmartDashboard.putString("current folder state", currentFolderState.toString());
 
