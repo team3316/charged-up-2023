@@ -19,8 +19,7 @@ public class Backward extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      followTrajectory.getResetOddometryCommand(),
-      followTrajectory.getFollowTrajectoryCommand()
-      );
+        followTrajectory.getResetOdometryCommand(),
+        followTrajectory.getFollowTrajectoryCommand());
   }
 }
