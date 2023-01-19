@@ -24,6 +24,8 @@ public class RollerGripperConstants {
     public static PIDFGains folderGains = new PIDFGains(kp);
     public static double inAngle = 0;
     public static double outAngle = 90;
+    public static double gearRatio = 0;
+    public static double conversionFactor = gearRatio * 360; // converts position to degrees
 
     // pneumatics folder
     // TODO: update values when electronics table is compiled

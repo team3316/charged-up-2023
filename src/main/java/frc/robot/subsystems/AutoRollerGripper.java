@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.CANSparkMax.ControlType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -91,6 +92,8 @@ public class AutoRollerGripper extends SubsystemBase {
         _folderSM.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
         _folderSM.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
 
+        _folderSM.getEncoder().setPositionConversionFactor(RollerGripperConstants.conversionFactor);
+
         _talonLeader.configAllSettings(_talonConfig);
         _talonFollower.configAllSettings(_talonConfig);
 
@@ -99,6 +102,9 @@ public class AutoRollerGripper extends SubsystemBase {
                 RollerGripperConstants.solenoidReverseChannel);
 
         _folderSM.restoreFactoryDefaults();
+
+        _folderSM.setupPIDF(RollerGripperConstants.folderGains);
+
     }
 
     public void periodic() {
@@ -107,8 +113,8 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public void setFolderState(FolderState state) {
-        _folderSM.set(state.desiredAngle);
         _doubleSolenoid.set(state.pneumaticState.solenoidValue);
+        _folderSM.setReference(state.desiredAngle, ControlType.kPosition);
 
         currentFolderState = state;
     }
@@ -124,7 +130,9 @@ public class AutoRollerGripper extends SubsystemBase {
     public CommandBase getIntakeCommand() {
         return new InstantCommand(() -> setFolderState(FolderState.OUT))
                 .andThen(new StartEndCommand(
-                        () -> setRollersState(RollersState.INTAKE),
+                        () -> {
+                            setRollersState(RollersState.INTAKE);
+                        },
                         () -> {
                             new WaitCommand(RollerGripperConstants.grippingSleepDuration).andThen(
                                     new InstantCommand(() -> setRollersState(RollersState.OFF)));
