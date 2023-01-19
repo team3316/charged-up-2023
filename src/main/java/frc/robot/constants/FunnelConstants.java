@@ -4,8 +4,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class FunnelConstants {
     // TODO: update these values to real robot
-    public static final DoubleSolenoid.Value collectState = DoubleSolenoid.Value.kForward;
-    public static final DoubleSolenoid.Value installState = DoubleSolenoid.Value.kForward;
+    public static final DoubleSolenoid.Value openState = DoubleSolenoid.Value.kForward;
     public static final DoubleSolenoid.Value closedState = DoubleSolenoid.Value.kReverse;
 
     public static final double collectSpeedPercent = -0.15;
