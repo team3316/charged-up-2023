@@ -35,6 +35,7 @@ public class RollerGripperConstants {
 
     // TODO: add values when calibrating the subsystem
     public static double kp, ki, kd, kf;
+    public static double[] outputRange = new double[2];
     public static PIDFGains folderGains = new PIDFGains(kp, ki, kd, kf);
 
     // pneumatics constants

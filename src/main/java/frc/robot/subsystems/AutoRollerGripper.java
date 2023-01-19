@@ -110,6 +110,9 @@ public class AutoRollerGripper extends SubsystemBase {
         _folderPID.setP(RollerGripperConstants.folderGains.kP);
         _folderPID.setI(RollerGripperConstants.folderGains.kI);
         _folderPID.setD(RollerGripperConstants.folderGains.kD);
+        _folderPID.setOutputRange(RollerGripperConstants.outputRange[0], RollerGripperConstants.outputRange[1]);
+
+        _folderPID.setReference(0, CANSparkMax.ControlType.kPosition);
 
     }
 
