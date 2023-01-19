@@ -29,9 +29,9 @@ public class RobotContainer {
             JoysticksConstants.driverPort);
 
     private boolean _fieldRelative = true;
-    
-  
-  private final Compressor _compressor = new Compressor(PneumaticsModuleType.REVPH);
+
+    private final Compressor _compressor = new Compressor(PneumaticsModuleType.REVPH);
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -49,7 +49,6 @@ public class RobotContainer {
                                 _fieldRelative),
                         m_drivetrain));
     }
-  
 
     /**
      * Use this method to define your trigger->command mappings.
@@ -61,11 +60,11 @@ public class RobotContainer {
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
         _driverController.triangle().onTrue(
-            m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
+                m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
         _driverController.circle().onTrue(
-            m_Funnel.setFunnelStateCommand(FunnelState.CLOSED));
+                m_Funnel.setFunnelStateCommand(FunnelState.CLOSED));
         _driverController.triangle().onTrue(
-            m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
+                m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
     }
 
     /**
