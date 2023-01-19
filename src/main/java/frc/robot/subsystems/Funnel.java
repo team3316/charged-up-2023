@@ -22,16 +22,16 @@ public class Funnel extends SubsystemBase {
     private FunnelState _currentState;
 
     public enum FunnelState {
-        COLLECT(FunnelConstants.collectState, FunnelConstants.collectSpeed),
+        COLLECT(FunnelConstants.collectState, FunnelConstants.collectSpeedPercent),
         INSTALL(FunnelConstants.collectState, FunnelConstants.installSpeed),
         CLOSED(DoubleSolenoid.Value.kReverse, FunnelConstants.closedSpeed);
 
         public final DoubleSolenoid.Value solenoidState;
-        public final double rollerSpeed;
+        public final double rollerSpeedPercent;
 
-        private FunnelState(Value solenoidState, double rollerSpeed) {
+        private FunnelState(Value solenoidState, double rollerSpeedPercent) {
             this.solenoidState = solenoidState;
-            this.rollerSpeed = rollerSpeed;
+            this.rollerSpeedPercent = rollerSpeedPercent;
         }
     };
 
@@ -56,7 +56,7 @@ public class Funnel extends SubsystemBase {
         }
 
         _funnelSolenoid.set(state.solenoidState);
-        _rollers.set(state.rollerSpeed);
+        _rollers.set(state.rollerSpeedPercent);
 
         _currentState = state;
     }
@@ -68,9 +68,9 @@ public class Funnel extends SubsystemBase {
 
     @SuppressWarnings({ "unused" })
     private void updateSDB() {
+        
         SmartDashboard.putString("funnel state", this._currentState.toString());
         SmartDashboard.putNumber("funnel roller speed", this._rollers.get());
-
     }
 
     public CommandBase setFunnelStateCommand(FunnelState state) {
