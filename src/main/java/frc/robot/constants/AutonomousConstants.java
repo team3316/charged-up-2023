@@ -1,7 +1,5 @@
 package frc.robot.constants;
 
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-
 public class AutonomousConstants {
     // TODO: update .pathplanner/settings.json
     // TODO: update speeds
