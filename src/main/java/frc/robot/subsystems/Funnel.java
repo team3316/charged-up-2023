@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -19,60 +18,63 @@ import frc.robot.constants.FunnelConstants;
 
 public class Funnel extends SubsystemBase {
 
-  private CANSparkMax _rollers;
-  private FunnelState _currentState;
+    private CANSparkMax _rollers;
+    private FunnelState _currentState;
 
-  public enum FunnelState {
-    COLLECT(FunnelConstants.collectState, FunnelConstants.collectSpeed),
-    INSTALL(FunnelConstants.collectState, FunnelConstants.installSpeed),
-    CLOSED(DoubleSolenoid.Value.kReverse, FunnelConstants.closedSpeed);
+    public enum FunnelState {
+        COLLECT(FunnelConstants.collectState, FunnelConstants.collectSpeed),
+        INSTALL(FunnelConstants.collectState, FunnelConstants.installSpeed),
+        CLOSED(DoubleSolenoid.Value.kReverse, FunnelConstants.closedSpeed);
 
-    public final DoubleSolenoid.Value solenoidState;
-    public final double rollerSpeed;
+        public final DoubleSolenoid.Value solenoidState;
+        public final double rollerSpeed;
 
-    private FunnelState(Value solenoidState, double rollerSpeed) {
-      this.solenoidState = solenoidState;
-      this.rollerSpeed = rollerSpeed;
+        private FunnelState(Value solenoidState, double rollerSpeed) {
+            this.solenoidState = solenoidState;
+            this.rollerSpeed = rollerSpeed;
+        }
+    };
+
+    /** Creates a new Funnel. */
+    private DoubleSolenoid _funnelSolenoid;
+
+    public Funnel() {
+        this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort,
+                FunnelConstants.solenoidReversePort);
+        this._rollers = new CANSparkMax(FunnelConstants.sparkMaxPort, MotorType.kBrushless);
+
     }
-  };
-  /** Creates a new Funnel. */
-  private DoubleSolenoid _funnelSolenoid;
-  public Funnel() {
-    this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort, FunnelConstants.solenoidReversePort);
-    this._rollers = new CANSparkMax(FunnelConstants.sparkMaxPort, MotorType.kBrushless);
 
-  }
+    public FunnelState getFunnelState() {
+        return _currentState;
 
-  public FunnelState getFunnelState(){
-    return _currentState;
-    
-  }
-  
-  public void setFunnelState(FunnelState state){
-    if(state == getFunnelState()){
-      return;
     }
-    
-    _funnelSolenoid.set(state.solenoidState);
-    _rollers.set(state.rollerSpeed);
 
-    _currentState = state;
-  }
-  @Override
-  public void periodic() {
-    updateSDB();
-    // This method will be called once per scheduler run
-  }
+    public void setFunnelState(FunnelState state) {
+        if (state == getFunnelState()) {
+            return;
+        }
 
-  @SuppressWarnings({ "unused" })
+        _funnelSolenoid.set(state.solenoidState);
+        _rollers.set(state.rollerSpeed);
+
+        _currentState = state;
+    }
+
+    @Override
+    public void periodic() {
+        updateSDB();
+        // This method will be called once per scheduler run
+    }
+
+    @SuppressWarnings({ "unused" })
     private void updateSDB() {
         SmartDashboard.putString("funnel state", this._currentState.toString());
         SmartDashboard.putNumber("funnel roller speed", this._rollers.get());
-        
+
     }
 
-
-  public CommandBase setFunnelStateCommand(FunnelState state) {
-    return new InstantCommand(() -> {setFunnelState(state);},this);
-  }
+    public CommandBase setFunnelStateCommand(FunnelState state) {
+        return new InstantCommand(() -> setFunnelState(state), this);
+    }
 }
