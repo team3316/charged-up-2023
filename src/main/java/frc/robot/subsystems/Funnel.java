@@ -25,7 +25,7 @@ public class Funnel extends SubsystemBase {
     public enum FunnelState {
         COLLECT(FunnelConstants.collectState, FunnelConstants.collectSpeedPercent),
         INSTALL(FunnelConstants.collectState, FunnelConstants.installSpeed),
-        CLOSED(DoubleSolenoid.Value.kReverse, FunnelConstants.closedSpeed);
+        CLOSED(FunnelConstants.closedState, FunnelConstants.closedSpeed);
 
         public final DoubleSolenoid.Value solenoidState;
         public final double rollerSpeedPercent;
