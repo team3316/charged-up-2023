@@ -63,8 +63,7 @@ public class Funnel extends SubsystemBase {
 
     @Override
     public void periodic() {
-        updateSDB();
-        // This method will be called once per scheduler run
+        // updateSDB();
     }
 
     @SuppressWarnings({ "unused" })
