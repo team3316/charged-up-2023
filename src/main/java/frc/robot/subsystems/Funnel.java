@@ -59,6 +59,9 @@ public class Funnel extends SubsystemBase {
         _rollers.set(state.rollerSpeedPercent);
 
         _currentState = state;
+        
+        SmartDashboard.putString("funnel state", this._currentState.toString());
+        SmartDashboard.putNumber("funnel roller speed", this._rollers.get());
     }
 
     @Override
@@ -66,12 +69,7 @@ public class Funnel extends SubsystemBase {
         // updateSDB();
     }
 
-    @SuppressWarnings({ "unused" })
-    private void updateSDB() {
-        
-        SmartDashboard.putString("funnel state", this._currentState.toString());
-        SmartDashboard.putNumber("funnel roller speed", this._rollers.get());
-    }
+ 
 
     public CommandBase setFunnelStateCommand(FunnelState state) {
         return new InstantCommand(() -> setFunnelState(state), this);
