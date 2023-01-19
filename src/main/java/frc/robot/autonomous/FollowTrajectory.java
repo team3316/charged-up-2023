@@ -10,9 +10,9 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -30,7 +30,7 @@ public class FollowTrajectory {
     private SwerveDriveKinematics _kinematics;
     private PIDController _xController;
     private PIDController _yController;
-    private ProfiledPIDController _thetaController;
+    private PIDController _thetaController;
     private Consumer<SwerveModuleState[]> _outputModuleStates;
 
     public FollowTrajectory(Drivetrain drivetrain, String path) {
@@ -42,24 +42,21 @@ public class FollowTrajectory {
         this._kinematics = DrivetrainConstants.kinematics;
         this._xController = new PIDController(AutonomousConstants.kPXController, 0, 0);
         this._yController = new PIDController(AutonomousConstants.kPYController, 0, 0);
-        this._thetaController = new ProfiledPIDController(AutonomousConstants.kPThetaController, 0, 0,
-                AutonomousConstants.kThetaControllerConstraints);
+        this._thetaController = new PIDController(AutonomousConstants.kPThetaController, 0, 0);
         _thetaController.enableContinuousInput(-Math.PI, Math.PI);
         this._outputModuleStates = this.m_drivetrain::setDesiredStates;
     }
 
     public Command getFollowTrajectoryCommand() {
-
-        return new DBugPPSwerveControllerCommand(m_trajectory,
+        return new PPSwerveControllerCommand(m_trajectory,
                 _pose, _kinematics,
                 _xController, _yController,
                 _thetaController,
                 _outputModuleStates,
-                () -> m_trajectory.getEndState().holonomicRotation,
                 m_drivetrain);
     }
 
-    public Command getResetOddometryCommand() {
+    public Command getResetOdometryCommand() {
         PathPlannerState initState = m_trajectory.getInitialState();
 
         return new InstantCommand(() -> {
