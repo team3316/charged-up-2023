@@ -4,11 +4,14 @@
 
 package frc.robot.subsystems;
 
+import javax.management.relation.RelationServiceNotRegisteredException;
+
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxRelativeEncoder;
@@ -31,15 +34,18 @@ public class AutoRollerGripper extends SubsystemBase {
 
     private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
     private CANSparkMax _folderSM;
-    private SparkMaxRelativeEncoder _encoder;
+    private RelativeEncoder _encoder;
 
     private DoubleSolenoid _doubleSolenoid;
 
     private TalonSRXConfiguration _talonConfig = new TalonSRXConfiguration();
 
+    private FolderState currentFolderState;
+
     /**
      * TODO: set all states from percentOutput to Position ControlMode
      * examples in:
+     * https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Position%20Closed%20Loop%20Control/src/main/java/frc/robot/Robot.java
      */
 
     public enum FolderState {
@@ -47,11 +53,11 @@ public class AutoRollerGripper extends SubsystemBase {
         OUT(RollerGripperConstants.kFolderOutValue, PneumaticFolderState.OUT),
         OFF(RollerGripperConstants.kFolderOffValue, PneumaticFolderState.OFF);
 
-        private final double percentOutput;
+        private final double desiredAngle;
         private final PneumaticFolderState pneumaticState;
 
-        FolderState(double percentOutput, PneumaticFolderState pneumaticState) {
-            this.percentOutput = percentOutput;
+        FolderState(double desiredAngle, PneumaticFolderState pneumaticState) {
+            this.desiredAngle = desiredAngle;
             this.pneumaticState = pneumaticState;
         }
     }
@@ -59,7 +65,7 @@ public class AutoRollerGripper extends SubsystemBase {
     public enum PneumaticFolderState {
         OUT(RollerGripperConstants.kStateWhenFoldedOut),
         IN(RollerGripperConstants.kStateWhenFoldedIn),
-        OFF(null);
+        OFF(RollerGripperConstants.kStateWhenOff);
 
         private DoubleSolenoid.Value solenoidValue;
 
@@ -73,10 +79,10 @@ public class AutoRollerGripper extends SubsystemBase {
         EJECT(RollerGripperConstants.kRollerEjectValue),
         OFF(RollerGripperConstants.kRollerOffValue);
 
-        private final double percentOutput;
+        private final double desiredAngle;
 
-        RollersState(double percentOutput) {
-            this.percentOutput = percentOutput;
+        RollersState(double desiredAngle) {
+            this.desiredAngle = desiredAngle;
         }
     }
 
@@ -89,6 +95,7 @@ public class AutoRollerGripper extends SubsystemBase {
         _folderSM = new CANSparkMax(RollerGripperConstants.kSparkMaxFolderPort, MotorType.kBrushless);
         _folderInLS.enableLimitSwitch(true);
         _folderOutLS.enableLimitSwitch(true);
+        _encoder = _folderSM.getEncoder();
 
         _talonLeader.configAllSettings(_talonConfig);
         _talonFollower.configAllSettings(_talonConfig);
@@ -99,6 +106,8 @@ public class AutoRollerGripper extends SubsystemBase {
 
         _encoder.setPosition(0);
 
+        _folderSM.restoreFactoryDefaults();
+
     }
 
     public void periodic() {
@@ -107,19 +116,20 @@ public class AutoRollerGripper extends SubsystemBase {
         if (_encoder.getPosition() <= RollerGripperConstants.kMaxFolderIn ||
                 _encoder.getPosition() >= RollerGripperConstants.kMaxFolderOut)
             setFolderState(FolderState.OFF);
+
+        SmartDashboard.putString("current folder state", currentFolderState.toString());
+
     }
 
-    // TODO: merge the setFolderStates for double actions
     public void setFolderState(FolderState state) {
-        _folderSM.set(state.percentOutput);
-    }
+        _folderSM.set(state.desiredAngle);
+        _doubleSolenoid.set(state.pneumaticState.solenoidValue);
 
-    public void setFolderState(PneumaticFolderState pneumaticState) {
-        _doubleSolenoid.set(pneumaticState.solenoidValue);
+        currentFolderState = state;
     }
 
     public void setRollersState(RollersState state) {
-        _talonLeader.set(TalonSRXControlMode.PercentOutput, state.percentOutput);
+        _talonLeader.set(TalonSRXControlMode.Position, state.desiredAngle);
     }
 
     public boolean hasCone() {
