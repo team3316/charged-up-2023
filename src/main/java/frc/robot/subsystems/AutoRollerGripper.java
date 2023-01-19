@@ -28,7 +28,6 @@ public class AutoRollerGripper extends SubsystemBase {
     private TalonSRX _talonLeader, _talonFollower;
     private DigitalInput _rollerLimitSwitch;
 
-    private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
     private DBugSparkMax _folderSM;
 
     private DoubleSolenoid _doubleSolenoid;
