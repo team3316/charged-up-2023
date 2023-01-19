@@ -49,6 +49,10 @@ public class Drivetrain extends SubsystemBase {
         m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
     }
 
+    public void drive(ChassisSpeeds speeds) {
+        drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);
+    }
+
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         fieldRelative = fieldRelative && this._pigeon.getState() == PigeonState.Ready;
         SmartDashboard.putBoolean("Field Relative", fieldRelative);
@@ -122,7 +126,7 @@ public class Drivetrain extends SubsystemBase {
                 new Pose2d(pose.getTranslation(), new Rotation2d()));
     }
 
-    public void resetOdometry(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         this._odometry.resetPosition(getRotation2d(), getSwerveModulePositions(), pose);
     }
 

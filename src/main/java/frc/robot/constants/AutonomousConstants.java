@@ -12,8 +12,7 @@ public class AutonomousConstants {
     public static final String defaultPath = "rotate";
 
     // TODO: update P gains
-    public static final double kPXController = 1;
-    public static final double kPYController = 1;
+    public static final double kPTranslationController = 1;
     public static final double kPThetaController = 3;
 
     public static final Constraints kThetaControllerConstraints = new Constraints(

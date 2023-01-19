@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.autonomous.paths.Backward;
-import frc.robot.autonomous.paths.MoveFoward;
+import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
@@ -80,8 +79,8 @@ public class RobotContainer {
     }
 
     public void initChooser() {
-        this.chooser.setDefaultOption("forward", new MoveFoward(m_drivetrain));
-        this.chooser.addOption("backward", new Backward(m_drivetrain));
+        this.chooser.setDefaultOption("forward", AutoFactory.createAuto(m_drivetrain, "forward"));
+        this.chooser.addOption("backward", AutoFactory.createAuto(m_drivetrain, "backward"));
         SmartDashboard.putData("autonomous", this.chooser);
     }
 
