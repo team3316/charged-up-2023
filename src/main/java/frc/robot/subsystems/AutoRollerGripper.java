@@ -8,11 +8,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -24,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.RollerGripperConstants;
+import frc.robot.motors.DBugSparkMax;
 
 public class AutoRollerGripper extends SubsystemBase {
 
@@ -31,9 +28,7 @@ public class AutoRollerGripper extends SubsystemBase {
     private DigitalInput _rollerLimitSwitch;
 
     private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
-    private CANSparkMax _folderSM;
-    private RelativeEncoder _encoder;
-    private SparkMaxPIDController _folderPID;
+    private DBugSparkMax _folderSM;
 
     private DoubleSolenoid _doubleSolenoid;
 
@@ -91,11 +86,10 @@ public class AutoRollerGripper extends SubsystemBase {
         _talonFollower.follow(_talonLeader);
         _talonFollower.setInverted(InvertType.OpposeMaster);
 
-        _folderSM = new CANSparkMax(RollerGripperConstants.kSparkMaxFolderPort, MotorType.kBrushless);
-        _folderInLS.enableLimitSwitch(true);
-        _folderOutLS.enableLimitSwitch(true);
-        _encoder = _folderSM.getEncoder();
-        _folderPID = _folderSM.getPIDController();
+        _folderSM = DBugSparkMax.create(RollerGripperConstants.kSparkMaxFolderPort, RollerGripperConstants.folderGains,
+                1, 1, 0);
+        _folderSM.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
+        _folderSM.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
 
         _talonLeader.configAllSettings(_talonConfig);
         _talonFollower.configAllSettings(_talonConfig);
@@ -104,21 +98,12 @@ public class AutoRollerGripper extends SubsystemBase {
                 RollerGripperConstants.kSolenoidForwardChannel,
                 RollerGripperConstants.kSolenoidReverseChannel);
 
-        _encoder.setPosition(0);
-
         _folderSM.restoreFactoryDefaults();
-        _folderPID.setP(RollerGripperConstants.folderGains.kP);
-        _folderPID.setI(RollerGripperConstants.folderGains.kI);
-        _folderPID.setD(RollerGripperConstants.folderGains.kD);
-        _folderPID.setOutputRange(RollerGripperConstants.outputRange[0], RollerGripperConstants.outputRange[1]);
-
-        _folderPID.setReference(0, CANSparkMax.ControlType.kPosition);
-
     }
 
     public void periodic() {
-        if (_encoder.getPosition() <= RollerGripperConstants.kMaxFolderIn ||
-                _encoder.getPosition() >= RollerGripperConstants.kMaxFolderOut)
+        if (_folderSM.getPosition() <= RollerGripperConstants.kMaxFolderIn ||
+                _folderSM.getPosition() >= RollerGripperConstants.kMaxFolderOut)
             setFolderState(FolderState.OFF);
 
         SmartDashboard.putString("current folder state", currentFolderState.toString());
