@@ -42,6 +42,7 @@ public class Funnel extends SubsystemBase {
         this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort,
                 FunnelConstants.solenoidReversePort);
         this._rollers = new CANSparkMax(FunnelConstants.sparkMaxPort, MotorType.kBrushless);
+        this._rollers.restoreFactoryDefaults();
 
     }
 
