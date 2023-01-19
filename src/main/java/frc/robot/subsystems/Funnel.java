@@ -20,6 +20,7 @@ public class Funnel extends SubsystemBase {
 
     private CANSparkMax _rollers;
     private FunnelState _currentState;
+    private DoubleSolenoid _funnelSolenoid;
 
     public enum FunnelState {
         COLLECT(FunnelConstants.collectState, FunnelConstants.collectSpeedPercent),
@@ -36,7 +37,6 @@ public class Funnel extends SubsystemBase {
     };
 
     /** Creates a new Funnel. */
-    private DoubleSolenoid _funnelSolenoid;
 
     public Funnel() {
         this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort,
