@@ -1,7 +1,7 @@
 package frc.robot.constants;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import frc.robot.motors.PIDFGains;
 
 public class RollerGripperConstants {
     public final static double kFoldingPercent = 0.3;
@@ -32,6 +32,10 @@ public class RollerGripperConstants {
 
     // binding test
     public final static int kControllerPort = 1;
+
+    // TODO: add values when calibrating the subsystem
+    public static double kp, ki, kd, kf;
+    public static PIDFGains folderGains = new PIDFGains(kp, ki, kd, kf);
 
     // pneumatics constants
     // TODO: update values when electronics table is compiled

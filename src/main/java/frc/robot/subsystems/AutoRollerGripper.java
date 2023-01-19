@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -35,6 +36,7 @@ public class AutoRollerGripper extends SubsystemBase {
     private SparkMaxLimitSwitch _folderInLS, _folderOutLS;
     private CANSparkMax _folderSM;
     private RelativeEncoder _encoder;
+    private SparkMaxPIDController _folderPID;
 
     private DoubleSolenoid _doubleSolenoid;
 
@@ -96,6 +98,7 @@ public class AutoRollerGripper extends SubsystemBase {
         _folderInLS.enableLimitSwitch(true);
         _folderOutLS.enableLimitSwitch(true);
         _encoder = _folderSM.getEncoder();
+        _folderPID = _folderSM.getPIDController();
 
         _talonLeader.configAllSettings(_talonConfig);
         _talonFollower.configAllSettings(_talonConfig);
@@ -107,18 +110,19 @@ public class AutoRollerGripper extends SubsystemBase {
         _encoder.setPosition(0);
 
         _folderSM.restoreFactoryDefaults();
+        _folderPID.setP(RollerGripperConstants.folderGains.kP);
+        _folderPID.setI(RollerGripperConstants.folderGains.kP);
+        _folderPID.setD(RollerGripperConstants.folderGains.kP);
 
     }
 
     public void periodic() {
-        SmartDashboard.putBoolean("hasCone", hasCone());
-
         if (_encoder.getPosition() <= RollerGripperConstants.kMaxFolderIn ||
                 _encoder.getPosition() >= RollerGripperConstants.kMaxFolderOut)
             setFolderState(FolderState.OFF);
 
         SmartDashboard.putString("current folder state", currentFolderState.toString());
-
+        SmartDashboard.putBoolean("hasCone", hasCone());
     }
 
     public void setFolderState(FolderState state) {
