@@ -74,10 +74,10 @@ public class AutoRollerGripper extends SubsystemBase {
         EJECT(RollerGripperConstants.rollerEjectValue),
         OFF(RollerGripperConstants.rollerOffValue);
 
-        private final double desiredAngle;
+        private final double percentOutput;
 
-        RollersState(double desiredAngle) {
-            this.desiredAngle = desiredAngle;
+        RollersState(double percentOutput) {
+            this.percentOutput = percentOutput;
         }
     }
 
@@ -88,11 +88,13 @@ public class AutoRollerGripper extends SubsystemBase {
         _talonFollower.setInverted(InvertType.OpposeMaster);
 
         _folderSM = DBugSparkMax.create(RollerGripperConstants.sparkMaxFolderPort, RollerGripperConstants.folderGains,
-                1, 1, 0);
+                RollerGripperConstants.positionConversionFactor, RollerGripperConstants.velocityConversionFactor,
+                RollerGripperConstants.inAngle);
+
         _folderSM.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
         _folderSM.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
 
-        _folderSM.getEncoder().setPositionConversionFactor(RollerGripperConstants.conversionFactor);
+        _folderSM.getEncoder().setPositionConversionFactor(RollerGripperConstants.positionConversionFactor);
 
         _talonLeader.configAllSettings(_talonConfig);
         _talonFollower.configAllSettings(_talonConfig);
@@ -101,14 +103,15 @@ public class AutoRollerGripper extends SubsystemBase {
                 RollerGripperConstants.solenoidForwardChannel,
                 RollerGripperConstants.solenoidReverseChannel);
 
-        _folderSM.restoreFactoryDefaults();
-
         _folderSM.setupPIDF(RollerGripperConstants.folderGains);
 
     }
 
     public void periodic() {
-        SmartDashboard.putString("current folder state", currentFolderState.toString());
+        // updateSDB();
+    }
+
+    public void updateSDB() {
         SmartDashboard.putBoolean("hasCone", hasCone());
     }
 
@@ -116,11 +119,14 @@ public class AutoRollerGripper extends SubsystemBase {
         _doubleSolenoid.set(state.pneumaticState.solenoidValue);
         _folderSM.setReference(state.desiredAngle, ControlType.kPosition);
 
+        SmartDashboard.putString("current folder state", currentFolderState.toString());
+
         currentFolderState = state;
     }
 
     public void setRollersState(RollersState state) {
-        _talonLeader.set(TalonSRXControlMode.Position, state.desiredAngle);
+        _talonLeader.set(TalonSRXControlMode.PercentOutput, state.percentOutput);
+
     }
 
     public boolean hasCone() {
