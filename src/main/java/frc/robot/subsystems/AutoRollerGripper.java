@@ -43,9 +43,9 @@ public class AutoRollerGripper extends SubsystemBase {
      */
 
     public enum FolderState {
-        IN(RollerGripperConstants.kFolderInValue, PneumaticFolderState.IN),
-        OUT(RollerGripperConstants.kFolderOutValue, PneumaticFolderState.OUT),
-        OFF(RollerGripperConstants.kFolderOffValue, PneumaticFolderState.OFF);
+        IN(RollerGripperConstants.inAngle, PneumaticFolderState.IN),
+        OUT(RollerGripperConstants.outAngle, PneumaticFolderState.OUT),
+        OFF(0, PneumaticFolderState.OFF);
 
         private final double desiredAngle;
         private final PneumaticFolderState pneumaticState;
@@ -57,9 +57,9 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public enum PneumaticFolderState {
-        OUT(RollerGripperConstants.kStateWhenFoldedOut),
-        IN(RollerGripperConstants.kStateWhenFoldedIn),
-        OFF(RollerGripperConstants.kStateWhenOff);
+        OUT(RollerGripperConstants.stateWhenFoldedOut),
+        IN(RollerGripperConstants.stateWhenFoldedIn),
+        OFF(RollerGripperConstants.stateWhenOff);
 
         private DoubleSolenoid.Value solenoidValue;
 
@@ -69,9 +69,9 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public enum RollersState {
-        INTAKE(RollerGripperConstants.kRollerIntakeValue),
-        EJECT(RollerGripperConstants.kRollerEjectValue),
-        OFF(RollerGripperConstants.kRollerOffValue);
+        INTAKE(RollerGripperConstants.rollerIntakeValue),
+        EJECT(RollerGripperConstants.rollerEjectValue),
+        OFF(RollerGripperConstants.rollerOffValue);
 
         private final double desiredAngle;
 
@@ -81,12 +81,12 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public AutoRollerGripper() {
-        _talonLeader = new TalonSRX(RollerGripperConstants.kTalonLeaderPort);
-        _talonFollower = new TalonSRX(RollerGripperConstants.kTalonFollowerPort);
+        _talonLeader = new TalonSRX(RollerGripperConstants.talonLeaderPort);
+        _talonFollower = new TalonSRX(RollerGripperConstants.talonFollowerPort);
         _talonFollower.follow(_talonLeader);
         _talonFollower.setInverted(InvertType.OpposeMaster);
 
-        _folderSM = DBugSparkMax.create(RollerGripperConstants.kSparkMaxFolderPort, RollerGripperConstants.folderGains,
+        _folderSM = DBugSparkMax.create(RollerGripperConstants.sparkMaxFolderPort, RollerGripperConstants.folderGains,
                 1, 1, 0);
         _folderSM.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
         _folderSM.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
@@ -95,17 +95,13 @@ public class AutoRollerGripper extends SubsystemBase {
         _talonFollower.configAllSettings(_talonConfig);
 
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-                RollerGripperConstants.kSolenoidForwardChannel,
-                RollerGripperConstants.kSolenoidReverseChannel);
+                RollerGripperConstants.solenoidForwardChannel,
+                RollerGripperConstants.solenoidReverseChannel);
 
         _folderSM.restoreFactoryDefaults();
     }
 
     public void periodic() {
-        if (_folderSM.getPosition() <= RollerGripperConstants.kMaxFolderIn ||
-                _folderSM.getPosition() >= RollerGripperConstants.kMaxFolderOut)
-            setFolderState(FolderState.OFF);
-
         SmartDashboard.putString("current folder state", currentFolderState.toString());
         SmartDashboard.putBoolean("hasCone", hasCone());
     }
@@ -130,7 +126,7 @@ public class AutoRollerGripper extends SubsystemBase {
                 .andThen(new StartEndCommand(
                         () -> setRollersState(RollersState.INTAKE),
                         () -> {
-                            new WaitCommand(RollerGripperConstants.kGrippingSleepDuration).andThen(
+                            new WaitCommand(RollerGripperConstants.grippingSleepDuration).andThen(
                                     new InstantCommand(() -> setRollersState(RollersState.OFF)));
                         }).until(this::hasCone));
     }
@@ -138,7 +134,7 @@ public class AutoRollerGripper extends SubsystemBase {
     public CommandBase getEjectCommand() {
         return new InstantCommand(() -> {
             setRollersState(RollersState.EJECT);
-        }).andThen(new WaitCommand(RollerGripperConstants.kFoldingSleepDuration),
+        }).andThen(new WaitCommand(RollerGripperConstants.foldingSleepDuration),
                 new InstantCommand(() -> {
                     setRollersState(RollersState.OFF);
                     setFolderState(FolderState.IN);

@@ -4,48 +4,33 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.robot.motors.PIDFGains;
 
 public class RollerGripperConstants {
-    public final static double kFoldingPercent = 0.3;
-
-    public final static double kVoltage = 0;
-    public final static double kms = 0;
-
     // TODO: update values when electronics table is compiled
-    public final static int kTalonLeaderPort = 0;
-    public final static int kTalonFollowerPort = 1;
-    public final static int kSparkMaxFolderPort = 2;
+    public final static int talonLeaderPort = 0;
+    public final static int talonFollowerPort = 1;
 
-    public final static double kFolderInValue = -0.3;
-    public final static double kFolderOutValue = 0.3;
-    public final static double kFolderOffValue = 0;
+    public final static double rollerIntakeValue = 0.70;
+    public final static double rollerEjectValue = -0.70;
+    public final static double rollerOffValue = 0;
 
-    public final static double kRollerIntakeValue = 0.70;
-    public final static double kRollerEjectValue = -0.70;
-    public final static double kRollerOffValue = 0;
+    public final static double foldingSleepDuration = 0.05;
+    public final static double grippingSleepDuration = 0.5;
 
-    public final static double kFoldingSleepDuration = 0.05;
-    public final static double kGrippingSleepDuration = 0.5;
+    public final static double ejectDuration = 0.02;
 
-    public final static double kEjectDuration = 0.02;
-
-    public final static double kMaxFolderIn = 0;
-    public final static double kMaxFolderOut = 90;
-
-    // binding test
-    public final static int kControllerPort = 1;
-
+    // spark max folder
+    public final static int sparkMaxFolderPort = 2;
     // TODO: add values when calibrating the subsystem
-    public static double kp, ki, kd, kf;
-    public static double[] outputRange = new double[2];
-    public static PIDFGains folderGains = new PIDFGains(kp, ki, kd, kf);
+    public static double kp = 0.01; // motor%/deg
+    public static PIDFGains folderGains = new PIDFGains(kp);
+    public static double inAngle = 0;
+    public static double outAngle = 90;
 
-    // pneumatics constants
+    // pneumatics folder
     // TODO: update values when electronics table is compiled
-    public final static int kSolenoidForwardChannel = 0;
-    public final static int kSolenoidReverseChannel = 1;
-
-    // TODO: update values when electronics table is compiled
-    public final static DoubleSolenoid.Value kStateWhenFoldedIn = DoubleSolenoid.Value.kForward;
-    public final static DoubleSolenoid.Value kStateWhenFoldedOut = DoubleSolenoid.Value.kReverse;
-    public final static DoubleSolenoid.Value kStateWhenOff = DoubleSolenoid.Value.kOff;
+    public final static int solenoidForwardChannel = 0;
+    public final static int solenoidReverseChannel = 1;
+    public final static DoubleSolenoid.Value stateWhenFoldedIn = DoubleSolenoid.Value.kForward;
+    public final static DoubleSolenoid.Value stateWhenFoldedOut = DoubleSolenoid.Value.kReverse;
+    public final static DoubleSolenoid.Value stateWhenOff = DoubleSolenoid.Value.kOff;
 
 }
