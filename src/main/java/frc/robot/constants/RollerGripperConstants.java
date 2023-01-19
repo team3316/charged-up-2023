@@ -8,14 +8,14 @@ public class RollerGripperConstants {
     public final static int talonLeaderPort = 0;
     public final static int talonFollowerPort = 1;
 
-    public final static double rollerIntakeValue = 0.70; // percent
-    public final static double rollerEjectValue = -0.70; // percent
-    public final static double rollerOffValue = 0; // percent
+    public final static double rollerIntakePercent = 0.70; // percent
+    public final static double rollerEjectPercent = -0.70; // percent
+    public final static double rollerOffPercent = 0; // percent
 
-    public final static double foldingSleepDuration = 0.05; // seconds
-    public final static double grippingSleepDuration = 0.5; // seconds
+    public final static double foldingSleepDurationSeconds = 0.05; // seconds
+    public final static double grippingSleepDurationSeconds = 0.5; // seconds
 
-    public final static double ejectDuration = 0.02; // seconds
+    public final static double ejectDurationSeconds = 0.02; // seconds
 
     // spark max folder
     public final static int sparkMaxFolderPort = 2;
@@ -27,7 +27,6 @@ public class RollerGripperConstants {
     public static double gearRatio = 1;
     public static double positionConversionFactor = gearRatio * 360; // converts position to degrees
     public static double velocityConversionFactor = 1;
-    
 
     // pneumatics folder
     // TODO: update values when electronics table is compiled

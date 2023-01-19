@@ -70,9 +70,9 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public enum RollersState {
-        INTAKE(RollerGripperConstants.rollerIntakeValue),
-        EJECT(RollerGripperConstants.rollerEjectValue),
-        OFF(RollerGripperConstants.rollerOffValue);
+        INTAKE(RollerGripperConstants.rollerIntakePercent),
+        EJECT(RollerGripperConstants.rollerEjectPercent),
+        OFF(RollerGripperConstants.rollerOffPercent);
 
         private final double percentOutput;
 
@@ -140,7 +140,7 @@ public class AutoRollerGripper extends SubsystemBase {
                             setRollersState(RollersState.INTAKE);
                         },
                         () -> {
-                            new WaitCommand(RollerGripperConstants.grippingSleepDuration).andThen(
+                            new WaitCommand(RollerGripperConstants.grippingSleepDurationSeconds).andThen(
                                     new InstantCommand(() -> setRollersState(RollersState.OFF)));
                         }).until(this::hasCone));
     }
@@ -148,7 +148,7 @@ public class AutoRollerGripper extends SubsystemBase {
     public CommandBase getEjectCommand() {
         return new InstantCommand(() -> {
             setRollersState(RollersState.EJECT);
-        }).andThen(new WaitCommand(RollerGripperConstants.foldingSleepDuration),
+        }).andThen(new WaitCommand(RollerGripperConstants.foldingSleepDurationSeconds),
                 new InstantCommand(() -> {
                     setRollersState(RollersState.OFF);
                     setFolderState(FolderState.IN);
