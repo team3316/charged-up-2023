@@ -95,9 +95,6 @@ public class AutoRollerGripper extends SubsystemBase {
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 RollerGripperConstants.solenoidForwardChannel,
                 RollerGripperConstants.solenoidReverseChannel);
-
-        _folderSM.setupPIDF(RollerGripperConstants.folderGains);
-
     }
 
     public void periodic() {
