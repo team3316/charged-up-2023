@@ -58,18 +58,9 @@ public class Funnel extends SubsystemBase {
 
         _currentState = state;
 
-        // updateSDB();
+        SmartDashboard.putString("Funnel State", this._currentState.toString());
     }
 
-    @Override
-    public void periodic() {
-    }
-
-    @SuppressWarnings({ "unused" })
-    private void updateSDB() {
-        SmartDashboard.putString("funnel state", this._currentState.toString());
-        SmartDashboard.putNumber("funnel roller speed", this._rollers.get());
-    }
 
     public CommandBase setFunnelStateCommand(FunnelState state) {
         return new InstantCommand(() -> setFunnelState(state), this);
