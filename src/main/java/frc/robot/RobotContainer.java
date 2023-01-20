@@ -6,9 +6,12 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
@@ -28,14 +31,18 @@ public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final Funnel m_Funnel = new Funnel();
     private final Manipulator m_Manipulator = new Manipulator();
+    private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
+
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
-    private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
 
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
 
     private boolean _fieldRelative = true;
+
+    private SendableChooser<Command> chooser;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -43,6 +50,8 @@ public class RobotContainer {
     public RobotContainer() {
         m_compressor.enableDigital();
 
+        this.chooser = new SendableChooser<Command>();
+        initChooser();
         // Configure the trigger bindings
         configureBindings();
 
@@ -82,11 +91,19 @@ public class RobotContainer {
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
     }
 
+    public void initChooser() {
+        SmartDashboard.putData("autonomous", this.chooser);
+    }
+
     /**
      * Called when we disable the robot to make sure nothing moves after we enable
      */
     public void stop() {
         m_autoRollerGripper.stop();
+    }
+
+    public void updateTelemetry() {
+        m_drivetrain.updateTelemetry();
     }
 
     /**
@@ -95,6 +112,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new InstantCommand();
+        return this.chooser.getSelected();
     }
 }
