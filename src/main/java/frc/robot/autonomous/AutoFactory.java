@@ -47,4 +47,8 @@ public class AutoFactory {
                         AutonomousConstants.kMaxAccelerationMetersPerSecondSquared));
         return _autoBuilder.fullAuto(path);
     }
+
+    public CommandBase createAuto(Drivetrain drivetrain, PathPlannerTrajectory path) {
+        return _autoBuilder.fullAuto(path);
+    }
 }

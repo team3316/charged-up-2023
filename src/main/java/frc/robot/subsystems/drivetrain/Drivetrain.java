@@ -2,10 +2,15 @@ package frc.robot.subsystems.drivetrain;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -22,7 +27,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import frc.robot.autonomous.AutoFactory;
+import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DrivetrainConstants;
+import frc.robot.constants.LimelightConstants;
 
 /**
  * Drivetrain
@@ -156,6 +164,18 @@ public class Drivetrain extends SubsystemBase {
         // SmartDashboard.putNumber("profile velocity", spinState.velocity);
         // SmartDashboard.putNumber("pid output", PIDOutput);
 
+    }
+
+    public Command getMoveByTranslation2dCommand(Translation2d GoalOffsetTrans, AutoFactory factory) {
+        Translation2d currentTrans = new Translation2d(this.getPose().getX(), this.getPose().getY());
+        PathPlannerTrajectory transTrajectory = PathPlanner.generatePath(
+                new PathConstraints(AutonomousConstants.kMaxSpeedMetersPerSecond,
+                        AutonomousConstants.kMaxAccelerationMetersPerSecondSquared),
+                new PathPoint(currentTrans,
+                        this.getPose().getRotation()),
+                new PathPoint(currentTrans.plus(GoalOffsetTrans), LimelightConstants.installAngle,
+                        LimelightConstants.installAngle));
+        return factory.createAuto(this, transTrajectory);
     }
 
     public Command getSpinToAngleCommand(Rotation2d goal) {
