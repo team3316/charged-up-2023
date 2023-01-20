@@ -102,6 +102,10 @@ public class RobotContainer {
         m_autoRollerGripper.stop();
     }
 
+    public void updateTelemetry() {
+        m_drivetrain.updateTelemetry();
+    }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
