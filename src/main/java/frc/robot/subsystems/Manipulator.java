@@ -18,32 +18,25 @@ public class Manipulator extends SubsystemBase {
     private ManipulatorState _currentState;
     private DigitalInput _gamePieceDetector;
 
-    private DoubleSolenoid _leftSolenoid;
-    private DoubleSolenoid _rightSolenoid;
+    private DoubleSolenoid _solenoid;
 
     public static enum ManipulatorState {
-        OPEN(ManipulatorConstants.leftSolenoidOpenState, ManipulatorConstants.rightSolenoidOpenState),
-        CUBE_HOLD(ManipulatorConstants.leftSolenoidCubeClosedState, ManipulatorConstants.rightSolenoidCubeClosedState),
-        CONE_HOLD(ManipulatorConstants.leftSolenoidConeClosedState, ManipulatorConstants.rightSolenoidConeClosedState);
+        OPEN(ManipulatorConstants.solenoidOpenState),
+        HOLD(ManipulatorConstants.solenoidClosedState);
 
-        public final DoubleSolenoid.Value leftSolenoidState;
-        public final DoubleSolenoid.Value rightSolenoidState;
+        public final DoubleSolenoid.Value solenoidState;
 
-        private ManipulatorState(DoubleSolenoid.Value LeftSolenoidState, DoubleSolenoid.Value RightSolenoidState) {
-            this.leftSolenoidState = LeftSolenoidState;
-            this.rightSolenoidState = RightSolenoidState;
+        private ManipulatorState(DoubleSolenoid.Value solenoidState) {
+            this.solenoidState = solenoidState;
         }
     }
 
     /** Creates a new Manipulator. */
     public Manipulator() {
         this._gamePieceDetector = new DigitalInput(ManipulatorConstants.sensorID);
-        this._leftSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-                ManipulatorConstants.leftSolenoidForwardChannel,
-                ManipulatorConstants.leftSolenoidReverseChannel);
-        this._rightSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-                ManipulatorConstants.rightSolenoidForwardChannel,
-                ManipulatorConstants.rightSolenoidReverseChannel);
+        this._solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+                ManipulatorConstants.solenoidForwardChannel,
+                ManipulatorConstants.solenoidReverseChannel);
     }
 
     public ManipulatorState getManipulatorState() {
@@ -55,8 +48,7 @@ public class Manipulator extends SubsystemBase {
             return;
         }
 
-        this._leftSolenoid.set(requiredState.leftSolenoidState);
-        this._rightSolenoid.set(requiredState.rightSolenoidState);
+        this._solenoid.set(requiredState.solenoidState);
 
         SmartDashboard.putString("Manipulator State", requiredState.toString());
         this._currentState = requiredState;
