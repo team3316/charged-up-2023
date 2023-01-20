@@ -49,9 +49,6 @@ public class Drivetrain extends SubsystemBase {
         m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
     }
 
-    public void drive(ChassisSpeeds speeds) {
-        drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);
-    }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         fieldRelative = fieldRelative && this._pigeon.getState() == PigeonState.Ready;
