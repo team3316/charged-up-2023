@@ -1,10 +1,14 @@
 package frc.robot.subsystems.drivetrain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.EventMarker;
 import com.pathplanner.lib.PathPoint;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -175,6 +179,9 @@ public class Drivetrain extends SubsystemBase {
                         this.getPose().getRotation()),
                 new PathPoint(currentTrans.plus(GoalOffsetTrans), LimelightConstants.installAngle,
                         LimelightConstants.installAngle));
+                        
+        List<String> actionEvents = new ArrayList<String>();
+        transTrajectory.getMarkers().add(EventMarker.fromTime(actionEvents, 0.9));
         return factory.createAuto(this, transTrajectory);
     }
 
