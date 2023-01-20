@@ -14,8 +14,10 @@ import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.AutoRollerGripper;
-import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.AutoRollerGripper.FolderState;
+import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.Funnel.FunnelState;
+import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /**
@@ -24,6 +26,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
  */
 public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
+    private final Funnel m_Funnel = new Funnel();
     private final Manipulator m_Manipulator = new Manipulator();
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
@@ -59,6 +62,12 @@ public class RobotContainer {
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
+        _driverController.povUp().onTrue(
+                m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
+        _driverController.povDown().onTrue(
+                m_Funnel.setFunnelStateCommand(FunnelState.CLOSED));
+        _driverController.povLeft().onTrue(
+                m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
 
         _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
         _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
