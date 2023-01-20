@@ -28,8 +28,6 @@ public class Drivetrain extends SubsystemBase {
 
     private SwerveDriveOdometry _odometry;
     private DoubleLogEntry m_logX, m_logY, m_logR;
-    private int m_counter = 0;
-    private static final int LOG_EVERY = 10;
 
     public Drivetrain() {
         this._modules = new SwerveModule[] {
@@ -85,7 +83,6 @@ public class Drivetrain extends SubsystemBase {
         m_logX.append(pose.getX());
         m_logY.append(pose.getY());
         m_logR.append(pose.getRotation().getDegrees());
-        m_counter = 0;
     }
 
     public void disabledInit() {
