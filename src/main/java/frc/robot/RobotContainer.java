@@ -81,8 +81,6 @@ public class RobotContainer {
     }
 
     public void initChooser() {
-        this.chooser.setDefaultOption("forward", _autoFactory.createAuto(m_drivetrain, "forward"));
-        this.chooser.addOption("backward", _autoFactory.createAuto(m_drivetrain, "backward"));
         SmartDashboard.putData("autonomous", this.chooser);
     }
 
