@@ -23,16 +23,16 @@ public class Funnel extends SubsystemBase {
     private DoubleSolenoid _funnelSolenoid;
 
     public enum FunnelState {
-        COLLECT(FunnelConstants.openState, FunnelConstants.collectSpeedPercent),
-        INSTALL(FunnelConstants.openState, FunnelConstants.installSpeed),
-        CLOSED(FunnelConstants.closedState, FunnelConstants.closedSpeed);
+        COLLECT(FunnelConstants.openState, FunnelConstants.collectPercent),
+        INSTALL(FunnelConstants.openState, FunnelConstants.installPercent),
+        CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent);
 
         public final DoubleSolenoid.Value solenoidState;
-        public final double rollerSpeedPercent;
+        public final double rollerPercent;
 
-        private FunnelState(Value solenoidState, double rollerSpeedPercent) {
+        private FunnelState(Value solenoidState, double rollerPercent) {
             this.solenoidState = solenoidState;
-            this.rollerSpeedPercent = rollerSpeedPercent;
+            this.rollerPercent = rollerPercent;
         }
     };
 
@@ -54,7 +54,7 @@ public class Funnel extends SubsystemBase {
         }
 
         _funnelSolenoid.set(state.solenoidState);
-        _rollers.set(state.rollerSpeedPercent);
+        _rollers.set(state.rollerPercent);
 
         _currentState = state;
 
