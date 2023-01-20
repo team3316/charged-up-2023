@@ -39,4 +39,12 @@ public class ArmConstants {
     public static final double velocityGain = 0.000965; // in Motor% sec/deg
     public static final double staticGain = 0.02; // in Motor%
     public static final double accelerationGain = 0; // in Motor% sec^2/deg
+
+    // State Angles - need to get exact numbers from Guy
+    public static final double collectAngle = 250; // in deg
+    public static final double driveAngle = 90; // in deg
+    public static final double midCubeAngle = 30; // in deg
+    public static final double midConeAngle = 30; // in deg
+    public static final double lowAngle = -50; // in deg
+
 }
