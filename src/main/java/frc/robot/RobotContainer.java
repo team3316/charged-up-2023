@@ -15,6 +15,7 @@ import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
+import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /**
@@ -24,19 +25,20 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final Funnel m_Funnel = new Funnel();
+    private final Manipulator m_Manipulator = new Manipulator();
+    private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
 
     private boolean _fieldRelative = true;
 
-    private final Compressor _compressor = new Compressor(PneumaticsModuleType.REVPH);
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        _compressor.enableDigital();
+        m_compressor.enableDigital();
+
         // Configure the trigger bindings
         configureBindings();
 
@@ -59,12 +61,19 @@ public class RobotContainer {
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
-        _driverController.triangle().onTrue(
+        _driverController.povUp().onTrue(
                 m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
-        _driverController.circle().onTrue(
+        _driverController.povDown().onTrue(
                 m_Funnel.setFunnelStateCommand(FunnelState.CLOSED));
-        _driverController.triangle().onTrue(
+        _driverController.povLeft().onTrue(
                 m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
+
+        _driverController.triangle().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CONE_HOLD));
+        _driverController.square().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
+        _driverController.cross().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
     }
 
     /**
