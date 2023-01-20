@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -18,40 +19,28 @@ public class LimeLight extends SubsystemBase {
     private NetworkTableEntry ty;
 
     /** Creates a new LimeLight. */
-    public LimeLight() {
+    public LimeLight() { // CR: add a way to send the config to the limelight trough code
         limeLightTable = NetworkTableInstance.getDefault().getTable("limelight");
         tx = limeLightTable.getEntry("tx");
         ty = limeLightTable.getEntry("ty");
     }
 
     public double getAngle() {
-      return -1*tx.getDouble(0); //negative because LL and pigeon have opposite sensor fazzes
+        return -1 * tx.getDouble(0); // negative because LL and pigeon have opposite sensor fazzes
     }
 
-    //height dif between goal and limelight devided by tan of limelight y angle.
+    // height dif between goal and limelight devided by tan of limelight y angle.
     public double getDist() {
-      return LimelightConstants.limeLightToLowGoalMeters
-      /Math.tan(Math.toRadians(
-        ty.getDouble(0)+LimelightConstants.limelightAngleFromFloorDegs
-        )
-      );
+        return LimelightConstants.limeLightGoalHeightOffset
+                / Math.tan(Math.toRadians(
+                        ty.getDouble(0) + LimelightConstants.limelightAngleFromFloorDegs));
     }
 
-    public Pose2d getPose() {
-      return new Pose2d(
-        getDist()*Math.cos(Math.toRadians(getAngle())),
-        getDist()*Math.sin(Math.toRadians(getAngle())),
-        new Rotation2d());
-    }
+    public Translation2d getTrans(double rotateRads) {
+        // CR: Use Translation2d
+        return new Translation2d(
+                getDist(), Rotation2d.fromDegrees(getAngle() + Math.toRadians(rotateRads)));
 
-    public Pose2d getPose(double rotateRads) {
-      return new Pose2d(
-        getDist()*Math.cos(Math.toRadians(getAngle())+rotateRads),
-        getDist()*Math.sin(Math.toRadians(getAngle())+rotateRads),
-        new Rotation2d());
     }
-    
-
-    
 
 }
