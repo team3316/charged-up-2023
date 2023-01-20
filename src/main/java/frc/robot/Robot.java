@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -13,16 +14,25 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
+    private boolean _debug = false;
+
     private static double LOGGING_PERIOD_SECONDS = 0.2;
 
     @Override
     public void robotInit() {
         m_robotContainer = new RobotContainer();
-        addPeriodic(m_robotContainer::updateTelemetry, LOGGING_PERIOD_SECONDS);
+        addPeriodic(() -> {
+            if (_debug)
+                m_robotContainer.updateTelemetry();
+        }, LOGGING_PERIOD_SECONDS);
+        SmartDashboard.putBoolean("Debug", _debug);
     }
 
     @Override
     public void robotPeriodic() {
+        _debug = SmartDashboard.putBoolean("Debug", _debug);
+        SmartDashboard.putBoolean("Debug", _debug);
+
         CommandScheduler.getInstance().run();
     }
 
