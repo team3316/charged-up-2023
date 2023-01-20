@@ -6,6 +6,7 @@ import frc.robot.motors.PIDFGains;
 public class RollerGripperConstants {
     public final static int talonLeaderPort = 17;
     public final static int talonFollowerPort = 18;
+    public final static int rollerLimitSwitchPort = 1;
 
     // TODO: calibrate values when system is built
     public final static double rollerIntakePercent = 0.70; // percent

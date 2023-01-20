@@ -67,6 +67,8 @@ public class AutoRollerGripper extends SubsystemBase {
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 RollerGripperConstants.solenoidForwardChannel,
                 RollerGripperConstants.solenoidReverseChannel);
+
+        _rollerLimitSwitch = new DigitalInput(RollerGripperConstants.rollerLimitSwitchPort);
     }
 
     public void periodic() {
