@@ -15,6 +15,7 @@ import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /**
@@ -59,10 +60,9 @@ public class RobotContainer {
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
-        // Square button: intake
+        _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
         _driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
-
-        // Cross button: eject
         _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
 
         _driverController.triangle().onTrue(
@@ -71,6 +71,13 @@ public class RobotContainer {
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
         _driverController.cross().onTrue(
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
+    }
+
+    /**
+     * Called when we disable the robot to make sure nothing moves after we enable
+     */
+    public void stop() {
+        m_autoRollerGripper.stop();
     }
 
     /**

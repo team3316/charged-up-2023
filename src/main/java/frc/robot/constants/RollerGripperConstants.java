@@ -12,8 +12,8 @@ public class RollerGripperConstants {
     public final static double rollerEjectPercent = -0.70; // percent
     public final static double rollerOffPercent = 0; // percent
 
-    public final static double foldingSleepDurationSeconds = 0.05; // seconds
-    public final static double grippingSleepDurationSeconds = 0.5; // seconds
+    public final static double ejectSleepDurationSeconds = 0.5; // seconds
+    public final static double intakeSleepDurationSeconds = 0.5; // seconds
 
     public final static double ejectDurationSeconds = 0.02; // seconds
 

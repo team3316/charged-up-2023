@@ -37,28 +37,15 @@ public class AutoRollerGripper extends SubsystemBase {
     private FolderState currentFolderState;
 
     public enum FolderState {
-        IN(RollerGripperConstants.inAngle, PneumaticFolderState.IN),
-        OUT(RollerGripperConstants.outAngle, PneumaticFolderState.OUT),
-        OFF(0, PneumaticFolderState.OFF);
+        IN(RollerGripperConstants.inAngle, RollerGripperConstants.stateWhenFoldedIn),
+        OUT(RollerGripperConstants.outAngle, RollerGripperConstants.stateWhenFoldedOut);
 
         private final double desiredAngle;
-        private final PneumaticFolderState pneumaticState;
+        private final DoubleSolenoid.Value pneumaticState;
 
-        FolderState(double desiredAngle, PneumaticFolderState pneumaticState) {
+        FolderState(double desiredAngle, DoubleSolenoid.Value pneumaticState) {
             this.desiredAngle = desiredAngle;
             this.pneumaticState = pneumaticState;
-        }
-    }
-
-    public enum PneumaticFolderState {
-        OUT(RollerGripperConstants.stateWhenFoldedOut),
-        IN(RollerGripperConstants.stateWhenFoldedIn),
-        OFF(RollerGripperConstants.stateWhenOff);
-
-        private DoubleSolenoid.Value solenoidValue;
-
-        private PneumaticFolderState(DoubleSolenoid.Value value) {
-            this.solenoidValue = value;
         }
     }
 
@@ -84,8 +71,8 @@ public class AutoRollerGripper extends SubsystemBase {
                 RollerGripperConstants.positionConversionFactor, RollerGripperConstants.velocityConversionFactor,
                 RollerGripperConstants.inAngle);
 
-        _folderSM.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
-        _folderSM.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyClosed).enableLimitSwitch(true);
+        _folderSM.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen).enableLimitSwitch(true);
+        _folderSM.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen).enableLimitSwitch(true);
 
         _folderSM.getEncoder().setPositionConversionFactor(RollerGripperConstants.positionConversionFactor);
 
@@ -98,22 +85,18 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public void periodic() {
-        // updateSDB();
+        updateSDB();
     }
 
     public void updateSDB() {
-        SmartDashboard.putBoolean("hasCone", hasCone());
+        SmartDashboard.putBoolean("Auto Gripper Has Cone", hasCone());
     }
 
     public void setFolderState(FolderState state) {
-        if (state == FolderState.OFF) {
-            _folderSM.set(0);
-        } else {
-            _doubleSolenoid.set(state.pneumaticState.solenoidValue);
-            _folderSM.setReference(state.desiredAngle, ControlType.kPosition);
-        }
+        _doubleSolenoid.set(state.pneumaticState);
+        _folderSM.setReference(state.desiredAngle, ControlType.kPosition);
 
-        SmartDashboard.putString("current folder state", currentFolderState.toString());
+        SmartDashboard.putString("Auto Gripper State", currentFolderState.toString());
 
         currentFolderState = state;
     }
@@ -123,29 +106,38 @@ public class AutoRollerGripper extends SubsystemBase {
 
     }
 
+    public void stop() {
+        _talonLeader.set(TalonSRXControlMode.PercentOutput, 0);
+        _folderSM.set(0);
+    }
+
     public boolean hasCone() {
         return _rollerLimitSwitch.get();
     }
 
     public CommandBase getIntakeCommand() {
-        return new InstantCommand(() -> setFolderState(FolderState.OUT))
-                .andThen(new StartEndCommand(
-                        () -> {
-                            setRollersState(RollersState.INTAKE);
-                        },
-                        () -> {
-                            new WaitCommand(RollerGripperConstants.grippingSleepDurationSeconds).andThen(
-                                    new InstantCommand(() -> setRollersState(RollersState.OFF)));
-                        }).until(this::hasCone));
+        return new StartEndCommand(
+                () -> {
+                    setRollersState(RollersState.INTAKE);
+                },
+                () -> {
+                    new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds).andThen(
+                            new InstantCommand(() -> setRollersState(RollersState.OFF)));
+                }).until(this::hasCone);
     }
 
     public CommandBase getEjectCommand() {
         return new InstantCommand(() -> {
             setRollersState(RollersState.EJECT);
-        }).andThen(new WaitCommand(RollerGripperConstants.foldingSleepDurationSeconds),
+        }).andThen(new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
                 new InstantCommand(() -> {
                     setRollersState(RollersState.OFF);
-                    setFolderState(FolderState.IN);
                 }));
+    }
+
+    public CommandBase getFoldCommand(FolderState fState) {
+        return new InstantCommand(() -> {
+            setFolderState(fState);
+        });
     }
 }
