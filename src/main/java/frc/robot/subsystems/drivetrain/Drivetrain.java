@@ -3,20 +3,20 @@ package frc.robot.subsystems.drivetrain;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
@@ -125,11 +125,10 @@ public class Drivetrain extends SubsystemBase {
 
     public void resetYaw() {
         Pose2d pose = getPose();
-        this._odometry.resetPosition(getRotation2d(), getSwerveModulePositions(),
-                new Pose2d(pose.getTranslation(), new Rotation2d()));
+        this.resetPose(new Pose2d(pose.getTranslation(), new Rotation2d()));
     }
 
-    public void resetOdometry(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         this._odometry.resetPosition(getRotation2d(), getSwerveModulePositions(), pose);
     }
 
@@ -148,9 +147,10 @@ public class Drivetrain extends SubsystemBase {
 
         return swerveModulePositions;
     }
+
     public void driveAndSpinByState(TrapezoidProfile.State spinState, double kP) {
-        double PIDOutput = kP*(spinState.position - getRotation2d().getRadians());
-        drive(0,0,spinState.velocity+PIDOutput,true);
+        double PIDOutput = kP * (spinState.position - getRotation2d().getRadians());
+        drive(0, 0, spinState.velocity + PIDOutput, true);
 
         // SmartDashboard.putNumber("profile position", spinState.position);
         // SmartDashboard.putNumber("profile velocity", spinState.velocity);
@@ -160,14 +160,13 @@ public class Drivetrain extends SubsystemBase {
 
     public Command getSpinToAngleCommand(Rotation2d goal) {
         return new TrapezoidProfileCommand(
-            new TrapezoidProfile(
-                new Constraints(DrivetrainConstants.maxAngularVelocityRadsPerSec,DrivetrainConstants.maxAngularaccRadsPerSecSquared),
-                new State(goal.getRadians(),0),
-                new State(getRotation2d().getRadians(),0)
-            ),
-            (State state) -> this.driveAndSpinByState(state,SmartDashboard.getNumber("kP", 0)),
-            this
-        ).andThen(getHighAccuracySpinCommand(goal));
+                new TrapezoidProfile(
+                        new Constraints(DrivetrainConstants.maxAngularVelocityRadsPerSec,
+                                DrivetrainConstants.maxAngularaccRadsPerSecSquared),
+                        new State(goal.getRadians(), 0),
+                        new State(getRotation2d().getRadians(), 0)),
+                (State state) -> this.driveAndSpinByState(state, SmartDashboard.getNumber("kP", 0)),
+                this).andThen(getHighAccuracySpinCommand(goal));
     }
 
     public Command getSpinByAngleCommand(Rotation2d delta) {
@@ -179,10 +178,10 @@ public class Drivetrain extends SubsystemBase {
         controller.enableContinuousInput(-Math.PI, Math.PI);
         controller.setTolerance(0.5);
         return new PIDCommand(controller,
-         () -> getRotation2d().getRadians(),
-          goal.getRadians(),
-           (double rot) -> drive(0, 0, rot, true),
-            this);
+                () -> getRotation2d().getRadians(),
+                goal.getRadians(),
+                (double rot) -> drive(0, 0, rot, true),
+                this);
     }
 
 }

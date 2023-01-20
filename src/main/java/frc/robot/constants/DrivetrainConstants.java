@@ -61,6 +61,8 @@ public class DrivetrainConstants {
         }
     }
 
+    public static final double maxRotationSpeedRadPerSec = 11.5;
+
     // TODO: update robot dimensions
     public static final double frontWheelDistMeters = 0.6703;
     public static final double sideWheelDistMeters = 0.5102;

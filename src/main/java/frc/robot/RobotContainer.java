@@ -4,37 +4,43 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commandGroup.backward;
-import frc.robot.commandGroup.moveFoward;
+import frc.robot.autonomous.AutoFactory;
+import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
+import frc.robot.subsystems.AutoRollerGripper;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
+import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared (subsystems,
+ * commands, and trigger mappings).
  */
 public class RobotContainer {
-    // The robot's subsystems and commands are defined here...
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final LimeLight m_LimeLight = new LimeLight();
 
-    // Replace with CommandPS4Controller or CommandJoystick if needed
+    private final Funnel m_Funnel = new Funnel();
+    private final Manipulator m_Manipulator = new Manipulator();
+    private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
+
+    private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
+
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
 
@@ -46,6 +52,8 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        m_compressor.enableDigital();
+
         this.chooser = new SendableChooser<Command>();
         initChooser();
         // Configure the trigger bindings
@@ -53,31 +61,16 @@ public class RobotContainer {
         SmartDashboard.putNumber("target angle", 0);
         SmartDashboard.putNumber("kP", 0);
         SmartDashboard.putNumber("high kP", 0);
-        
 
-        m_drivetrain.setDefaultCommand(
-                new RunCommand(
-                        () -> m_drivetrain.drive(
-                                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getCombinedAxis() * 11.5,
-                                _fieldRelative),
-                        m_drivetrain));
+        m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.drive(
+                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
+                _fieldRelative), m_drivetrain));
     }
 
     /**
-     * Use this method to define your trigger->command mappings. Triggers can be
-     * created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-     * an arbitrary
-     * predicate, or via the named factories in {@link
-     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-     * {@link
-     * CommandXboxController
-     * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-     * PS4} controllers or
-     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-     * joysticks}.
+     * Use this method to define your trigger->command mappings.
      */
     private void configureBindings() {
         _driverController.options().onTrue(
@@ -86,27 +79,48 @@ public class RobotContainer {
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
-        _driverController.cross().onTrue(
+        _driverController.R3().onTrue(
                 new InstantCommand(
-                () -> m_drivetrain.getSpinByAngleCommand(Rotation2d.fromDegrees(m_LimeLight.getAngle())).schedule())
-                .andThen(new InstantCommand(() -> 
-                                SmartDashboard.putNumber("limeangle",m_LimeLight.getAngle())))
-                
-        );     
+                        () -> m_drivetrain.getSpinByAngleCommand(Rotation2d.fromDegrees(m_LimeLight.getAngle()))
+                                .schedule())
+                        .andThen(
+                                new InstantCommand(() -> SmartDashboard.putNumber("limeangle", m_LimeLight.getAngle())))
 
-        _driverController.L3().onTrue(
-                new InstantCommand(() -> m_drivetrain.getCurrentCommand().cancel()).
-                andThen(new InstantCommand(
-                        () -> SmartDashboard.putNumber("target angle", 0)
-                ))
         );
 
+        _driverController.L3().onTrue(
+                new InstantCommand(() -> m_drivetrain.getCurrentCommand().cancel()).andThen(new InstantCommand(
+                        () -> SmartDashboard.putNumber("target angle", 0))));
+
+        _driverController.povUp().onTrue(
+                m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
+        _driverController.povDown().onTrue(
+                m_Funnel.setFunnelStateCommand(FunnelState.CLOSED));
+        _driverController.povLeft().onTrue(
+                m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
+
+        _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
+        _driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
+        _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
+
+        _driverController.triangle().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CONE_HOLD));
+        _driverController.square().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
+        _driverController.cross().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
     }
 
     public void initChooser() {
-        this.chooser.setDefaultOption("forward", new moveFoward(m_drivetrain));
-        this.chooser.addOption("backward", new backward(m_drivetrain));
         SmartDashboard.putData("autonomous", this.chooser);
+    }
+
+    /**
+     * Called when we disable the robot to make sure nothing moves after we enable
+     */
+    public void stop() {
+        m_autoRollerGripper.stop();
     }
 
     /**
@@ -115,7 +129,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An example command will be run in autonomous
         return this.chooser.getSelected();
     }
 }
