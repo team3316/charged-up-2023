@@ -49,7 +49,6 @@ public class Drivetrain extends SubsystemBase {
         m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
     }
 
-
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         fieldRelative = fieldRelative && this._pigeon.getState() == PigeonState.Ready;
         SmartDashboard.putBoolean("Field Relative", fieldRelative);
@@ -119,8 +118,7 @@ public class Drivetrain extends SubsystemBase {
 
     public void resetYaw() {
         Pose2d pose = getPose();
-        this._odometry.resetPosition(getRotation2d(), getSwerveModulePositions(),
-                new Pose2d(pose.getTranslation(), new Rotation2d()));
+        this.resetPose(new Pose2d(pose.getTranslation(), new Rotation2d()));
     }
 
     public void resetPose(Pose2d pose) {
