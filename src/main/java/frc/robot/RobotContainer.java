@@ -13,6 +13,8 @@ import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
+import frc.robot.subsystems.AutoRollerGripper;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.Manipulator;
@@ -28,6 +30,8 @@ public class RobotContainer {
     private final Manipulator m_Manipulator = new Manipulator();
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
+    private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
+
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
 
@@ -42,14 +46,11 @@ public class RobotContainer {
         // Configure the trigger bindings
         configureBindings();
 
-        m_drivetrain.setDefaultCommand(
-                new RunCommand(
-                        () -> m_drivetrain.drive(
-                                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
-                                _fieldRelative),
-                        m_drivetrain));
+        m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.drive(
+                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
+                _fieldRelative), m_drivetrain));
     }
 
     /**
@@ -68,12 +69,24 @@ public class RobotContainer {
         _driverController.povLeft().onTrue(
                 m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
 
+        _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
+        _driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
+        _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
+
         _driverController.triangle().onTrue(
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CONE_HOLD));
         _driverController.square().onTrue(
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
         _driverController.cross().onTrue(
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
+    }
+
+    /**
+     * Called when we disable the robot to make sure nothing moves after we enable
+     */
+    public void stop() {
+        m_autoRollerGripper.stop();
     }
 
     /**
