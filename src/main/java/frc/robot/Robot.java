@@ -30,8 +30,6 @@ public class Robot extends TimedRobot {
             if (_debug)
                 m_robotContainer.updateTelemetry();
         }, LOGGING_PERIOD_SECONDS);
-        // SmartDashboard.putBoolean("Debug", _debug);
-
     }
 
     @Override
