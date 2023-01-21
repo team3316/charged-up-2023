@@ -10,7 +10,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.constants.ArmConstants;
@@ -22,7 +24,7 @@ public class Arm extends SubsystemBase {
     private ArmFeedforward _feedForward;
     private TalonFXConfiguration _leaderConfig = new TalonFXConfiguration();
 
-    private ArmState _currentState;
+    private ArmState _targetState;
 
     public static enum ArmState {
         COLLECT(ArmConstants.collectAngle),
@@ -62,42 +64,61 @@ public class Arm extends SubsystemBase {
         _follower.follow(_leader);
         _follower.setInverted(InvertType.OpposeMaster);
 
-        _leader.setSelectedSensorPosition(angleToTicks(getArmAngle()));
-        
+        _leader.setSelectedSensorPosition(angleToTicks(getInitialState().stateAngle));
+        _targetState = getInitialState();
     }
 
-    public double getArmAngle() {
-        // TODO: need to get exact angles from Guy
+    private ArmState getInitialState() {
         if (_leader.isRevLimitSwitchClosed() == 1) {
-            return ArmConstants.lowAngle;
+            return ArmState.LOW;
         } else if (_leader.isFwdLimitSwitchClosed() == 1) {
-            return ArmConstants.collectAngle;
+            return ArmState.COLLECT;
         } else {
-            return ArmConstants.driveAngle;
+            return ArmState.DRIVE;
         }
     }
 
-    public ArmState getState() {
-        return this._currentState;
+    public ArmState getTargetState() {
+        return this._targetState;
     }
 
-    public Command setStateCommand(ArmState requireState) {
-        TrapezoidProfile profile = new TrapezoidProfile(ArmConstants.trapezoidConstraints,
-                new TrapezoidProfile.State(getArmAngle(), 0),
-                new TrapezoidProfile.State(requireState.stateAngle, 0));
-
-        return new TrapezoidProfileCommand(profile, this::useState, this);
-    }
-
-    private void useState(TrapezoidProfile.State state) {
-
-        double feedForward = _feedForward.calculate(Math.toRadians(state.position), Math.toRadians(state.velocity));
-
-        _leader.set(ControlMode.Position, angleToTicks(state.position), DemandType.ArbitraryFeedForward, feedForward);
+    public double getAngle() {
+        return _leader.getSelectedSensorPosition();
     }
 
     private static double angleToTicks(double angle) {
+        /*
+         * Divides angle by 360 to get the percentage, then multiplies by ticks per
+         * revolution constant to get angle in ticks,
+         * then divides by gear ratio to get the actual angle the motor should move
+         */
         return angle / 360 * TICKS_PER_REVOLUTION / ArmConstants.gearRatio;
+    }
+
+    private void useState(TrapezoidProfile.State state) {
+        double feedForward = _feedForward.calculate(Math.toRadians(state.position), Math.toRadians(state.velocity));
+        _leader.set(ControlMode.Position, angleToTicks(state.position), DemandType.ArbitraryFeedForward, feedForward);
+        SmartDashboard.putNumber("Current arm velocity", state.velocity);
+        SmartDashboard.putNumber("Current arm position", state.position);
+    }
+
+    public Command setStateCommand(ArmState requiredState) {
+        TrapezoidProfile profile = new TrapezoidProfile(ArmConstants.trapezoidConstraints,
+                new TrapezoidProfile.State(_targetState.stateAngle, 0),
+                new TrapezoidProfile.State(requiredState.stateAngle, 0));
+
+        return new TrapezoidProfileCommand(profile, this::useState, this)
+                .alongWith(new InstantCommand(() -> _targetState = requiredState));
+    }
+
+    public double getVelocity() {
+        return _leader.getSelectedSensorVelocity() * 10 * 360 / TICKS_PER_REVOLUTION * ArmConstants.gearRatio;
+    }
+
+    private void updateSDB() {
+        SmartDashboard.putNumber("Current arm angle", getAngle());
+        SmartDashboard.putString("Target arm state", getTargetState().toString());
+        SmartDashboard.putNumber("Current arm velocity", getVelocity());
     }
 
     @Override
@@ -105,6 +126,7 @@ public class Arm extends SubsystemBase {
         if (_leader.isFwdLimitSwitchClosed() == 1) {
             _leader.setSelectedSensorPosition(angleToTicks(ArmConstants.collectAngle));
         }
+        updateSDB();
     }
 
 }
