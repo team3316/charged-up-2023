@@ -23,9 +23,9 @@ public class ArmConstants {
 
     // motion profile.
     public static final double movementTime = 1.75; // in secs.
-    public static final double maxVelocityDegreesPerSec = 180 * 2 / movementTime; // in Degrees/s
+    public static final double maxVelocityDegreesPerSec = 180 * 2 / movementTime; // in deg/s
     public static final double maxAccelerationDegreesPerSecSqrd = maxVelocityDegreesPerSec / (movementTime / 2); // in
-                                                                                                                 // Degrees/s^2
+                                                                                                                 // deg/s^2
     public static final Constraints trapezoidConstraints = new Constraints(maxVelocityDegreesPerSec,
             maxAccelerationDegreesPerSecSqrd);
 
@@ -46,5 +46,8 @@ public class ArmConstants {
     public static final double midCubeAngle = 30; // in deg
     public static final double midConeAngle = 30; // in deg
     public static final double lowAngle = -50; // in deg
+
+    public static final double gearRatio = 1.0 / 36.0;
+
 
 }
