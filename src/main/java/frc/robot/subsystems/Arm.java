@@ -57,7 +57,6 @@ public class Arm extends SubsystemBase {
         _leaderConfig.peakOutputForward = ArmConstants.kMaxOutput;
         _leaderConfig.peakOutputReverse = -ArmConstants.kMaxOutput;
 
-        _leader.setSelectedSensorPosition(0);
         _leader.configAllSettings(_leaderConfig);
 
         _follower.configAllSettings(new TalonFXConfiguration());
