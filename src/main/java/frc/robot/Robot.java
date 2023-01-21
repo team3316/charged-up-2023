@@ -4,10 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.humanIO.ShuffleboardTabs;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -15,6 +17,9 @@ public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
 
     private boolean _debug = false;
+
+    private GenericEntry debugWidget = ShuffleboardTabs.CONFIG.tab.add("debug", _debug)
+            .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
 
     private static double LOGGING_PERIOD_SECONDS = 0.2;
 
@@ -25,13 +30,13 @@ public class Robot extends TimedRobot {
             if (_debug)
                 m_robotContainer.updateTelemetry();
         }, LOGGING_PERIOD_SECONDS);
-        SmartDashboard.putBoolean("Debug", _debug);
+        // SmartDashboard.putBoolean("Debug", _debug);
+
     }
 
     @Override
     public void robotPeriodic() {
-        _debug = SmartDashboard.putBoolean("Debug", _debug);
-        SmartDashboard.putBoolean("Debug", _debug);
+        _debug = debugWidget.getBoolean(_debug);
 
         CommandScheduler.getInstance().run();
     }
