@@ -35,8 +35,8 @@ public class Arm extends SubsystemBase {
 
         public final double stateAngle;
 
-        private ArmState(double StateAngle) {
-            this.stateAngle = StateAngle;
+        private ArmState(double stateAngle) {
+            this.stateAngle = stateAngle;
         }
     }
 

@@ -15,6 +15,7 @@ import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared (subsystems,
@@ -24,6 +25,7 @@ public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final Manipulator m_Manipulator = new Manipulator();
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+    private final Arm m_arm = new Arm();
 
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
