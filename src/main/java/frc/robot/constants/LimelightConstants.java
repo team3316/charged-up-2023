@@ -1,5 +1,8 @@
 package frc.robot.constants;
 
+import java.util.Arrays;
+import java.util.List;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
@@ -14,4 +17,7 @@ public class LimelightConstants {
     public static final double limelightAngleFromFloorDegs = 20;
 
     public static final Rotation2d installAngle = new Rotation2d(-Math.PI / 2);
+
+    public static final List<String> actionEvents = Arrays.asList(new String[] { "arm", "manipulator" });
+
 }
