@@ -33,17 +33,16 @@ public class RobotContainer {
     private final Funnel m_Funnel = new Funnel();
     private final Manipulator m_Manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
-
-    private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
     private final Arm m_arm = new Arm();
 
-    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
+    private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
 
     private boolean _fieldRelative = true;
 
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
     private SendableChooser<Command> chooser;
 
     /**
