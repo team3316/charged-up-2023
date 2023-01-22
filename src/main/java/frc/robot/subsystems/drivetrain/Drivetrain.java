@@ -42,8 +42,6 @@ public class Drivetrain extends SubsystemBase {
 
     private SwerveDriveOdometry _odometry;
     private DoubleLogEntry m_logX, m_logY, m_logR;
-    private int m_counter = 0;
-    private static final int LOG_EVERY = 10;
 
     public Drivetrain() {
         this._modules = new SwerveModule[] {
@@ -92,15 +90,13 @@ public class Drivetrain extends SubsystemBase {
         // Update the odometry in the periodic block
         this._odometry.update(getRotation2d(), getSwerveModulePositions());
         // updateSDB();
+    }
 
-        if (m_counter++ == LOG_EVERY) {
-            Pose2d pose = _odometry.getPoseMeters();
-            m_logX.append(pose.getX());
-            m_logY.append(pose.getY());
-            m_logR.append(pose.getRotation().getDegrees());
-            m_counter = 0;
-        }
-
+    public void updateTelemetry() {
+        Pose2d pose = _odometry.getPoseMeters();
+        m_logX.append(pose.getX());
+        m_logY.append(pose.getY());
+        m_logR.append(pose.getRotation().getDegrees());
     }
 
     public void disabledInit() {

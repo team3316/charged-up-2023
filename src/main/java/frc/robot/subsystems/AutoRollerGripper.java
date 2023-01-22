@@ -8,11 +8,10 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.SparkMaxLimitSwitch;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -21,14 +20,11 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.RollerGripperConstants;
-import frc.robot.motors.DBugSparkMax;
 
 public class AutoRollerGripper extends SubsystemBase {
 
     private TalonSRX _talonLeader, _talonFollower;
     private DigitalInput _rollerLimitSwitch;
-
-    private DBugSparkMax _folderSM;
 
     private DoubleSolenoid _doubleSolenoid;
 
@@ -37,14 +33,12 @@ public class AutoRollerGripper extends SubsystemBase {
     private FolderState currentFolderState;
 
     public enum FolderState {
-        IN(RollerGripperConstants.inAngle, RollerGripperConstants.stateWhenFoldedIn),
-        OUT(RollerGripperConstants.outAngle, RollerGripperConstants.stateWhenFoldedOut);
+        IN(RollerGripperConstants.stateWhenFoldedIn),
+        OUT(RollerGripperConstants.stateWhenFoldedOut);
 
-        private final double desiredAngle;
         private final DoubleSolenoid.Value pneumaticState;
 
-        FolderState(double desiredAngle, DoubleSolenoid.Value pneumaticState) {
-            this.desiredAngle = desiredAngle;
+        FolderState(DoubleSolenoid.Value pneumaticState) {
             this.pneumaticState = pneumaticState;
         }
     }
@@ -67,21 +61,14 @@ public class AutoRollerGripper extends SubsystemBase {
         _talonFollower.follow(_talonLeader);
         _talonFollower.setInverted(InvertType.OpposeMaster);
 
-        _folderSM = DBugSparkMax.create(RollerGripperConstants.sparkMaxFolderPort, RollerGripperConstants.folderGains,
-                RollerGripperConstants.positionConversionFactor, RollerGripperConstants.velocityConversionFactor,
-                RollerGripperConstants.inAngle);
-
-        _folderSM.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen).enableLimitSwitch(true);
-        _folderSM.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen).enableLimitSwitch(true);
-
-        _folderSM.getEncoder().setPositionConversionFactor(RollerGripperConstants.positionConversionFactor);
-
         _talonLeader.configAllSettings(_talonConfig);
         _talonFollower.configAllSettings(_talonConfig);
 
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 RollerGripperConstants.solenoidForwardChannel,
                 RollerGripperConstants.solenoidReverseChannel);
+
+        _rollerLimitSwitch = new DigitalInput(RollerGripperConstants.rollerLimitSwitchPort);
     }
 
     public void periodic() {
@@ -94,7 +81,6 @@ public class AutoRollerGripper extends SubsystemBase {
 
     public void setFolderState(FolderState state) {
         _doubleSolenoid.set(state.pneumaticState);
-        _folderSM.setReference(state.desiredAngle, ControlType.kPosition);
 
         SmartDashboard.putString("Auto Gripper State", currentFolderState.toString());
 
@@ -108,7 +94,7 @@ public class AutoRollerGripper extends SubsystemBase {
 
     public void stop() {
         _talonLeader.set(TalonSRXControlMode.PercentOutput, 0);
-        _folderSM.set(0);
+        _doubleSolenoid.set(Value.kOff);
     }
 
     public boolean hasCone() {

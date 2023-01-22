@@ -106,9 +106,7 @@ public class RobotContainer {
         _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
 
         _driverController.triangle().onTrue(
-                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CONE_HOLD));
-        _driverController.square().onTrue(
-                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.HOLD));
         _driverController.cross().onTrue(
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
     }
@@ -122,6 +120,10 @@ public class RobotContainer {
      */
     public void stop() {
         m_autoRollerGripper.stop();
+    }
+
+    public void updateTelemetry() {
+        m_drivetrain.updateTelemetry();
     }
 
     /**

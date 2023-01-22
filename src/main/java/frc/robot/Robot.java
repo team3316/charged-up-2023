@@ -13,9 +13,12 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
+    private static double LOGGING_PERIOD_SECONDS = 0.2;
+
     @Override
     public void robotInit() {
         m_robotContainer = new RobotContainer();
+        addPeriodic(m_robotContainer::updateTelemetry, LOGGING_PERIOD_SECONDS);
     }
 
     @Override
