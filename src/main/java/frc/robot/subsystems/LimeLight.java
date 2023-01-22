@@ -37,8 +37,8 @@ public class LimeLight extends SubsystemBase {
 
     public Translation2d getTrans(Rotation2d gyroRotation) {
         // CR: Use Translation2d
-        return new Translation2d(
-                getDist(), Rotation2d.fromDegrees(getAngle()).plus(gyroRotation));
+        return new Translation2d(getDist(), Rotation2d.fromDegrees(getAngle()).plus(gyroRotation))
+                .minus(new Translation2d(0, LimelightConstants.installDistanceFromLowGoalMeters));
 
     }
 
