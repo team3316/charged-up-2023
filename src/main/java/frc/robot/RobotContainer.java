@@ -45,8 +45,6 @@ public class RobotContainer {
 
     private boolean _fieldRelative = true;
 
-    private SendableChooser<Command> chooser;
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
