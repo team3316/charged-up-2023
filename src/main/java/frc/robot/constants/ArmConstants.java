@@ -37,5 +37,4 @@ public class ArmConstants {
 
     public static final double gearRatio = 1.0 / 36.0;
 
-
 }
