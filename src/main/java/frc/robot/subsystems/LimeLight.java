@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -36,10 +35,10 @@ public class LimeLight extends SubsystemBase {
                         ty.getDouble(0) + LimelightConstants.limelightAngleFromFloorDegs));
     }
 
-    public Translation2d getTrans(double rotateRads) {
+    public Translation2d getTrans(Rotation2d gyroRotation) {
         // CR: Use Translation2d
         return new Translation2d(
-                getDist(), Rotation2d.fromDegrees(getAngle() + Math.toRadians(rotateRads)));
+                getDist(), Rotation2d.fromDegrees(getAngle()).plus(gyroRotation));
 
     }
 

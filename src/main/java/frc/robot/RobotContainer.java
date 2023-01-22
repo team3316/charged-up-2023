@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -81,7 +80,9 @@ public class RobotContainer {
 
         _driverController.R3().onTrue(
                 new InstantCommand(
-                        () -> m_drivetrain.getSpinByAngleCommand(Rotation2d.fromDegrees(m_LimeLight.getAngle()))
+                        () -> m_drivetrain
+                                .getMoveByTranslation2dCommand(
+                                        m_LimeLight.getTrans(m_drivetrain.getPose().getRotation()), _autoFactory)
                                 .schedule())
                         .andThen(
                                 new InstantCommand(() -> SmartDashboard.putNumber("limeangle", m_LimeLight.getAngle())))

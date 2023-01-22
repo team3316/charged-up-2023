@@ -1,9 +1,5 @@
 package frc.robot.subsystems.drivetrain;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.pathplanner.lib.PathConstraints;
@@ -12,7 +8,6 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.EventMarker;
 import com.pathplanner.lib.PathPoint;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,7 +24,6 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.autonomous.AutoFactory;
@@ -199,21 +193,6 @@ public class Drivetrain extends SubsystemBase {
                         new State(goal.getRadians(), 0),
                         new State(getRotation2d().getRadians(), 0)),
                 (State state) -> this.driveAndSpinByState(state, SmartDashboard.getNumber("kP", 0)),
-                this).andThen(getHighAccuracySpinCommand(goal));
-    }
-
-    public Command getSpinByAngleCommand(Rotation2d delta) {
-        return getSpinToAngleCommand(delta.plus(getRotation2d()));
-    }
-
-    public Command getHighAccuracySpinCommand(Rotation2d goal) {
-        PIDController controller = new PIDController(SmartDashboard.getNumber("high kP", 0), 0, 0);
-        controller.enableContinuousInput(-Math.PI, Math.PI);
-        controller.setTolerance(0.5);
-        return new PIDCommand(controller,
-                () -> getRotation2d().getRadians(),
-                goal.getRadians(),
-                (double rot) -> drive(0, 0, rot, true),
                 this);
     }
 
