@@ -48,7 +48,8 @@ public class AutoFactory {
         return _autoBuilder.fullAuto(path);
     }
 
-    public CommandBase createAuto(Drivetrain drivetrain, PathPlannerTrajectory path) {
-        return _autoBuilder.fullAuto(path);
+    public CommandBase createfollow(PathPlannerTrajectory path) {
+        System.out.println("init" + path.getInitialPose().getX() + ", " + path.getInitialPose().getY());
+        return _autoBuilder.followPath(path);
     }
 }

@@ -5,7 +5,6 @@ import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPlannerTrajectory.EventMarker;
 import com.pathplanner.lib.PathPoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -167,18 +166,16 @@ public class Drivetrain extends SubsystemBase {
                 new PathConstraints(AutonomousConstants.kMaxSpeedMetersPerSecond,
                         AutonomousConstants.kMaxAccelerationMetersPerSecondSquared),
                 new PathPoint(currentTrans,
-                        this.getPose().getRotation()),
-                new PathPoint(currentTrans.plus(GoalOffsetTrans), LimelightConstants.installAngle,
-                        LimelightConstants.installAngle));
-        transTrajectory.getMarkers().add(
-                EventMarker.fromTime(LimelightConstants.actionEvents, transTrajectory.getTotalTimeSeconds() - 0.3));// replace
-                                                                                                                    // 0.3
-                                                                                                                    // with
-                                                                                                                    // time
-                                                                                                                    // to
-                                                                                                                    // lower
-                                                                                                                    // arm
-        return factory.createAuto(this, transTrajectory);
+                        LimelightConstants.installAngle, this.getPose().getRotation()), // if not calibrated, will be
+                                                                                        // jittery (as in to dierction
+                                                                                        // of
+                // travel)
+                new PathPoint(currentTrans.plus(GoalOffsetTrans),
+                        LimelightConstants.installAngle, this.getPose().getRotation()));
+        System.out.println("currentTrans " + currentTrans.getX() + ", " + currentTrans.getY());
+        System.out.println("currentTrans " + currentTrans.plus(GoalOffsetTrans).getX() + ", "
+                + currentTrans.plus(GoalOffsetTrans).getY());
+        return factory.createfollow(transTrajectory);
     }
 
     public Command getSpinToAngleCommand(Rotation2d goal) {

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -82,7 +83,9 @@ public class RobotContainer {
                 new InstantCommand(
                         () -> m_drivetrain
                                 .getMoveByTranslation2dCommand(
-                                        m_LimeLight.getTrans(m_drivetrain.getPose().getRotation()), _autoFactory)
+                                        new Translation2d(SmartDashboard.getNumber("x for trans", 0),
+                                                SmartDashboard.getNumber("y for trans", 0)),
+                                        _autoFactory)
                                 .schedule())
                         .andThen(
                                 new InstantCommand(() -> SmartDashboard.putNumber("limeangle", m_LimeLight.getAngle())))
@@ -91,7 +94,18 @@ public class RobotContainer {
 
         _driverController.L3().onTrue(
                 new InstantCommand(() -> m_drivetrain.getCurrentCommand().cancel()).andThen(new InstantCommand(
-                        () -> SmartDashboard.putNumber("target angle", 0))));
+                        () -> {
+                            SmartDashboard.putNumber("x of trans",
+                                    m_LimeLight.getTrans(m_drivetrain.getPose().getRotation()).getX());
+                            SmartDashboard.putNumber("y of trans",
+                                    m_LimeLight.getTrans(m_drivetrain.getPose().getRotation()).getY());
+                            SmartDashboard.putNumber("rot",
+                                    m_drivetrain.getPose().getRotation().getRadians());
+                            SmartDashboard.putNumber("dist",
+                                    m_LimeLight.getDist());
+                            SmartDashboard.putNumber("x for trans", 0);
+                            SmartDashboard.putNumber("y for trans", 0);
+                        })));
 
         _driverController.povUp().onTrue(
                 m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
