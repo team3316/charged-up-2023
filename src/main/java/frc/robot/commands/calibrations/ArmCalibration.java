@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -94,7 +93,7 @@ public class ArmCalibration extends CommandBase {
 
     public void execute() {
         _currentValue = SmartDashboard.getNumber("arm voltage calibration", 0);
-        _leader.set(TalonFXControlMode.PercentOutput, _currentValue);
+        _leader.set(TalonFXControlMode.Position, _currentValue);
         SmartDashboard.putNumber("arm voltage calibration", _currentValue);
     }
 
