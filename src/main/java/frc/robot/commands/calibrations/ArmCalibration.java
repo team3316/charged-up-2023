@@ -89,6 +89,12 @@ public class ArmCalibration extends CommandBase {
         SmartDashboard.putData("add to pid", new InstantCommand(() -> addToPID(
                 SmartDashboard.getString("pid new gain", "new gain"),
                 SmartDashboard.getNumber("pid new value", 00))));
+
+        SmartDashboard.putString("ff new gain", "new gain");
+        SmartDashboard.putNumber("ff new value", 00);
+        SmartDashboard.putData("add to pid", new InstantCommand(() -> addToFeedforward(
+                SmartDashboard.getString("ff new gain", "new gain"),
+                SmartDashboard.getNumber("ff new value", 00))));
     }
 
     public void execute() {
