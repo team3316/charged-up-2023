@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
@@ -23,6 +24,11 @@ public class Arm extends SubsystemBase {
     private TalonFX _follower;
     private ArmFeedforward _feedForward;
     private TalonFXConfiguration _leaderConfig = new TalonFXConfiguration();
+
+    double kA;
+    double kS;
+    double kV;
+    double kG;
 
     private ArmState _targetState;
 
@@ -65,6 +71,10 @@ public class Arm extends SubsystemBase {
 
         _leader.setSelectedSensorPosition(angleToTicks(getInitialState().stateAngle));
         _targetState = getInitialState();
+    }
+
+    public TalonFX getLeader() {
+        return _leader;
     }
 
     private ArmState getInitialState() {
@@ -118,6 +128,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Current arm angle", getAngle());
         SmartDashboard.putString("Target arm state", getTargetState().toString());
         SmartDashboard.putNumber("Current arm velocity", getVelocity());
+
     }
 
     @Override
