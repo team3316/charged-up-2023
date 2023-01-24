@@ -99,6 +99,7 @@ public class RobotContainer {
      */
     public void stop() {
         m_autoRollerGripper.stop();
+        m_arm.stop();
     }
 
     public void updateTelemetry() {

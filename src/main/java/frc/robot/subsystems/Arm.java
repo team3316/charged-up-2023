@@ -129,4 +129,7 @@ public class Arm extends SubsystemBase {
         updateSDB();
     }
 
+    public void stop() {
+        _leader.set(ControlMode.PercentOutput, 0);
+    }
 }
