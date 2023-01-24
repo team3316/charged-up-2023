@@ -5,16 +5,17 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.humanIO.CommandPS5Controller;
+import frc.robot.humanIO.PS5Controller;
 import frc.robot.subsystems.Arm;
 
 public class ArmCalibration extends CommandBase {
 
-    PS4Controller _controller;
+    PS5Controller _controller;
 
     ArmFeedforward _feedforward;
 
@@ -37,7 +38,7 @@ public class ArmCalibration extends CommandBase {
 
     double _currentValue;
 
-    public ArmCalibration(Arm subsystem, PS4Controller controller) {
+    public ArmCalibration(Arm subsystem, PS5Controller controller) {
         this._subsystem = subsystem;
         this._leader = subsystem.getLeader();
         this._controller = controller;
@@ -104,10 +105,10 @@ public class ArmCalibration extends CommandBase {
     }
 
     public boolean isFinished() {
-        if (_controller.getCircleButtonPressed())
+        if (_controller.getCrossButtonPressed())
             return true;
-
-        return false;
+        else
+            return false;
     }
 
     public void end() {
