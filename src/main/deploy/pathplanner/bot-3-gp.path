@@ -220,7 +220,7 @@
       }
     }
   ],
-  "maxVelocity": 3.2,
+  "maxVelocity": 1.6,
   "maxAcceleration": 3.0,
   "isReversed": null,
   "markers": [
@@ -231,9 +231,21 @@
       ]
     },
     {
-      "position": 2.0,
+      "position": 4.0,
       "names": [
         "eject"
+      ]
+    },
+    {
+      "position": 8.0,
+      "names": [
+        "event"
+      ]
+    },
+    {
+      "position": 4.4,
+      "names": [
+        "intake"
       ]
     }
   ]
