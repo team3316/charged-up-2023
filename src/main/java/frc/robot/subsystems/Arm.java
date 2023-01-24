@@ -103,9 +103,9 @@ public class Arm extends SubsystemBase {
 
     public Command setStateCommand(ArmState requiredState) {
         TrapezoidProfile profile = new TrapezoidProfile(ArmConstants.trapezoidConstraints,
+                new TrapezoidProfile.State(requiredState.stateAngle, 0),
                 new TrapezoidProfile.State(_leader.getSelectedSensorPosition() / angleToTicks(1.0),
-                        _leader.getSelectedSensorVelocity() / angleToTicks(1.0) / 10),
-                new TrapezoidProfile.State(requiredState.stateAngle, 0));
+                        _leader.getSelectedSensorVelocity() / angleToTicks(1.0) / 10));
 
         return new TrapezoidProfileCommand(profile, this::useState, this)
                 .alongWith(new InstantCommand(() -> _targetState = requiredState));
