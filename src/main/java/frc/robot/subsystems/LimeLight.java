@@ -45,14 +45,13 @@ public class LimeLight extends SubsystemBase {
     }
 
     public int getClosest() {
-        int targets = (int)limeLightTable.getEntry("tv").getDouble(0);
-        switch (targets){
+        int targets = (int) limeLightTable.getEntry("tv").getDouble(0);
+        switch (targets) {
             case 1:
-                return (int)limeLightTable.getEntry("td").getDouble(0);
+                return (int) limeLightTable.getEntry("td").getDouble(0);
             case 2:
-                
-            
-                default:
+
+            default:
                 return 0;
 
         }
