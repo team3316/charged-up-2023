@@ -195,7 +195,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Command getSpinByInputCommand(DoubleSupplier input, DoubleSupplier goal) {
-        return new PIDCommand(new PIDController(0.1, 0, 0), input, goal,
+        return new PIDCommand(new PIDController(1.5, 0, 0), input, goal,
                 (double output) -> drive(0, output, 0, false));
     }
 }
