@@ -106,7 +106,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Current arm position", state.position);
     }
 
-    public Command setStateCommand(ArmState requiredState) {
+    public Command getSetStateCommand(ArmState requiredState) {
         TrapezoidProfile profile = new TrapezoidProfile(ArmConstants.trapezoidConstraints,
                 new TrapezoidProfile.State(requiredState.stateAngle, 0),
                 new TrapezoidProfile.State(getAngle(), getVelocity()));
