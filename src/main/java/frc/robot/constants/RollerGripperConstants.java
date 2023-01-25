@@ -1,7 +1,6 @@
 package frc.robot.constants;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import frc.robot.motors.PIDFGains;
 
 public class RollerGripperConstants {
     public final static int talonLeaderPort = 17;

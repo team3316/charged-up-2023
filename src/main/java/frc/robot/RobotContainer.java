@@ -22,6 +22,7 @@ import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared (subsystems,
@@ -32,16 +33,16 @@ public class RobotContainer {
     private final Funnel m_Funnel = new Funnel();
     private final Manipulator m_Manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
+    private final Arm m_arm = new Arm();
 
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
-
-    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
 
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
 
     private boolean _fieldRelative = true;
 
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
     private SendableChooser<Command> chooser;
 
     /**
@@ -98,6 +99,7 @@ public class RobotContainer {
      */
     public void stop() {
         m_autoRollerGripper.stop();
+        m_arm.stop();
     }
 
     public void updateTelemetry() {
