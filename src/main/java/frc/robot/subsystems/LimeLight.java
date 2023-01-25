@@ -4,11 +4,13 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.geometry.*;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.LimelightConstants;
 
@@ -40,6 +42,40 @@ public class LimeLight extends SubsystemBase {
         return new Translation2d(getDist(), Rotation2d.fromDegrees(getAngle()).plus(gyroRotation))
                 .minus(new Translation2d(0, LimelightConstants.installDistanceFromLowGoalMeters));
 
+    }
+
+    public int getClosest() {
+        int targets = (int)limeLightTable.getEntry("tv").getDouble(0);
+        switch (targets){
+            case 1:
+                return (int)limeLightTable.getEntry("td").getDouble(0);
+            case 2:
+                
+            
+                default:
+                return 0;
+
+        }
+    }
+
+    public Pose2d getPos() {
+        double[] poseComponents = limeLightTable.getEntry("botpose").getDoubleArray(new double[6]);
+        if (poseComponents.length == 0)
+            return new Pose2d();
+
+        return new Pose2d(
+                poseComponents[0],
+                poseComponents[1],
+                new Rotation2d(
+                        poseComponents[3],
+                        poseComponents[4]));
+
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putString("limelight position", this.getPos().toString());
+        SmartDashboard.putNumber("target", limeLightTable.getEntry("tv").getDouble(0));
     }
 
 }
