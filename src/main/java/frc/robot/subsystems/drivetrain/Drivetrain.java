@@ -149,7 +149,6 @@ public class Drivetrain extends SubsystemBase {
         return swerveModulePositions;
     }
 
-
     public Command getMoveByTranslation2dCommand(Translation2d GoalOffsetTrans, AutoFactory factory) {
         Translation2d currentTrans = new Translation2d(this.getPose().getX(), this.getPose().getY());
         PathPlannerTrajectory transTrajectory = PathPlanner.generatePath(
@@ -169,8 +168,12 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Command getSpinByInputCommand(DoubleSupplier inputX, DoubleSupplier inputY) {
-        return new RunCommand(() -> drive(inputX.getAsDouble() * 0.1, inputY.getAsDouble() * 0.1,
-                -getPose().getRotation().getDegrees() * 0.1, true), this)
-                .until(() -> (Math.abs(inputX.getAsDouble()) < 0.2) && (Math.abs(inputY.getAsDouble()) < 0.01));
+        return new RunCommand(
+                () -> drive(inputX.getAsDouble() * SmartDashboard.getNumber("xKP", 0), // working value 0.05
+                        inputY.getAsDouble() * SmartDashboard.getNumber("yKP", 0), // working value 0.06
+                        -getPose().getRotation().getDegrees() * SmartDashboard.getNumber("tKP", 0), true), // working
+                                                                                                           // value 0.05
+                this)
+                .until(() -> (Math.abs(inputX.getAsDouble()) < 0.5) && (Math.abs(inputY.getAsDouble()) < 0.5));
     }
 }

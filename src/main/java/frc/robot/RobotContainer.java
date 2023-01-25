@@ -57,9 +57,9 @@ public class RobotContainer {
         initChooser();
         // Configure the trigger bindings
         configureBindings();
-        SmartDashboard.putNumber("target angle", 0);
-        SmartDashboard.putNumber("kP", 0);
-        SmartDashboard.putNumber("high kP", 0);
+        SmartDashboard.putNumber("xKP", 0);
+        SmartDashboard.putNumber("yKP", 0);
+        SmartDashboard.putNumber("tKP", 0);
 
         m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.drive(
                 _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
@@ -91,7 +91,7 @@ public class RobotContainer {
 
         _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
         _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
-        _driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
+        //_driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
         _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
 
         _driverController.triangle().onTrue(
