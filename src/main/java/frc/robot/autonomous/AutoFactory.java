@@ -49,7 +49,6 @@ public class AutoFactory {
     }
 
     public CommandBase createfollow(PathPlannerTrajectory path) {
-        System.out.println("init" + path.getInitialPose().getX() + ", " + path.getInitialPose().getY());
         return _autoBuilder.followPath(path);
     }
 }
