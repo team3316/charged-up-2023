@@ -24,20 +24,18 @@ public class LimeLight extends SubsystemBase {
         ty = limeLightTable.getEntry("ty");
     }
 
-    public double getAngle() {
+    public double getXAngle() {
         return -1 * tx.getDouble(0); // negative because LL and pigeon have opposite sensor fazzes
     }
 
     // height dif between goal and limelight devided by tan of limelight y angle.
-    public double getDist() {
-        return LimelightConstants.limeLightGoalHeightOffset
-                / Math.tan(Math.toRadians(
-                        ty.getDouble(0) + LimelightConstants.limelightAngleFromFloorDegs));
+    public double getYAngle() {
+        return ty.getDouble(0);
     }
 
     public Translation2d getTrans(Rotation2d gyroRotation) {
         // CR: Use Translation2d
-        return new Translation2d(getDist(), Rotation2d.fromDegrees(getAngle()).plus(gyroRotation))
+        return new Translation2d(getYAngle(), Rotation2d.fromDegrees(getXAngle()).plus(gyroRotation))
                 .minus(new Translation2d(0, LimelightConstants.installDistanceFromLowGoalMeters));
 
     }

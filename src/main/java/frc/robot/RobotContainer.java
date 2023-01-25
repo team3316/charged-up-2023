@@ -87,7 +87,8 @@ public class RobotContainer {
                                         _autoFactory)
                                 .schedule())
                         .andThen(
-                                new InstantCommand(() -> SmartDashboard.putNumber("limeangle", m_LimeLight.getAngle())))
+                                new InstantCommand(
+                                        () -> SmartDashboard.putNumber("limeangle", m_LimeLight.getXAngle())))
 
         );
 
@@ -101,7 +102,7 @@ public class RobotContainer {
                             SmartDashboard.putNumber("rot",
                                     m_drivetrain.getPose().getRotation().getRadians());
                             SmartDashboard.putNumber("dist",
-                                    m_LimeLight.getDist());
+                                    m_LimeLight.getYAngle());
                             SmartDashboard.putNumber("x for trans", 0);
                             SmartDashboard.putNumber("y for trans", 0);
                             SmartDashboard.putNumber("yAngle goal", 0);
@@ -116,8 +117,8 @@ public class RobotContainer {
                         .schedule()));
 
         _driverController.R1().whileTrue(
-                new InstantCommand(() -> m_drivetrain.getSpinByInputCommand(m_LimeLight::getDist,
-                        () -> SmartDashboard.getNumber("yAngle goal", 0)).schedule()));
+                new InstantCommand(() -> m_drivetrain
+                        .getSpinByInputCommand(m_LimeLight::getXAngle, m_LimeLight::getYAngle).schedule()));
 
     }
 
