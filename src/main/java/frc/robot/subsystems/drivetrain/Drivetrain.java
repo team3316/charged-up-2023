@@ -9,7 +9,6 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,8 +25,7 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.autonomous.AutoFactory;
@@ -194,8 +192,9 @@ public class Drivetrain extends SubsystemBase {
                 this);
     }
 
-    public Command getSpinByInputCommand(DoubleSupplier input, DoubleSupplier goal) {
-        return new PIDCommand(new PIDController(1.5, 0, 0), input, goal,
-                (double output) -> drive(0, output, 0, false));
+    public Command getSpinByInputCommand(DoubleSupplier inputX, DoubleSupplier inputY) {
+        return new RunCommand(() -> drive(inputX.getAsDouble() * 0.1, inputY.getAsDouble() * 0.1,
+                -getPose().getRotation().getDegrees() * 0.1, true), this)
+                .until(() -> (Math.abs(inputX.getAsDouble()) < 0.2) && (Math.abs(inputY.getAsDouble()) < 0.01));
     }
 }
