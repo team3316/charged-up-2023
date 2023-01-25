@@ -104,6 +104,7 @@ public class RobotContainer {
                                     m_LimeLight.getDist());
                             SmartDashboard.putNumber("x for trans", 0);
                             SmartDashboard.putNumber("y for trans", 0);
+                            SmartDashboard.putNumber("yAngle goal", 0);
                         })));
 
         _driverController.L1().onTrue(new InstantCommand(
@@ -113,6 +114,10 @@ public class RobotContainer {
                                         .rotateBy(Rotation2d.fromDegrees(-90)),
                                 _autoFactory)
                         .schedule()));
+
+        _driverController.R1().whileTrue(
+                new InstantCommand(() -> m_drivetrain.getSpinByInputCommand(m_LimeLight::getDist,
+                        () -> SmartDashboard.getNumber("yAngle goal", 0)).schedule()));
 
     }
 
