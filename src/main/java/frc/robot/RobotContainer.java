@@ -90,8 +90,18 @@ public class RobotContainer {
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
     }
 
-    public void initChooser() {
+    private void addToChooser(String pathName) {
+        this.chooser.addOption(pathName, _autoFactory.createAuto(m_drivetrain, pathName));
+    }
+
+    private void initChooser() {
         SmartDashboard.putData("autonomous", this.chooser);
+        addToChooser("1-gp-engage");
+        addToChooser("1-gp-leaveCommunity");
+        addToChooser("bot-2-gp-engage");
+        addToChooser("bot-2-gp");
+        addToChooser("bot-3-gp-engage");
+        addToChooser("bot-3-gp");
     }
 
     /**
