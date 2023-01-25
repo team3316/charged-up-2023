@@ -82,7 +82,7 @@ public class Arm extends SubsystemBase {
     }
 
     public double getAngle() {
-        return _leader.getSelectedSensorPosition();
+        return ticksToAngle(_leader.getSelectedSensorPosition());
     }
 
     private static double angleToTicks(double angle) {
@@ -92,6 +92,11 @@ public class Arm extends SubsystemBase {
          * then divides by gear ratio to get the actual angle the motor should move
          */
         return angle / 360 * TICKS_PER_REVOLUTION / ArmConstants.gearRatio;
+    }
+
+    private static double ticksToAngle(double ticks) {
+        // Inverse of angleToTicks
+        return ticks / angleToTicks(1);
     }
 
     private void useState(TrapezoidProfile.State state) {
@@ -104,15 +109,14 @@ public class Arm extends SubsystemBase {
     public Command setStateCommand(ArmState requiredState) {
         TrapezoidProfile profile = new TrapezoidProfile(ArmConstants.trapezoidConstraints,
                 new TrapezoidProfile.State(requiredState.stateAngle, 0),
-                new TrapezoidProfile.State(_leader.getSelectedSensorPosition() / angleToTicks(1.0),
-                        _leader.getSelectedSensorVelocity() / angleToTicks(1.0) / 10));
+                new TrapezoidProfile.State(getAngle(), getVelocity()));
 
         return new TrapezoidProfileCommand(profile, this::useState, this)
                 .alongWith(new InstantCommand(() -> _targetState = requiredState));
     }
 
     public double getVelocity() {
-        return _leader.getSelectedSensorVelocity() * 10 * 360 / TICKS_PER_REVOLUTION * ArmConstants.gearRatio;
+        return ticksToAngle(_leader.getSelectedSensorVelocity()) * 10;
     }
 
     private void updateSDB() {
