@@ -11,11 +11,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.constants.ArmConstants;
+import frc.robot.utils.DynamicCommand;
 
 public class Arm extends SubsystemBase {
     private static final int TICKS_PER_REVOLUTION = 4096;
@@ -102,17 +103,21 @@ public class Arm extends SubsystemBase {
     private void useState(TrapezoidProfile.State state) {
         double feedForward = _feedForward.calculate(Math.toRadians(state.position), Math.toRadians(state.velocity));
         _leader.set(ControlMode.Position, angleToTicks(state.position), DemandType.ArbitraryFeedForward, feedForward);
-        SmartDashboard.putNumber("Current arm velocity", state.velocity);
-        SmartDashboard.putNumber("Current arm position", state.position);
+        SmartDashboard.putNumber("State arm velocity", state.velocity);
+        SmartDashboard.putNumber("State arm position", state.position);
     }
 
-    public Command getSetStateCommand(ArmState requiredState) {
+    private CommandBase generateSetStateCommand(ArmState requiredState) {
         TrapezoidProfile profile = new TrapezoidProfile(ArmConstants.trapezoidConstraints,
                 new TrapezoidProfile.State(requiredState.stateAngle, 0),
                 new TrapezoidProfile.State(getAngle(), getVelocity()));
 
         return new TrapezoidProfileCommand(profile, this::useState, this)
                 .alongWith(new InstantCommand(() -> _targetState = requiredState));
+    }
+
+    public CommandBase getSetStateCommand(ArmState requiredState) {
+        return new DynamicCommand(() -> generateSetStateCommand(requiredState), this);
     }
 
     public double getVelocity() {
