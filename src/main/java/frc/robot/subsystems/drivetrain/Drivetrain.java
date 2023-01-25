@@ -17,9 +17,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -27,7 +24,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DrivetrainConstants;
@@ -153,15 +149,6 @@ public class Drivetrain extends SubsystemBase {
         return swerveModulePositions;
     }
 
-    public void driveAndSpinByState(TrapezoidProfile.State spinState, double kP) {
-        double PIDOutput = kP * (spinState.position - getRotation2d().getRadians());
-        drive(0, 0, spinState.velocity + PIDOutput, true);
-
-        // SmartDashboard.putNumber("profile position", spinState.position);
-        // SmartDashboard.putNumber("profile velocity", spinState.velocity);
-        // SmartDashboard.putNumber("pid output", PIDOutput);
-
-    }
 
     public Command getMoveByTranslation2dCommand(Translation2d GoalOffsetTrans, AutoFactory factory) {
         Translation2d currentTrans = new Translation2d(this.getPose().getX(), this.getPose().getY());
@@ -179,17 +166,6 @@ public class Drivetrain extends SubsystemBase {
         System.out.println("currentTrans " + currentTrans.plus(GoalOffsetTrans).getX() + ", "
                 + currentTrans.plus(GoalOffsetTrans).getY());
         return factory.createfollow(transTrajectory);
-    }
-
-    public Command getSpinToAngleCommand(Rotation2d goal) {
-        return new TrapezoidProfileCommand(
-                new TrapezoidProfile(
-                        new Constraints(DrivetrainConstants.maxAngularVelocityRadsPerSec,
-                                DrivetrainConstants.maxAngularaccRadsPerSecSquared),
-                        new State(goal.getRadians(), 0),
-                        new State(getRotation2d().getRadians(), 0)),
-                (State state) -> this.driveAndSpinByState(state, SmartDashboard.getNumber("kP", 0)),
-                this);
     }
 
     public Command getSpinByInputCommand(DoubleSupplier inputX, DoubleSupplier inputY) {

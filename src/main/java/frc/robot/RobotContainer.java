@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -19,7 +17,9 @@ import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.AutoRollerGripper;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -78,66 +78,27 @@ public class RobotContainer {
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
-        _driverController.R3().onTrue(
-                new InstantCommand(
-                        () -> m_drivetrain
-                                .getMoveByTranslation2dCommand(
-                                        new Translation2d(SmartDashboard.getNumber("x for trans", 0),
-                                                SmartDashboard.getNumber("y for trans", 0)),
-                                        _autoFactory)
-                                .schedule())
-                        .andThen(
-                                new InstantCommand(
-                                        () -> SmartDashboard.putNumber("limeangle", m_LimeLight.getXAngle())))
-
-        );
-
-        _driverController.L3().onTrue(
-                new InstantCommand(() -> m_drivetrain.getCurrentCommand().cancel()).andThen(new InstantCommand(
-                        () -> {
-                            SmartDashboard.putNumber("x of trans",
-                                    m_LimeLight.getTrans(m_drivetrain.getPose().getRotation()).getX());
-                            SmartDashboard.putNumber("y of trans",
-                                    m_LimeLight.getTrans(m_drivetrain.getPose().getRotation()).getY());
-                            SmartDashboard.putNumber("rot",
-                                    m_drivetrain.getPose().getRotation().getRadians());
-                            SmartDashboard.putNumber("dist",
-                                    m_LimeLight.getYAngle());
-                            SmartDashboard.putNumber("x for trans", 0);
-                            SmartDashboard.putNumber("y for trans", 0);
-                            SmartDashboard.putNumber("yAngle goal", 0);
-                        })));
-
-        _driverController.L1().onTrue(new InstantCommand(
-                () -> m_drivetrain
-                        .getMoveByTranslation2dCommand(
-                                m_LimeLight.getTrans(m_drivetrain.getPose().getRotation())
-                                        .rotateBy(Rotation2d.fromDegrees(-90)),
-                                _autoFactory)
-                        .schedule()));
-
         _driverController.R1().whileTrue(
                 new InstantCommand(() -> m_drivetrain
                         .getSpinByInputCommand(m_LimeLight::getXAngle, m_LimeLight::getYAngle).schedule()));
 
+        _driverController.povUp().onTrue(
+                m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
+        _driverController.povDown().onTrue(
+                m_Funnel.setFunnelStateCommand(FunnelState.CLOSED));
+        _driverController.povLeft().onTrue(
+                m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
+
+        _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
+        _driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
+        _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
+
+        _driverController.triangle().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.HOLD));
+        _driverController.cross().onTrue(
+                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
     }
-
-    // _driverController.povUp().onTrue(
-    // m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
-    // _driverController.povDown().onTrue(
-    // m_Funnel.setFunnelStateCommand(FunnelState.CLOSED));
-    // _driverController.povLeft().onTrue(
-    // m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
-
-    // _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
-    // _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
-    // _driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
-    // _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
-
-    // _driverController.triangle().onTrue(
-    // m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.HOLD));
-    // _driverController.cross().onTrue(
-    // m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
 
     public void initChooser() {
         SmartDashboard.putData("autonomous", this.chooser);

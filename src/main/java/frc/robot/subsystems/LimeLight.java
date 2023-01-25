@@ -4,13 +4,10 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.LimelightConstants;
 
 public class LimeLight extends SubsystemBase {
     NetworkTable limeLightTable;
@@ -31,13 +28,6 @@ public class LimeLight extends SubsystemBase {
     // height dif between goal and limelight devided by tan of limelight y angle.
     public double getYAngle() {
         return ty.getDouble(0);
-    }
-
-    public Translation2d getTrans(Rotation2d gyroRotation) {
-        // CR: Use Translation2d
-        return new Translation2d(getYAngle(), Rotation2d.fromDegrees(getXAngle()).plus(gyroRotation))
-                .minus(new Translation2d(0, LimelightConstants.installDistanceFromLowGoalMeters));
-
     }
 
 }
