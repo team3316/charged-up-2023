@@ -67,6 +67,10 @@ public class Arm extends SubsystemBase {
         _targetState = getInitialState();
     }
 
+    public TalonFX getLeader() {
+        return _leader;
+    }
+
     private ArmState getInitialState() {
         if (_leader.isRevLimitSwitchClosed() == 1) {
             return ArmState.LOW;
@@ -118,6 +122,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Current arm angle", getAngle());
         SmartDashboard.putString("Target arm state", getTargetState().toString());
         SmartDashboard.putNumber("Current arm velocity", getVelocity());
+
     }
 
     @Override
@@ -126,14 +131,6 @@ public class Arm extends SubsystemBase {
             _leader.setSelectedSensorPosition(angleToTicks(ArmConstants.collectAngle));
         }
         updateSDB();
-    }
-
-    public void setLeaderPercentOutput() {
-        _leader.set(ControlMode.PercentOutput, SmartDashboard.getNumber("current arm angle", 0));
-    }
-
-    public TalonFX getLeader() {
-        return _leader;
     }
 
 }

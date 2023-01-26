@@ -1,11 +1,11 @@
 package frc.robot.commands.calibrations;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -21,8 +21,6 @@ public class ArmCalibration extends CommandBase {
     Subsystem _subsystem;
     TalonFX _leader;
     TalonFXConfiguration _leaderConfig;
-
-    boolean calibrationSequence = true;
 
     // ff gains
     double ks = 0;
@@ -83,19 +81,20 @@ public class ArmCalibration extends CommandBase {
     }
 
     public void init() {
-        SmartDashboard.putNumber("current arm percent", 0);
+        SmartDashboard.putBoolean("is calibration activated", false);
+        SmartDashboard.putNumber("arm voltage calibration", 0);
 
         SmartDashboard.putString("pid new gain", "new gain");
-        SmartDashboard.putNumber("pid new value", 0);
+        SmartDashboard.putNumber("pid new value", 00);
         SmartDashboard.putData("add to pid", new InstantCommand(() -> addToPID(
                 SmartDashboard.getString("pid new gain", "new gain"),
-                SmartDashboard.getNumber("pid new value", 0))));
+                SmartDashboard.getNumber("pid new value", 00))));
 
         SmartDashboard.putString("ff new gain", "new gain");
-        SmartDashboard.putNumber("ff new value", 0);
+        SmartDashboard.putNumber("ff new value", 00);
         SmartDashboard.putData("add to pid", new InstantCommand(() -> addToFeedforward(
                 SmartDashboard.getString("ff new gain", "new gain"),
-                SmartDashboard.getNumber("ff new value", 0))));
+                SmartDashboard.getNumber("ff new value", 00))));
     }
 
     public void execute() {
