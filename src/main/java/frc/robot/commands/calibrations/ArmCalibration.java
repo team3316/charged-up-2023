@@ -1,26 +1,29 @@
 package frc.robot.commands.calibrations;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 
 public class ArmCalibration extends CommandBase {
 
-    PS4Controller _controller;
+    CommandPS5Controller _controller;
 
     ArmFeedforward _feedforward;
 
     Subsystem _subsystem;
     TalonFX _leader;
     TalonFXConfiguration _leaderConfig;
+
+    boolean calibrationSequence = true;
 
     // ff gains
     double ks = 0;
@@ -37,12 +40,9 @@ public class ArmCalibration extends CommandBase {
 
     double _currentValue;
 
-    public ArmCalibration(Arm subsystem, PS4Controller controller) {
-        this._subsystem = subsystem;
-        this._leader = subsystem.getLeader();
-        this._controller = controller;
-
-        this._leader.configAllSettings(_leaderConfig);
+    public ArmCalibration(Arm subsystem, CommandPS5Controller controller) {
+        _subsystem = subsystem;
+        _leader = subsystem.getLeader();
     }
 
     public void addToFeedforward(String gain, double value) {
@@ -81,33 +81,33 @@ public class ArmCalibration extends CommandBase {
     }
 
     public void init() {
-        SmartDashboard.putBoolean("is calibration activated", false);
-        SmartDashboard.putNumber("arm voltage calibration", 0);
+        SmartDashboard.putNumber("current arm percent", 0);
 
         SmartDashboard.putString("pid new gain", "new gain");
-        SmartDashboard.putNumber("pid new value", 00);
+        SmartDashboard.putNumber("pid new value", 0);
         SmartDashboard.putData("add to pid", new InstantCommand(() -> addToPID(
                 SmartDashboard.getString("pid new gain", "new gain"),
-                SmartDashboard.getNumber("pid new value", 00))));
+                SmartDashboard.getNumber("pid new value", 0))));
 
         SmartDashboard.putString("ff new gain", "new gain");
-        SmartDashboard.putNumber("ff new value", 00);
+        SmartDashboard.putNumber("ff new value", 0);
         SmartDashboard.putData("add to pid", new InstantCommand(() -> addToFeedforward(
                 SmartDashboard.getString("ff new gain", "new gain"),
-                SmartDashboard.getNumber("ff new value", 00))));
+                SmartDashboard.getNumber("ff new value", 0))));
     }
 
     public void execute() {
-        _currentValue = SmartDashboard.getNumber("arm voltage calibration", 0);
-        _leader.set(TalonFXControlMode.Position, _currentValue);
-        SmartDashboard.putNumber("arm voltage calibration", _currentValue);
+        _currentValue = SmartDashboard.getNumber("current arm percent", 0);
+        _leader.set(ControlMode.PercentOutput, _currentValue);
+        SmartDashboard.putNumber("current arm percent", _currentValue);
     }
 
     public boolean isFinished() {
-        if (_controller.getCircleButtonPressed())
-            return true;
+        return !calibrationSequence;
+    }
 
-        return false;
+    public CommandBase endCalibrationSequence() {
+        return new InstantCommand(() -> calibrationSequence = false);
     }
 
     public void end() {
