@@ -30,7 +30,8 @@ public class AutoRollerGripper extends SubsystemBase {
 
     private TalonSRXConfiguration _talonConfig = new TalonSRXConfiguration();
 
-    private FolderState currentFolderState;
+    private FolderState _currentFolderState;
+    private RollersState _currentRollerState;
 
     public enum FolderState {
         IN(RollerGripperConstants.stateWhenFoldedIn),
@@ -82,14 +83,18 @@ public class AutoRollerGripper extends SubsystemBase {
     public void setFolderState(FolderState state) {
         _doubleSolenoid.set(state.pneumaticState);
 
-        SmartDashboard.putString("Auto Gripper State", currentFolderState.toString());
+        SmartDashboard.putString("Auto Gripper State", _currentFolderState.toString());
 
-        currentFolderState = state;
+        _currentFolderState = state;
     }
 
     public void setRollersState(RollersState state) {
         _talonLeader.set(TalonSRXControlMode.PercentOutput, state.percentOutput);
+        _currentRollerState = state;
+    }
 
+    public RollersState getRollerState() {
+        return _currentRollerState;
     }
 
     public void stop() {
