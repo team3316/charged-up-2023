@@ -9,13 +9,14 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.commands.calibrations.ArmCalibration;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared (subsystems,
@@ -29,6 +30,8 @@ public class RobotContainer {
 
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
+
+    private final ArmCalibration m_armCalibration = new ArmCalibration(m_arm, _driverController);
 
     private boolean _fieldRelative = true;
 
@@ -44,9 +47,12 @@ public class RobotContainer {
         m_drivetrain.setDefaultCommand(
                 new RunCommand(
                         () -> m_drivetrain.drive(
-                                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
+                                _driverController.getLeftY()
+                                        * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                                _driverController.getLeftX()
+                                        * SwerveModuleConstants.freeSpeedMetersPerSecond,
+                                _driverController.getCombinedAxis()
+                                        * DrivetrainConstants.maxRotationSpeedRadPerSec,
                                 _fieldRelative),
                         m_drivetrain));
     }
@@ -56,7 +62,8 @@ public class RobotContainer {
      */
     private void configureBindings() {
         _driverController.options().onTrue(
-                new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative mode
+                new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative
+                                                                             // mode
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
@@ -67,6 +74,9 @@ public class RobotContainer {
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
         _driverController.cross().onTrue(
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
+
+        _driverController.circle().onTrue(
+                m_armCalibration.endCalibrationSequence());
     }
 
     /**
