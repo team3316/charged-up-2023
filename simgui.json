@@ -1,0 +1,23 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo"
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "LiveWindow": {
+        "open": true
+      },
+      "Shuffleboard": {
+        "open": true
+      },
+      "SmartDashboard": {
+        "open": true
+      }
+    }
+  },
+  "NetworkTables View": {
+    "visible": false
+  }
+}

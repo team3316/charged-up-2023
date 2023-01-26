@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.humanIO.PS5Controller;
 import frc.robot.subsystems.Arm;
 
@@ -100,15 +99,12 @@ public class ArmCalibration extends CommandBase {
 
     public void execute() {
         _currentValue = SmartDashboard.getNumber("arm voltage calibration", 0);
-        _leader.set(TalonFXControlMode.Position, _currentValue);
+        _leader.set(TalonFXControlMode.PercentOutput, _currentValue);
         SmartDashboard.putNumber("arm voltage calibration", _currentValue);
     }
 
     public boolean isFinished() {
-        if (_controller.getCrossButtonPressed())
-            return true;
-        else
-            return false;
+        return _controller.getCrossButtonPressed();
     }
 
     public void end() {

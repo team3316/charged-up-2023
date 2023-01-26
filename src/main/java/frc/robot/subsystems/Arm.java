@@ -24,11 +24,6 @@ public class Arm extends SubsystemBase {
     private ArmFeedforward _feedForward;
     private TalonFXConfiguration _leaderConfig = new TalonFXConfiguration();
 
-    double kA;
-    double kS;
-    double kV;
-    double kG;
-
     private ArmState _targetState;
 
     public static enum ArmState {
