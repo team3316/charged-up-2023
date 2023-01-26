@@ -9,6 +9,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -167,13 +168,27 @@ public class Drivetrain extends SubsystemBase {
         return factory.createfollow(transTrajectory);
     }
 
-    public Command getSpinByInputCommand(DoubleSupplier inputX, DoubleSupplier inputY) {
+    public Command getLimeLightAllignCommand(DoubleSupplier inputX, DoubleSupplier inputY) {
+        PIDController xControl = new PIDController(LimelightConstants.xKP, LimelightConstants.xKI,
+                LimelightConstants.xKD);
+        PIDController yControl = new PIDController(LimelightConstants.yKP, LimelightConstants.yKI,
+                LimelightConstants.yKD);
+        PIDController thetaControl = new PIDController(LimelightConstants.thetaKP, LimelightConstants.thetaKI,
+                LimelightConstants.thetaKD);
+
+        xControl.reset();
+        yControl.reset();
+        thetaControl.reset();
+
+        xControl.setSetpoint(0);
+        yControl.setSetpoint(0);
+        thetaControl.setSetpoint(LimelightConstants.installAngle.getDegrees());
+
         return new RunCommand(
-                () -> drive(inputX.getAsDouble() * SmartDashboard.getNumber("xKP", 0), // working value 0.05
-                        inputY.getAsDouble() * SmartDashboard.getNumber("yKP", 0), // working value 0.06
-                        -getPose().getRotation().getDegrees() * SmartDashboard.getNumber("tKP", 0), true), // working
-                                                                                                           // value 0.05
+                () -> drive(xControl.calculate(inputX.getAsDouble()),
+                        yControl.calculate(inputY.getAsDouble()),
+                        thetaControl.calculate(this.getPose().getRotation().getDegrees()), true),
                 this)
-                .until(() -> (Math.abs(inputX.getAsDouble()) < 0.5) && (Math.abs(inputY.getAsDouble()) < 0.5));
+                .until(() -> (xControl.atSetpoint() && yControl.atSetpoint() && thetaControl.atSetpoint()));
     }
 }
