@@ -10,12 +10,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 
 public class ArmCalibration extends CommandBase {
 
-    CommandPS5Controller _controller;
+    PS4Controller _controller;
 
     ArmFeedforward _feedforward;
 
@@ -40,9 +39,12 @@ public class ArmCalibration extends CommandBase {
 
     double _currentValue;
 
-    public ArmCalibration(Arm subsystem, CommandPS5Controller controller) {
-        _subsystem = subsystem;
-        _leader = subsystem.getLeader();
+    public ArmCalibration(Arm subsystem, PS4Controller controller) {
+        this._subsystem = subsystem;
+        this._leader = subsystem.getLeader();
+        this._controller = controller;
+
+        this._leader.configAllSettings(_leaderConfig);
     }
 
     public void addToFeedforward(String gain, double value) {
@@ -97,17 +99,16 @@ public class ArmCalibration extends CommandBase {
     }
 
     public void execute() {
-        _currentValue = SmartDashboard.getNumber("current arm percent", 0);
-        _leader.set(ControlMode.PercentOutput, _currentValue);
-        SmartDashboard.putNumber("current arm percent", _currentValue);
+        _currentValue = SmartDashboard.getNumber("arm voltage calibration", 0);
+        _leader.set(TalonFXControlMode.Position, _currentValue);
+        SmartDashboard.putNumber("arm voltage calibration", _currentValue);
     }
 
     public boolean isFinished() {
-        return !calibrationSequence;
-    }
+        if (_controller.getCircleButtonPressed())
+            return true;
 
-    public CommandBase endCalibrationSequence() {
-        return new InstantCommand(() -> calibrationSequence = false);
+        return false;
     }
 
     public void end() {
