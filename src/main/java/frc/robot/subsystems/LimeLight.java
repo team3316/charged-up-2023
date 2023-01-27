@@ -26,24 +26,18 @@ public class LimeLight extends SubsystemBase {
     }
 
     public boolean hasTarget() {
-        return hasTarget.getDouble(0) == 1;
+        // return hasTarget.getDouble(0) == 1;
+        return true;
     }
 
     public double getXAngle() {
-        if (this.hasTarget()) {
-            lastX = -1 * tx.getDouble(0);
-        }
 
-        return lastX; // negative because LL and pigeon have opposite sensor fazzes
+        return -1 * tx.getDouble(0); // negative because LL and pigeon have opposite sensor fazzes
     }
 
     // height dif between goal and limelight devided by tan of limelight y angle.
     public double getYAngle() {
-        if (this.hasTarget()) {
-            lastY = ty.getDouble(0);
-        }
-
-        return lastY;
+        return ty.getDouble(0);
     }
 
 }
