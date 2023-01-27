@@ -40,7 +40,7 @@ public class Drivetrain extends SubsystemBase {
     private PigeonIMU _pigeon;
 
     private SwerveDriveOdometry _odometry;
-    private DoubleLogEntry m_logX, m_logY, m_logR;
+    private DoubleLogEntry m_logX, m_logY, m_logR, m_logLLx, m_logLLy, m_logLLrot;
 
     public Drivetrain() {
         this._modules = new SwerveModule[] {
@@ -49,6 +49,7 @@ public class Drivetrain extends SubsystemBase {
                 new SwerveModule(DrivetrainConstants.BRModule),
                 new SwerveModule(DrivetrainConstants.BLModule)
         };
+
         _pigeon = new PigeonIMU(DrivetrainConstants.pigeonId); // We need the talon; not anymore
 
         this._odometry = new SwerveDriveOdometry(DrivetrainConstants.kinematics, getRotation2d(),
@@ -169,26 +170,36 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public Command getLimeLightAllignCommand(DoubleSupplier inputX, DoubleSupplier inputY) {
-        PIDController xControl = new PIDController(LimelightConstants.xKP, LimelightConstants.xKI,
+        PIDController xControl = new PIDController(SmartDashboard.getNumber("xKP", 0), LimelightConstants.xKI,
                 LimelightConstants.xKD);
-        PIDController yControl = new PIDController(LimelightConstants.yKP, LimelightConstants.yKI,
+        PIDController yControl = new PIDController(SmartDashboard.getNumber("yKP", 0), LimelightConstants.yKI,
                 LimelightConstants.yKD);
-        PIDController thetaControl = new PIDController(LimelightConstants.thetaKP, LimelightConstants.thetaKI,
+        PIDController thetaControl = new PIDController(SmartDashboard.getNumber("tKP", 0), LimelightConstants.thetaKI,
                 LimelightConstants.thetaKD);
 
         xControl.reset();
         yControl.reset();
         thetaControl.reset();
 
+        xControl.setTolerance(LimelightConstants.xTol);
+        yControl.setTolerance(LimelightConstants.yTol);
+        thetaControl.setSetpoint(LimelightConstants.thetaTol);
+
         xControl.setSetpoint(0);
         yControl.setSetpoint(0);
         thetaControl.setSetpoint(LimelightConstants.installAngle.getDegrees());
 
         return new RunCommand(
-                () -> drive(xControl.calculate(inputX.getAsDouble()),
-                        yControl.calculate(inputY.getAsDouble()),
+                () -> drive(-yControl.calculate(inputY.getAsDouble()),
+                        xControl.calculate(inputX.getAsDouble() + this.getPose().getRotation().getDegrees()
+                                + LimelightConstants.limelightRotations.getDegrees()),
                         thetaControl.calculate(this.getPose().getRotation().getDegrees()), true),
                 this)
-                .until(() -> (xControl.atSetpoint() && yControl.atSetpoint() && thetaControl.atSetpoint()));
+                .until(() -> (xControl.atSetpoint() && yControl.atSetpoint() && thetaControl.atSetpoint()))
+                .andThen(() -> {
+                    xControl.close();
+                    yControl.close();
+                    thetaControl.close();
+                });
     }
 }
