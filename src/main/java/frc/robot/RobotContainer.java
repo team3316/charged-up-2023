@@ -9,13 +9,14 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.commands.calibrations.ArmCalibration;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared (subsystems,
@@ -31,6 +32,8 @@ public class RobotContainer {
             JoysticksConstants.driverPort);
 
     private boolean _fieldRelative = true;
+
+    private final ArmCalibration m_armCalibration = new ArmCalibration(m_arm);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -67,6 +70,11 @@ public class RobotContainer {
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.CUBE_HOLD));
         _driverController.cross().onTrue(
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
+
+        _driverController.circle().onTrue(
+            m_armCalibration.endSequence()
+        );
+
     }
 
     /**

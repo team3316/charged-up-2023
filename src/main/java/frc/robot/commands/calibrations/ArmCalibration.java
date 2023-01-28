@@ -22,6 +22,8 @@ public class ArmCalibration extends CommandBase {
     TalonFX _leader;
     TalonFXConfiguration _leaderConfig;
 
+    public static boolean armClibrationSequenceEnded = false;
+
     // ff gains
     double ks = 0;
     double kv = 0;
@@ -37,10 +39,9 @@ public class ArmCalibration extends CommandBase {
 
     double _currentValue;
 
-    public ArmCalibration(Arm subsystem, PS5Controller controller) {
+    public ArmCalibration(Arm subsystem) {
         this._subsystem = subsystem;
         this._leader = subsystem.getLeader();
-        this._controller = controller;
 
         this._leader.configAllSettings(_leaderConfig);
     }
@@ -81,20 +82,23 @@ public class ArmCalibration extends CommandBase {
     }
 
     public void init() {
-        SmartDashboard.putBoolean("is calibration activated", false);
-        SmartDashboard.putNumber("arm voltage calibration", 0);
+        // SmartDashboard.putBoolean("is calibration activated", false);
+        // SmartDashboard.putNumber("arm voltage calibration", 0);
 
-        SmartDashboard.putString("pid new gain", "new gain");
-        SmartDashboard.putNumber("pid new value", 00);
-        SmartDashboard.putData("add to pid", new InstantCommand(() -> addToPID(
-                SmartDashboard.getString("pid new gain", "new gain"),
-                SmartDashboard.getNumber("pid new value", 00))));
+        // SmartDashboard.putString("pid new gain", "new gain");
+        // SmartDashboard.putNumber("pid new value", 00);
+        // SmartDashboard.putData("add to pid", new InstantCommand(() -> addToPID(
+        // SmartDashboard.getString("pid new gain", "new gain"),
+        // SmartDashboard.getNumber("pid new value", 00))));
 
-        SmartDashboard.putString("ff new gain", "new gain");
-        SmartDashboard.putNumber("ff new value", 00);
-        SmartDashboard.putData("add to pid", new InstantCommand(() -> addToFeedforward(
-                SmartDashboard.getString("ff new gain", "new gain"),
-                SmartDashboard.getNumber("ff new value", 00))));
+        // SmartDashboard.putString("ff new gain", "new gain");
+        // SmartDashboard.putNumber("ff new value", 00);
+        // SmartDashboard.putData("add to pid", new InstantCommand(() ->
+        // addToFeedforward(
+        // SmartDashboard.getString("ff new gain", "new gain"),
+        // SmartDashboard.getNumber("ff new value", 00))));
+
+        SmartDashboard.putString("TEST", "HELLO WORLD");
     }
 
     public void execute() {
@@ -103,8 +107,12 @@ public class ArmCalibration extends CommandBase {
         SmartDashboard.putNumber("arm voltage calibration", _currentValue);
     }
 
-    public boolean isFinished() {
-        return _controller.getCrossButtonPressed();
+    public CommandBase endSequence() {
+        return new InstantCommand(() -> isFinished(true));
+    }
+
+    public boolean isFinished(boolean end) {
+        return end;
     }
 
     public void end() {
