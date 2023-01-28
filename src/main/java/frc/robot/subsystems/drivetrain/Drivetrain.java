@@ -190,10 +190,19 @@ public class Drivetrain extends SubsystemBase {
         thetaControl.setSetpoint(LimelightConstants.installAngle.getDegrees());
 
         return new RunCommand(
-                () -> drive(-yControl.calculate(limelightYAngle.getAsDouble()),
-                        xControl.calculate(limelightXAngle.getAsDouble() + this.getPose().getRotation().getDegrees()
-                                + LimelightConstants.limelightRotations.getDegrees()),
-                        thetaControl.calculate(this.getPose().getRotation().getDegrees()), true),
+                () -> {
+
+                    ChassisSpeeds moveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                            xControl.calculate(limelightXAngle.getAsDouble() + this.getPose().getRotation().getDegrees()
+                                    + LimelightConstants.limelightRotationsOffset.getDegrees()),
+                            yControl.calculate(limelightYAngle.getAsDouble()),
+                            thetaControl.calculate(this.getPose().getRotation().getDegrees()),
+                            new Rotation2d().minus(LimelightConstants.limelightRotationsOffset));
+
+                    drive(moveSpeeds.vxMetersPerSecond,
+                            moveSpeeds.vyMetersPerSecond,
+                            moveSpeeds.omegaRadiansPerSecond, true);
+                },
                 this)
                 .until(() -> (xControl.atSetpoint() && yControl.atSetpoint() && thetaControl.atSetpoint()))
                 .andThen(() -> {

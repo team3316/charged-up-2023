@@ -23,7 +23,7 @@ public class LimelightConstants {
     public static final double thetaKD = 0.0;
     public static final double thetaTol = 1;
 
-    public static final Rotation2d limelightRotations = new Rotation2d(-Math.PI * 0.5);
+    public static final Rotation2d limelightRotationsOffset = new Rotation2d(Math.PI * 0.5);
 
     public static final Rotation2d installAngle = Rotation2d.fromDegrees(-90);
 
