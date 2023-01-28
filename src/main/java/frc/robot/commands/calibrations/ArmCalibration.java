@@ -99,7 +99,7 @@ public class ArmCalibration extends CommandBase {
 
     public void execute() {
         _currentValue = SmartDashboard.getNumber("arm voltage calibration", 0);
-        _leader.set(TalonFXControlMode.PercentOutput, _currentValue);
+        Arm.setLeaderPercentOutput(_currentValue);
         SmartDashboard.putNumber("arm voltage calibration", _currentValue);
     }
 
