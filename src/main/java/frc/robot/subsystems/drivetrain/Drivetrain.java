@@ -201,7 +201,8 @@ public class Drivetrain extends SubsystemBase {
 
                     drive(moveSpeeds.vxMetersPerSecond,
                             moveSpeeds.vyMetersPerSecond,
-                            moveSpeeds.omegaRadiansPerSecond, true);
+                            moveSpeeds.omegaRadiansPerSecond, true); // if fieldRelative false, then rotate chasis
+                                                                     // speeds by 2 LLC.LLRotationOffset
                 },
                 this)
                 .until(() -> (xControl.atSetpoint() && yControl.atSetpoint() && thetaControl.atSetpoint()))
