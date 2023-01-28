@@ -95,9 +95,4 @@ public class DrivetrainConstants {
 
     public static final int pigeonId = 9;
 
-    //spin to angle constants
-    public static final double maxAngularVelocityRadsPerSec = 3.5;
-    public static final double maxAngularaccRadsPerSecSquared = 6;
-    public static final double spinKp = 0.1; //TODO calibrate
-    
 }

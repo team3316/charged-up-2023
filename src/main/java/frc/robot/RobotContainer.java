@@ -91,7 +91,7 @@ public class RobotContainer {
 
         _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
         _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
-        // _driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
+        _driverController.R3().whileTrue(m_autoRollerGripper.getIntakeCommand());
         _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
 
         _driverController.triangle().onTrue(

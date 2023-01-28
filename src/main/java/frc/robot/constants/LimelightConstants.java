@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * LimelightConstants
  */
 public class LimelightConstants {
+    public static final double AlignLimeLightToPigeonPhase = -1;
+
     public static final double xKP = 0.05;
     public static final double xKI = 0.0;
     public static final double xKD = 0.0;

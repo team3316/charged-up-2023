@@ -40,7 +40,7 @@ public class Drivetrain extends SubsystemBase {
     private PigeonIMU _pigeon;
 
     private SwerveDriveOdometry _odometry;
-    private DoubleLogEntry m_logX, m_logY, m_logR, m_logLLx, m_logLLy, m_logLLrot;
+    private DoubleLogEntry m_logX, m_logY, m_logR;
 
     public Drivetrain() {
         this._modules = new SwerveModule[] {
@@ -169,7 +169,7 @@ public class Drivetrain extends SubsystemBase {
         return factory.createfollow(transTrajectory);
     }
 
-    public Command getLimeLightAllignCommand(DoubleSupplier inputX, DoubleSupplier inputY) {
+    public Command getLimeLightAllignCommand(DoubleSupplier limelightXAngle, DoubleSupplier limelightYAngle) {
         PIDController xControl = new PIDController(SmartDashboard.getNumber("xKP", 0), LimelightConstants.xKI,
                 LimelightConstants.xKD);
         PIDController yControl = new PIDController(SmartDashboard.getNumber("yKP", 0), LimelightConstants.yKI,
@@ -183,15 +183,15 @@ public class Drivetrain extends SubsystemBase {
 
         xControl.setTolerance(LimelightConstants.xTol);
         yControl.setTolerance(LimelightConstants.yTol);
-        thetaControl.setSetpoint(LimelightConstants.thetaTol);
+        thetaControl.setTolerance(LimelightConstants.thetaTol);
 
         xControl.setSetpoint(0);
         yControl.setSetpoint(0);
         thetaControl.setSetpoint(LimelightConstants.installAngle.getDegrees());
 
         return new RunCommand(
-                () -> drive(-yControl.calculate(inputY.getAsDouble()),
-                        xControl.calculate(inputX.getAsDouble() + this.getPose().getRotation().getDegrees()
+                () -> drive(-yControl.calculate(limelightYAngle.getAsDouble()),
+                        xControl.calculate(limelightXAngle.getAsDouble() + this.getPose().getRotation().getDegrees()
                                 + LimelightConstants.limelightRotations.getDegrees()),
                         thetaControl.calculate(this.getPose().getRotation().getDegrees()), true),
                 this)
