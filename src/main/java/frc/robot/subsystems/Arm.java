@@ -57,7 +57,7 @@ public class Arm extends SubsystemBase {
 
     public Arm() {
         _leader = new TalonFX(ArmConstants.leaderCANID);
-        _follower = new TalonFX(ArmConstants.followerCANID); 
+        _follower = new TalonFX(ArmConstants.followerCANID);
 
         _feedForward = new ArmFeedforward(ArmConstants.staticGain,
                 ArmConstants.gravityGain,
@@ -80,6 +80,9 @@ public class Arm extends SubsystemBase {
 
         _leader.setSelectedSensorPosition(angleToTicks(getInitialState().stateAngle));
         _targetState = getInitialState();
+
+        SmartDashboard.putData("update calibrationSDB", new InstantCommand(() -> updateCalibrationSDB()));
+        updateCalibrationSDB();
     }
 
     public TalonFX getLeader() {
@@ -102,10 +105,6 @@ public class Arm extends SubsystemBase {
 
     public double getAngle() {
         return _leader.getSelectedSensorPosition();
-    }
-
-    public static void setLeaderPercentOutput(double percent) {
-        _leader.set(ControlMode.PercentOutput, percent);
     }
 
     private static double angleToTicks(double angle) {
@@ -142,7 +141,6 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putString("Target arm state", getTargetState().toString());
         SmartDashboard.putNumber("Current arm velocity", getVelocity());
 
-        SmartDashboard.putData("update calibrationSDB", new InstantCommand(() -> updateCalibrationSDB()));
     }
 
     public void AC_addToPID(String gain, double value) {
@@ -183,23 +181,22 @@ public class Arm extends SubsystemBase {
     private void updateCalibrationSDB() {
         SmartDashboard.putNumber("arm percentOutput calibration", 0);
 
-        // SmartDashboard.putString("pid new gain", "new gain");
-        // SmartDashboard.putNumber("pid new value", 0);
-        // SmartDashboard.putData("add to pid", new InstantCommand(() -> AC_addToPID(
-        // SmartDashboard.getString("pid new gain", "new gain"),
-        // SmartDashboard.getNumber("pid new value", 0))));
+        SmartDashboard.putString("pid new gain", "new gain");
+        SmartDashboard.putNumber("pid new value", 0);
+        SmartDashboard.putData("add to pid", new InstantCommand(() -> AC_addToPID(
+                SmartDashboard.getString("pid new gain", "new gain"),
+                SmartDashboard.getNumber("pid new value", 0))));
 
-        // SmartDashboard.putString("ff new gain", "new gain");
-        // SmartDashboard.putNumber("ff new value", 0);
-        // SmartDashboard.putData("add to pid", new InstantCommand(() ->
-        // AC_addToFeedforward(
-        // SmartDashboard.getString("ff new gain", "new gain"),
-        // SmartDashboard.getNumber("ff new value", 0))));
+        SmartDashboard.putString("ff new gain", "new gain");
+        SmartDashboard.putNumber("ff new value", 0);
+        SmartDashboard.putData("add to ff", new InstantCommand(() -> AC_addToFeedforward(
+                SmartDashboard.getString("ff new gain", "new gain"),
+                SmartDashboard.getNumber("ff new value", 0))));
     }
 
     private void AC_setLeaderPercentOutput() {
         AC_currentValue = SmartDashboard.getNumber("arm percentOutput calibration", 0);
-        Arm.setLeaderPercentOutput(AC_currentValue);
+        _leader.set(ControlMode.PercentOutput, AC_currentValue); // can be used with useState for checking FF
         SmartDashboard.putNumber("arm percentOutput calibration", AC_currentValue);
     }
 
