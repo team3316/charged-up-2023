@@ -41,9 +41,7 @@ public class ArmCalibration extends CommandBase {
 
     public ArmCalibration(Arm subsystem) {
         this._subsystem = subsystem;
-        this._leader = subsystem.getLeader();
-
-        this._leader.configAllSettings(_leaderConfig);
+        addRequirements(this._subsystem);
     }
 
     public void addToFeedforward(String gain, double value) {
@@ -82,21 +80,20 @@ public class ArmCalibration extends CommandBase {
     }
 
     public void init() {
-        // SmartDashboard.putBoolean("is calibration activated", false);
-        // SmartDashboard.putNumber("arm voltage calibration", 0);
+        SmartDashboard.putBoolean("is calibration activated", false);
+        SmartDashboard.putNumber("arm voltage calibration", 0);
 
-        // SmartDashboard.putString("pid new gain", "new gain");
-        // SmartDashboard.putNumber("pid new value", 00);
-        // SmartDashboard.putData("add to pid", new InstantCommand(() -> addToPID(
-        // SmartDashboard.getString("pid new gain", "new gain"),
-        // SmartDashboard.getNumber("pid new value", 00))));
+        SmartDashboard.putString("pid new gain", "new gain");
+        SmartDashboard.putNumber("pid new value", 0);
+        SmartDashboard.putData("add to pid", new InstantCommand(() -> addToPID(
+                SmartDashboard.getString("pid new gain", "new gain"),
+                SmartDashboard.getNumber("pid new value", 0))));
 
-        // SmartDashboard.putString("ff new gain", "new gain");
-        // SmartDashboard.putNumber("ff new value", 00);
-        // SmartDashboard.putData("add to pid", new InstantCommand(() ->
-        // addToFeedforward(
-        // SmartDashboard.getString("ff new gain", "new gain"),
-        // SmartDashboard.getNumber("ff new value", 00))));
+        SmartDashboard.putString("ff new gain", "new gain");
+        SmartDashboard.putNumber("ff new value", 0);
+        SmartDashboard.putData("add to pid", new InstantCommand(() -> addToFeedforward(
+                SmartDashboard.getString("ff new gain", "new gain"),
+                SmartDashboard.getNumber("ff new value", 0))));
 
         SmartDashboard.putString("TEST", "HELLO WORLD");
     }
@@ -105,6 +102,7 @@ public class ArmCalibration extends CommandBase {
         _currentValue = SmartDashboard.getNumber("arm voltage calibration", 0);
         Arm.setLeaderPercentOutput(_currentValue);
         SmartDashboard.putNumber("arm voltage calibration", _currentValue);
+        System.out.println("ARM CALIBRATION IS EXECUTED!");
     }
 
     public CommandBase endSequence() {

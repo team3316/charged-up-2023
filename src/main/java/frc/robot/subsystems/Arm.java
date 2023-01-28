@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import frc.robot.commands.calibrations.ArmCalibration;
 import frc.robot.constants.ArmConstants;
 
 public class Arm extends SubsystemBase {
@@ -126,7 +127,6 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Current arm angle", getAngle());
         SmartDashboard.putString("Target arm state", getTargetState().toString());
         SmartDashboard.putNumber("Current arm velocity", getVelocity());
-
     }
 
     @Override
@@ -134,6 +134,7 @@ public class Arm extends SubsystemBase {
         if (_leader.isFwdLimitSwitchClosed() == 1) {
             _leader.setSelectedSensorPosition(angleToTicks(ArmConstants.collectAngle));
         }
+        
         updateSDB();
     }
 
