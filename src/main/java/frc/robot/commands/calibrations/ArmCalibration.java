@@ -1,119 +1,69 @@
-package frc.robot.commands.calibrations;
+// package frc.robot.commands.calibrations;
 
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+// import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+// import com.ctre.phoenix.motorcontrol.can.TalonFX;
+// import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.humanIO.PS5Controller;
-import frc.robot.subsystems.Arm;
+// import edu.wpi.first.math.controller.ArmFeedforward;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj2.command.CommandBase;
+// import edu.wpi.first.wpilibj2.command.InstantCommand;
+// import edu.wpi.first.wpilibj2.command.Subsystem;
+// import frc.robot.humanIO.PS5Controller;
+// import frc.robot.subsystems.Arm;
 
-public class ArmCalibration extends CommandBase {
+// public class ArmCalibration extends CommandBase {
 
-    PS5Controller _controller;
+//     PS5Controller _controller;
 
-    ArmFeedforward _feedforward;
+//     ArmFeedforward _feedforward;
 
-    Subsystem _subsystem;
-    TalonFX _leader;
-    TalonFXConfiguration _leaderConfig;
+//     Subsystem _subsystem;
+//     TalonFX _leader;
+//     TalonFXConfiguration _leaderConfig;
 
-    public static boolean armClibrationSequenceEnded = false;
+//     public static boolean armClibrationSequenceEnded = false;
 
-    // ff gains
-    double ks = 0;
-    double kv = 0;
-    double kg = 0;
-    double ka = 0;
+//     // ff gains
+//     double ks = 0;
+//     double kv = 0;
+//     double kg = 0;
+//     double ka = 0;
 
-    // pid gains
-    double kp = 0;
-    double ki = 0;
-    double kd = 0;
+//     // pid gains
+//     double kp = 0;
+//     double ki = 0;
+//     double kd = 0;
 
-    boolean isEnded = false;
+//     boolean isEnded = false;
 
-    double _currentValue;
+//     double _currentValue;
 
-    public ArmCalibration(Arm subsystem) {
-        this._subsystem = subsystem;
-        addRequirements(this._subsystem);
-    }
+//     public ArmCalibration(Arm subsystem) {
+//         this._subsystem = subsystem;
+//         addRequirements(this._subsystem);
+//     }
 
-    public void addToFeedforward(String gain, double value) {
-        gain.toLowerCase();
-        switch (gain) {
-            case "ks":
-                ks = value;
-                break;
-            case "kv":
-                kv = value;
-                break;
-            case "kg":
-                kg = value;
-                break;
-            case "ka":
-                ka = value;
-                break;
+    
 
-        }
-        _feedforward = new ArmFeedforward(ks, kv, kg, ka);
-    }
+    
 
-    public void addToPID(String gain, double value) {
-        gain.toLowerCase();
-        switch (gain) {
-            case "kp":
-                _leaderConfig.slot0.kP = value;
-                break;
-            case "ki":
-                _leaderConfig.slot1.kI = value;
-                break;
-            case "kd":
-                _leaderConfig.slot2.kD = value;
-                break;
-        }
-    }
+//     public void init() {
+        
+//     }
 
-    public void init() {
-        SmartDashboard.putBoolean("is calibration activated", false);
-        SmartDashboard.putNumber("arm voltage calibration", 0);
+//     public void execute() {
+//     }
 
-        SmartDashboard.putString("pid new gain", "new gain");
-        SmartDashboard.putNumber("pid new value", 0);
-        SmartDashboard.putData("add to pid", new InstantCommand(() -> addToPID(
-                SmartDashboard.getString("pid new gain", "new gain"),
-                SmartDashboard.getNumber("pid new value", 0))));
+//     public CommandBase endSequence() {
+//         return new InstantCommand(() -> isFinished(true));
+//     }
 
-        SmartDashboard.putString("ff new gain", "new gain");
-        SmartDashboard.putNumber("ff new value", 0);
-        SmartDashboard.putData("add to pid", new InstantCommand(() -> addToFeedforward(
-                SmartDashboard.getString("ff new gain", "new gain"),
-                SmartDashboard.getNumber("ff new value", 0))));
+//     public boolean isFinished(boolean end) {
+//         return end;
+//     }
 
-        SmartDashboard.putString("TEST", "HELLO WORLD");
-    }
-
-    public void execute() {
-        _currentValue = SmartDashboard.getNumber("arm voltage calibration", 0);
-        Arm.setLeaderPercentOutput(_currentValue);
-        SmartDashboard.putNumber("arm voltage calibration", _currentValue);
-        System.out.println("ARM CALIBRATION IS EXECUTED!");
-    }
-
-    public CommandBase endSequence() {
-        return new InstantCommand(() -> isFinished(true));
-    }
-
-    public boolean isFinished(boolean end) {
-        return end;
-    }
-
-    public void end() {
-        _leader.set(TalonFXControlMode.PercentOutput, 0);
-    }
-}
+//     public void end() {
+//         _leader.set(TalonFXControlMode.PercentOutput, 0);
+//     }
+// }

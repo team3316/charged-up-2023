@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.commands.calibrations.ArmCalibration;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
@@ -32,8 +31,6 @@ public class RobotContainer {
                         JoysticksConstants.driverPort);
 
         private boolean _fieldRelative = true;
-
-        private final ArmCalibration m_armCalibration = new ArmCalibration(m_arm);
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -75,9 +72,6 @@ public class RobotContainer {
                 _driverController.cross().onTrue(
                                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
 
-                _driverController.circle().onTrue(
-                                m_armCalibration.endSequence());
-
         }
 
         /**
@@ -89,7 +83,4 @@ public class RobotContainer {
                 return new InstantCommand();
         }
 
-        public Command getArmCalibrationCommand() {
-                return new ArmCalibration(m_arm);
-        }
 }

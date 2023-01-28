@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
-import frc.robot.commands.calibrations.ArmCalibration;
 import frc.robot.constants.ArmConstants;
 
 public class Arm extends SubsystemBase {
@@ -26,6 +25,21 @@ public class Arm extends SubsystemBase {
     private TalonFXConfiguration _leaderConfig = new TalonFXConfiguration();
 
     private ArmState _targetState;
+
+    // armCalibration
+    double ACks = 0;
+    double ACkv = 0;
+    double ACkg = 0;
+    double ACka = 0;
+
+    private ArmFeedforward AC_feedforward;
+
+    private double AC_currentValue;
+
+    String pidNewGain;
+    double pidNewValue;
+    String ffNewGain;
+    double ffNewValue;
 
     public static enum ArmState {
         COLLECT(ArmConstants.collectAngle),
@@ -43,7 +57,7 @@ public class Arm extends SubsystemBase {
 
     public Arm() {
         _leader = new TalonFX(ArmConstants.leaderCANID);
-        _follower = new TalonFX(ArmConstants.followerCANID);
+        _follower = new TalonFX(ArmConstants.followerCANID); 
 
         _feedForward = new ArmFeedforward(ArmConstants.staticGain,
                 ArmConstants.gravityGain,
@@ -127,6 +141,66 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Current arm angle", getAngle());
         SmartDashboard.putString("Target arm state", getTargetState().toString());
         SmartDashboard.putNumber("Current arm velocity", getVelocity());
+
+        SmartDashboard.putData("update calibrationSDB", new InstantCommand(() -> updateCalibrationSDB()));
+    }
+
+    public void AC_addToPID(String gain, double value) {
+        gain.toLowerCase();
+        switch (gain) {
+            case "kp":
+                _leaderConfig.slot0.kP = value;
+                break;
+            case "ki":
+                _leaderConfig.slot1.kI = value;
+                break;
+            case "kd":
+                _leaderConfig.slot2.kD = value;
+                break;
+        }
+    }
+
+    public void AC_addToFeedforward(String gain, double value) {
+        gain.toLowerCase();
+        switch (gain) {
+            case "ks":
+                ACks = value;
+                break;
+            case "kv":
+                ACkv = value;
+                break;
+            case "kg":
+                ACkg = value;
+                break;
+            case "ka":
+                ACka = value;
+                break;
+
+        }
+        AC_feedforward = new ArmFeedforward(ACks, ACkv, ACkg, ACka);
+    }
+
+    private void updateCalibrationSDB() {
+        SmartDashboard.putNumber("arm percentOutput calibration", 0);
+
+        // SmartDashboard.putString("pid new gain", "new gain");
+        // SmartDashboard.putNumber("pid new value", 0);
+        // SmartDashboard.putData("add to pid", new InstantCommand(() -> AC_addToPID(
+        // SmartDashboard.getString("pid new gain", "new gain"),
+        // SmartDashboard.getNumber("pid new value", 0))));
+
+        // SmartDashboard.putString("ff new gain", "new gain");
+        // SmartDashboard.putNumber("ff new value", 0);
+        // SmartDashboard.putData("add to pid", new InstantCommand(() ->
+        // AC_addToFeedforward(
+        // SmartDashboard.getString("ff new gain", "new gain"),
+        // SmartDashboard.getNumber("ff new value", 0))));
+    }
+
+    private void AC_setLeaderPercentOutput() {
+        AC_currentValue = SmartDashboard.getNumber("arm percentOutput calibration", 0);
+        Arm.setLeaderPercentOutput(AC_currentValue);
+        SmartDashboard.putNumber("arm percentOutput calibration", AC_currentValue);
     }
 
     @Override
@@ -134,7 +208,8 @@ public class Arm extends SubsystemBase {
         if (_leader.isFwdLimitSwitchClosed() == 1) {
             _leader.setSelectedSensorPosition(angleToTicks(ArmConstants.collectAngle));
         }
-        
+
+        AC_setLeaderPercentOutput();
         updateSDB();
     }
 
