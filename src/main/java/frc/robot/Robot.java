@@ -4,24 +4,60 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.humanIO.ShuffleboardTabs;
 
 public class Robot extends TimedRobot {
+
+    private static HashMap<String, Boolean> _debugBoolean = new HashMap<String, Boolean>();
+    private static HashMap<String, Double> _debugDouble = new HashMap<String, Double>();
+    private static HashMap<String, String> _debugString = new HashMap<String, String>();
+
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
 
     private boolean _debug = false;
+    private boolean _debugCalled = false;
 
     private GenericEntry debugWidget = ShuffleboardTabs.CONFIG.tab.add("debug", _debug)
             .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
 
     private static double LOGGING_PERIOD_SECONDS = 0.2;
+
+    /**
+     * Adds the element to SmartDashboard when debug switch is enabled
+     * 
+     * @param id:    SmartDashboard's key
+     * @param value: SmartDashboard's value
+     */
+    public static void insertBooleanToDebug(String id, boolean value) {
+        _debugBoolean.put(id, value);
+    }
+
+    public static void insertStringToDebug(String id, String value) {
+        _debugString.put(id, value);
+    }
+
+    public static void insertNumberToDebug(String id, double value) {
+        _debugDouble.put(id, value);
+    }
+
+    private void checkToDebug() {
+        if (!_debug && _debugCalled)
+            return;
+        _debugBoolean.forEach((String id, Boolean value) -> SmartDashboard.putBoolean(id, value));
+        _debugDouble.forEach((String id, Double value) -> SmartDashboard.putNumber(id, value));
+        _debugString.forEach((String id, String value) -> SmartDashboard.putString(id, value));
+        _debugCalled = true;
+    }
 
     @Override
     public void robotInit() {
@@ -37,6 +73,9 @@ public class Robot extends TimedRobot {
         _debug = debugWidget.getBoolean(_debug);
 
         CommandScheduler.getInstance().run();
+        checkToDebug();
+
+        _debugCalled = (!_debug) ? false : _debugCalled;
     }
 
     @Override
