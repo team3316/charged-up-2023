@@ -25,7 +25,6 @@ public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
 
     private boolean _debug = false;
-    private boolean _debugCalled = false;
 
     private GenericEntry debugWidget = ShuffleboardTabs.CONFIG.tab.add("debug", _debug)
             .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
@@ -51,12 +50,11 @@ public class Robot extends TimedRobot {
     }
 
     private void checkToDebug() {
-        if (!_debug && _debugCalled)
+        if (!_debug)
             return;
         _debugBoolean.forEach((String id, Boolean value) -> SmartDashboard.putBoolean(id, value));
         _debugDouble.forEach((String id, Double value) -> SmartDashboard.putNumber(id, value));
         _debugString.forEach((String id, String value) -> SmartDashboard.putString(id, value));
-        _debugCalled = true;
     }
 
     @Override
@@ -75,7 +73,6 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         checkToDebug();
 
-        _debugCalled = (!_debug) ? false : _debugCalled;
     }
 
     @Override
