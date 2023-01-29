@@ -72,22 +72,9 @@ public class RobotContainer {
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
-        _driverController.povUp().onTrue(
-                m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
-        _driverController.povDown().onTrue(
-                m_Funnel.setFunnelStateCommand(FunnelState.CLOSED));
-        _driverController.povLeft().onTrue(
-                m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
 
-        _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
-        _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
-        _driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
-        _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
-
-        _driverController.triangle().onTrue(
-                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.HOLD));
         _driverController.cross().onTrue(
-                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
+                new InstantCommand(() -> m_drivetrain.setModulesAngle(SmartDashboard.getNumber("module angles", 0))));
     }
 
     private void addToChooser(String pathName) {
