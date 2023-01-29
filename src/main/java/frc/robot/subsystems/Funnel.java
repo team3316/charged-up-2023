@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -14,12 +16,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.FunnelConstants;
-import frc.robot.motors.DBugSparkMax;
-import frc.robot.motors.PIDFGains;
 
 public class Funnel extends SubsystemBase {
 
-  private CANSparkMax _rollers;
+  private TalonSRX _rollers;
   private FunnelState _currentState;
   private DoubleSolenoid _funnelSolenoid;
 
@@ -42,7 +42,7 @@ public class Funnel extends SubsystemBase {
         FunnelConstants.solenoidReversePort);
 
     // We only use this SparkMax with Percent Output. So no need for all params
-    this._rollers = DBugSparkMax.create(FunnelConstants.sparkMaxPort, new PIDFGains(0), 1, 1, 0);
+    this._rollers = new TalonSRX(FunnelConstants.TalonSRXPort);
   }
 
   public FunnelState getFunnelState() {
@@ -54,8 +54,7 @@ public class Funnel extends SubsystemBase {
       return;
     }
 
-    _funnelSolenoid.set(state.solenoidState);
-    _rollers.set(state.rollerPercent);
+    _rollers.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
 
     _currentState = state;
 
