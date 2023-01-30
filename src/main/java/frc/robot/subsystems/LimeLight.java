@@ -15,6 +15,7 @@ public class LimeLight extends SubsystemBase {
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
     private NetworkTableEntry hasTarget;
+    private NetworkTableEntry pipeLine;
 
     /** Creates a new LimeLight. */
     public LimeLight() { // CR: add a way to send the config to the limelight trough code
@@ -22,6 +23,7 @@ public class LimeLight extends SubsystemBase {
         tx = limeLightTable.getEntry("tx");
         ty = limeLightTable.getEntry("ty");
         hasTarget = limeLightTable.getEntry("tv");
+        pipeLine = limeLightTable.getEntry("pipeline");
     }
 
     public boolean hasTarget() {
@@ -41,7 +43,7 @@ public class LimeLight extends SubsystemBase {
         return this.getXAngle();
     }
 
-    public double getApolloXAngle() {
-        return -1 * this.getYAngle();
+    public void setPipeLine(double id) {
+        pipeLine.setNumber(id);
     }
 }
