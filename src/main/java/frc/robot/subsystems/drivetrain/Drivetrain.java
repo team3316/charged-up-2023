@@ -1,7 +1,5 @@
 package frc.robot.subsystems.drivetrain;
 
-import java.util.function.DoubleSupplier;
-
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import com.pathplanner.lib.PathConstraints;
@@ -23,7 +21,6 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.AutonomousConstants;
@@ -42,6 +39,11 @@ public class Drivetrain extends SubsystemBase {
     private SwerveDriveOdometry _odometry;
     private DoubleLogEntry m_logX, m_logY, m_logR;
 
+    private static PIDController vision_xController;
+    private static PIDController vision_yController;
+    private static PIDController vision_thetaController;
+    private static PIDController spin_Controller;
+
     public Drivetrain() {
         this._modules = new SwerveModule[] {
                 new SwerveModule(DrivetrainConstants.TRModule),
@@ -59,6 +61,24 @@ public class Drivetrain extends SubsystemBase {
         m_logX = new DoubleLogEntry(log, "/drivetrain/position/x");
         m_logY = new DoubleLogEntry(log, "/drivetrain/position/y");
         m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
+
+        vision_xController = new PIDController(
+                LimelightConstants.xKP,
+                LimelightConstants.xKI,
+                LimelightConstants.xKD);
+        vision_yController = new PIDController(
+                LimelightConstants.yKP,
+                LimelightConstants.yKI,
+                LimelightConstants.yKD);
+        vision_thetaController = new PIDController(
+                LimelightConstants.thetaKP,
+                LimelightConstants.thetaKI,
+                LimelightConstants.thetaKD);
+
+        spin_Controller = new PIDController(DrivetrainConstants.spinKP, DrivetrainConstants.spinKI,
+                DrivetrainConstants.spinKD);
+
+        restartControllers();
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -169,47 +189,44 @@ public class Drivetrain extends SubsystemBase {
         return factory.createfollow(transTrajectory);
     }
 
-    public Command getLimeLightAllignCommand(DoubleSupplier limelightXAngle, DoubleSupplier limelightYAngle) {
-        PIDController xControl = new PIDController(SmartDashboard.getNumber("xKP", 0), LimelightConstants.xKI,
-                LimelightConstants.xKD);
-        PIDController yControl = new PIDController(SmartDashboard.getNumber("yKP", 0), LimelightConstants.yKI,
-                LimelightConstants.yKD);
-        PIDController thetaControl = new PIDController(SmartDashboard.getNumber("tKP", 0), LimelightConstants.thetaKI,
-                LimelightConstants.thetaKD);
+    public void restartControllers() {
+        vision_xController.reset();
+        vision_yController.reset();
+        vision_thetaController.reset();
+        spin_Controller.reset();
 
-        xControl.reset();
-        yControl.reset();
-        thetaControl.reset();
+        vision_xController.setTolerance(LimelightConstants.xTol);
+        vision_yController.setTolerance(LimelightConstants.yTol);
+        vision_thetaController.setTolerance(LimelightConstants.thetaTol);
+        spin_Controller.setTolerance(DrivetrainConstants.spinTol);
 
-        xControl.setTolerance(LimelightConstants.xTol);
-        yControl.setTolerance(LimelightConstants.yTol);
-        thetaControl.setTolerance(LimelightConstants.thetaTol);
+        vision_xController.setSetpoint(0);
+        vision_yController.setSetpoint(0);
+        vision_thetaController.setSetpoint(LimelightConstants.installAngle.getDegrees());
+        spin_Controller.setSetpoint(LimelightConstants.installAngle.getDegrees());
+    }
 
-        xControl.setSetpoint(0);
-        yControl.setSetpoint(0);
-        thetaControl.setSetpoint(LimelightConstants.installAngle.getDegrees());
+    public void driveByVisionControllers(double Xangle, double Yangle) {
+        if (!this.atInstallAngle()) {
+            this.spinToInstallAngle();
+            return;
+        }
+        this.drive(vision_xController.calculate(Xangle),
+                vision_yController.calculate(Yangle),
+                vision_thetaController.calculate(this.getPose().getRotation().getDegrees()),
+                true);
+    }
 
-        return new RunCommand(
-                () -> {
+    public boolean controllersAtSetpoint() {
+        return vision_xController.atSetpoint() && vision_yController.atSetpoint()
+                && vision_thetaController.atSetpoint();
+    }
 
-                    ChassisSpeeds moveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                            xControl.calculate(limelightXAngle.getAsDouble() + this.getPose().getRotation().getDegrees()
-                                    + LimelightConstants.limelightRotationsOffset.getDegrees()),
-                            yControl.calculate(limelightYAngle.getAsDouble()),
-                            thetaControl.calculate(this.getPose().getRotation().getDegrees()),
-                            new Rotation2d().minus(LimelightConstants.limelightRotationsOffset));
+    public boolean atInstallAngle() {
+        return spin_Controller.atSetpoint();
+    }
 
-                    drive(moveSpeeds.vxMetersPerSecond,
-                            moveSpeeds.vyMetersPerSecond,
-                            moveSpeeds.omegaRadiansPerSecond, true); // if fieldRelative false, then rotate chasis
-                                                                     // speeds by 2 LLC.LLRotationOffset
-                },
-                this)
-                .until(() -> (xControl.atSetpoint() && yControl.atSetpoint() && thetaControl.atSetpoint()))
-                .andThen(() -> {
-                    xControl.close();
-                    yControl.close();
-                    thetaControl.close();
-                });
+    public void spinToInstallAngle() {
+        this.drive(0, 0, spin_Controller.calculate(getPose().getRotation().getDegrees()), false);
     }
 }
