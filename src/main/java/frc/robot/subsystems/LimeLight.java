@@ -37,4 +37,11 @@ public class LimeLight extends SubsystemBase {
         return ty.getDouble(0);
     }
 
+    public double getApolloYAngle() {
+        return this.getXAngle();
+    }
+
+    public double getApolloXAngle() {
+        return -1 * this.getYAngle();
+    }
 }
