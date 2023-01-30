@@ -20,11 +20,16 @@ public class Robot extends TimedRobot {
     private static HashMap<String, Double> _debugDouble = new HashMap<String, Double>();
     private static HashMap<String, String> _debugString = new HashMap<String, String>();
 
+    private static HashMap<String, Boolean> _debugBooleanSingle = new HashMap<String, Boolean>();
+    private static HashMap<String, Double> _debugDoubleSingle = new HashMap<String, Double>();
+    private static HashMap<String, String> _debugStringSingle = new HashMap<String, String>();
+
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
 
     private boolean _debug = false;
+    private boolean _debugCalled = false;
 
     private GenericEntry debugWidget = ShuffleboardTabs.CONFIG.tab.add("debug", _debug)
             .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
@@ -37,21 +42,33 @@ public class Robot extends TimedRobot {
      * @param id:    SmartDashboard's key
      * @param value: SmartDashboard's value
      */
-    public static void insertBooleanToDebug(String id, boolean value) {
+    public static void insertBooleanToDebug(String id, boolean value, boolean singleCall) {
+        if (singleCall)
+            _debugBooleanSingle.put(id, value);
         _debugBoolean.put(id, value);
     }
 
-    public static void insertStringToDebug(String id, String value) {
+    public static void insertStringToDebug(String id, String value, boolean singleCall) {
+        if (singleCall)
+            _debugStringSingle.put(id, value);
         _debugString.put(id, value);
     }
 
-    public static void insertNumberToDebug(String id, double value) {
+    public static void insertNumberToDebug(String id, double value, boolean singleCall) {
+        if (singleCall)
+            _debugDoubleSingle.put(id, value);
         _debugDouble.put(id, value);
     }
 
-    private void checkToDebug() {
+    private void checkDebugPeriodic() {
         if (!_debug)
             return;
+        if (!_debugCalled) {
+            _debugBooleanSingle.forEach((String id, Boolean value) -> SmartDashboard.putBoolean(id, value));
+            _debugStringSingle.forEach((String id, String value) -> SmartDashboard.putString(id, value));
+            _debugDoubleSingle.forEach((String id, Double value) -> SmartDashboard.putNumber(id, value));
+            _debugCalled = true;
+        }
         _debugBoolean.forEach((String id, Boolean value) -> SmartDashboard.putBoolean(id, value));
         _debugDouble.forEach((String id, Double value) -> SmartDashboard.putNumber(id, value));
         _debugString.forEach((String id, String value) -> SmartDashboard.putString(id, value));
@@ -71,8 +88,7 @@ public class Robot extends TimedRobot {
         _debug = debugWidget.getBoolean(_debug);
 
         CommandScheduler.getInstance().run();
-        checkToDebug();
-
+        checkDebugPeriodic();
     }
 
     @Override
