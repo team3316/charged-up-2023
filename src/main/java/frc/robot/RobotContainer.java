@@ -79,8 +79,8 @@ public class RobotContainer {
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
         _driverController.R1().whileTrue(
-                new InstantCommand(() -> m_drivetrain
-                        .getLimeLightAllignCommand(m_LimeLight::getXAngle, m_LimeLight::getYAngle).schedule()));
+                new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_LimeLight.getApolloXAngle(),
+                        m_LimeLight.getApolloYAngle()), m_drivetrain).until(m_drivetrain::controllersAtSetpoint));
 
         _driverController.povUp().onTrue(
                 m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
