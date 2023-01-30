@@ -206,6 +206,21 @@ public class Drivetrain extends SubsystemBase {
         spin_Controller.setSetpoint(LimelightConstants.installAngle.getDegrees());
     }
 
+    public void setVisionPIDsByInputs(double xp, double xi, double xd, double yp, double yi, double yd, double tp,
+            double ti, double td) {
+        vision_xController.setP(xp);
+        vision_xController.setI(xi);
+        vision_xController.setD(xd);
+
+        vision_yController.setP(yp);
+        vision_yController.setI(yi);
+        vision_yController.setD(yd);
+
+        vision_thetaController.setP(tp);
+        vision_thetaController.setI(ti);
+        vision_thetaController.setD(td);
+    }
+
     public void driveByVisionControllers(double Xangle, double Yangle) {
         if (!this.atInstallAngle()) {
             this.spinToInstallAngle();
@@ -228,5 +243,10 @@ public class Drivetrain extends SubsystemBase {
 
     public void spinToInstallAngle() {
         this.drive(0, 0, spin_Controller.calculate(getPose().getRotation().getDegrees()), false);
+    }
+
+    public void visionPIDBySDB() {
+        this.setVisionPIDsByInputs(SmartDashboard.getNumber("xKP", 0), 0, 0, SmartDashboard.getNumber("yKP", 0), 0, 0,
+                SmartDashboard.getNumber("tKP", 0), 0, 0);
     }
 }

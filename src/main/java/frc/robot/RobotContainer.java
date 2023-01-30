@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -11,10 +12,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.AutoRollerGripper.FolderState;
@@ -60,6 +63,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("xKP", 0);
         SmartDashboard.putNumber("yKP", 0);
         SmartDashboard.putNumber("tKP", 0);
+        SmartDashboard.putData("update vision SDB", new InstantCommand(() -> m_drivetrain.visionPIDBySDB()));
 
         m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.drive(
                 _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
@@ -79,6 +83,10 @@ public class RobotContainer {
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
         _driverController.R1().whileTrue(
+                new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
+                        new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_LimeLight.getFieldTX(),
+                                m_LimeLight.getFieldTY()), m_drivetrain).until(m_drivetrain::controllersAtSetpoint)));
+
         _driverController.L1()
                 .toggleOnTrue(new StartEndCommand(() -> m_LimeLight.setPipeLine(LimelightConstants.pipeLineAprilTags),
                         () -> m_LimeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective), m_LimeLight));
@@ -93,7 +101,7 @@ public class RobotContainer {
         _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
         _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
         _driverController.R3().whileTrue(m_autoRollerGripper.getIntakeCommand());
-        _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
+        _driverController.L3().whileTrue(m_autoRollerGripper.getEjectCommand());
 
         _driverController.triangle().onTrue(
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.HOLD));
