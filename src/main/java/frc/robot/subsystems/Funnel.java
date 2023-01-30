@@ -19,7 +19,8 @@ import frc.robot.constants.FunnelConstants;
 
 public class Funnel extends SubsystemBase {
 
-  private TalonSRX _rollers;
+  private TalonSRX _FollowerRoller;
+  private TalonSRX _LeaderRoller;
   private FunnelState _currentState;
   private DoubleSolenoid _funnelSolenoid;
 
@@ -42,7 +43,8 @@ public class Funnel extends SubsystemBase {
         FunnelConstants.solenoidReversePort);
 
     // We only use this SparkMax with Percent Output. So no need for all params
-    this._rollers = new TalonSRX(FunnelConstants.TalonSRXPort);
+    this._FollowerRoller = new TalonSRX(FunnelConstants.TalonSRXFollowerPort);
+    this._LeaderRoller = new TalonSRX(FunnelConstants.TalonSRXFollowerPort);
   }
 
   public FunnelState getFunnelState() {
@@ -54,7 +56,8 @@ public class Funnel extends SubsystemBase {
       return;
     }
 
-    _rollers.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
+    _FollowerRoller.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
+    _LeaderRoller.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
 
     _currentState = state;
 
