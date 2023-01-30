@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -31,7 +32,6 @@ public class LimeLight extends SubsystemBase {
     }
 
     public double getXAngle() {
-
         return LimelightConstants.AlignLimeLightToPigeonPhase * tx.getDouble(0);
     }
 
@@ -39,8 +39,12 @@ public class LimeLight extends SubsystemBase {
         return ty.getDouble(0);
     }
 
-    public double getApolloYAngle() {
-        return this.getXAngle();
+    public double getFieldTY() {
+        return new Translation2d(getXAngle(), getYAngle()).rotateBy(LimelightConstants.limelightRotationsOffset).getY();
+    }
+
+    public double getFieldTX() {
+        return new Translation2d(getXAngle(), getYAngle()).rotateBy(LimelightConstants.limelightRotationsOffset).getX();
     }
 
     public void setPipeLine(double id) {
