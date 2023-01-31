@@ -197,10 +197,6 @@ public class Drivetrain extends SubsystemBase {
         this.drive(x, y, t, true);
     }
 
-    public boolean controllersAtSetpoint() {
-        return vision_xController.atSetpoint() && vision_yController.atSetpoint()
-                && vision_thetaController.atSetpoint();
-    }
 
     public void visionPIDBySDB() {
         this.setVisionPIDsByInputs(SmartDashboard.getNumber("xKP", 0), 0, 0, SmartDashboard.getNumber("yKP", 0), 0, 0,

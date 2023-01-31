@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -85,7 +84,7 @@ public class RobotContainer {
         _driverController.R1().whileTrue(
                 new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
                         new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_LimeLight.getFieldTX(),
-                                m_LimeLight.getFieldTY()), m_drivetrain).until(m_drivetrain::controllersAtSetpoint)));
+                                m_LimeLight.getFieldTY()), m_drivetrain)));
 
         _driverController.L1()
                 .toggleOnTrue(new StartEndCommand(() -> m_LimeLight.setPipeLine(LimelightConstants.pipeLineAprilTags),
