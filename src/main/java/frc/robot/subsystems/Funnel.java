@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
@@ -58,8 +59,9 @@ public class Funnel extends SubsystemBase {
 
     _funnelSolenoid.set(state.solenoidState);
 
-    _followerRoller.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
     _leaderRoller.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
+    _followerRoller.follow(_leaderRoller);
+    _followerRoller.setInverted(InvertType.OpposeMaster); 
 
     _currentState = state;
 
