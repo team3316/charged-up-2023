@@ -25,6 +25,4 @@ public class LimelightConstants {
     public static final double pipeLineRetroReflective = 0;
     public static final double pipeLineAprilTags = 1;
 
-    public static final Rotation2d installAngle = Rotation2d.fromDegrees(-90);
-
 }

@@ -2,15 +2,10 @@ package frc.robot.subsystems.drivetrain;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -20,10 +15,7 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.autonomous.AutoFactory;
-import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.LimelightConstants;
 
@@ -172,7 +164,7 @@ public class Drivetrain extends SubsystemBase {
 
         vision_xController.setSetpoint(0);
         vision_yController.setSetpoint(0);
-        vision_thetaController.setSetpoint(LimelightConstants.installAngle.getDegrees());
+        vision_thetaController.setSetpoint(DrivetrainConstants.installAngle.getDegrees());
     }
 
     public void setVisionPIDsByInputs(double xp, double xi, double xd, double yp, double yi, double yd, double tp,
@@ -195,7 +187,8 @@ public class Drivetrain extends SubsystemBase {
         double y = 0;
         double t = vision_thetaController.calculate(this.getPose().getRotation().getDegrees());
 
-        if (Math.abs(this.getPose().getRotation().getDegrees()) < LimelightConstants.spinToleranceDegrees) {
+        if (Math.abs(this.getPose().getRotation().getDegrees()
+                - DrivetrainConstants.installAngle.getDegrees()) < LimelightConstants.spinToleranceDegrees) {
             // Don't move until we're somewhat aligned
             x = vision_xController.calculate(Xangle);
             y = vision_yController.calculate(Yangle);
