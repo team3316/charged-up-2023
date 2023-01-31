@@ -11,15 +11,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
+import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.Arm;
@@ -30,6 +33,8 @@ import frc.robot.subsystems.Arm;
  */
 public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
+    private final LimeLight m_LimeLight = new LimeLight();
+
     private final Funnel m_Funnel = new Funnel();
     private final Manipulator m_Manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
@@ -55,6 +60,10 @@ public class RobotContainer {
         initChooser();
         // Configure the trigger bindings
         configureBindings();
+        SmartDashboard.putNumber("xKP", 0);
+        SmartDashboard.putNumber("yKP", 0);
+        SmartDashboard.putNumber("tKP", 0);
+        SmartDashboard.putData("update vision SDB", new InstantCommand(() -> m_drivetrain.visionPIDBySDB()));
 
         m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.drive(
                 _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
@@ -72,6 +81,16 @@ public class RobotContainer {
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
+
+        _driverController.R1().whileTrue(
+                new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
+                        new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_LimeLight.getFieldTX(),
+                                m_LimeLight.getFieldTY()), m_drivetrain)));
+
+        _driverController.L1()
+                .toggleOnTrue(new StartEndCommand(() -> m_LimeLight.setPipeLine(LimelightConstants.pipeLineAprilTags),
+                        () -> m_LimeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective), m_LimeLight));
+
         _driverController.povUp().onTrue(
                 m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
         _driverController.povDown().onTrue(
@@ -81,8 +100,8 @@ public class RobotContainer {
 
         _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
         _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
-        _driverController.R1().whileTrue(m_autoRollerGripper.getIntakeCommand());
-        _driverController.L1().whileTrue(m_autoRollerGripper.getEjectCommand());
+        _driverController.R3().whileTrue(m_autoRollerGripper.getIntakeCommand());
+        _driverController.L3().whileTrue(m_autoRollerGripper.getEjectCommand());
 
         _driverController.triangle().onTrue(
                 m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.HOLD));
