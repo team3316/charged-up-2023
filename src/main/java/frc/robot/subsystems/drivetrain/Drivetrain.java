@@ -3,13 +3,22 @@ package frc.robot.subsystems.drivetrain;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DrivetrainConstants;
+import frc.robot.constants.LimelightConstants;
 
 /**
  * Drivetrain
@@ -20,6 +29,13 @@ public class Drivetrain extends SubsystemBase {
 
     private PigeonIMU _pigeon;
 
+    private SwerveDriveOdometry _odometry;
+    private DoubleLogEntry m_logX, m_logY, m_logR;
+
+    private static PIDController vision_xController;
+    private static PIDController vision_yController;
+    private static PIDController vision_thetaController;
+
     public Drivetrain() {
         this._modules = new SwerveModule[] {
                 new SwerveModule(DrivetrainConstants.TRModule),
@@ -27,8 +43,25 @@ public class Drivetrain extends SubsystemBase {
                 new SwerveModule(DrivetrainConstants.BRModule),
                 new SwerveModule(DrivetrainConstants.BLModule)
         };
+
         _pigeon = new PigeonIMU(DrivetrainConstants.pigeonId); // We need the talon; not anymore
 
+        this._odometry = new SwerveDriveOdometry(DrivetrainConstants.kinematics, getRotation2d(),
+                getSwerveModulePositions());
+
+        DataLog log = DataLogManager.getLog();
+        m_logX = new DoubleLogEntry(log, "/drivetrain/position/x");
+        m_logY = new DoubleLogEntry(log, "/drivetrain/position/y");
+        m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
+
+        vision_xController = new PIDController(LimelightConstants.xGains.kP, LimelightConstants.xGains.kI,
+                LimelightConstants.xGains.kD);
+        vision_yController = new PIDController(LimelightConstants.yGains.kP, LimelightConstants.yGains.kI,
+                LimelightConstants.yGains.kD);
+        vision_thetaController = new PIDController(LimelightConstants.thetaGains.kP, LimelightConstants.thetaGains.kI,
+                LimelightConstants.thetaGains.kD);
+
+        restartControllers();
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -37,7 +70,7 @@ public class Drivetrain extends SubsystemBase {
 
         ChassisSpeeds speeds;
         if (fieldRelative) {
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getRotation2d());
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getPose().getRotation());
         } else {
             speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
         }
@@ -57,7 +90,16 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void periodic() {
+        // Update the odometry in the periodic block
+        this._odometry.update(getRotation2d(), getSwerveModulePositions());
         // updateSDB();
+    }
+
+    public void updateTelemetry() {
+        Pose2d pose = _odometry.getPoseMeters();
+        m_logX.append(pose.getX());
+        m_logY.append(pose.getY());
+        m_logR.append(pose.getRotation().getDegrees());
     }
 
     public void disabledInit() {
@@ -75,6 +117,10 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("rotation", getRotation2d().getRadians());
     }
 
+    public Pose2d getPose() {
+        return this._odometry.getPoseMeters();
+    }
+
     public double getHeading() {
         return this._pigeon.getFusedHeading();
     }
@@ -84,7 +130,12 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void resetYaw() {
-        this._pigeon.setFusedHeading(0);
+        Pose2d pose = getPose();
+        this.resetPose(new Pose2d(pose.getTranslation(), new Rotation2d()));
+    }
+
+    public void resetPose(Pose2d pose) {
+        this._odometry.resetPosition(getRotation2d(), getSwerveModulePositions(), pose);
     }
 
     public void calibrateSteering() {
@@ -93,4 +144,69 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    private SwerveModulePosition[] getSwerveModulePositions() {
+        SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[this._modules.length];
+
+        for (int i = 0; i < swerveModulePositions.length; i++) {
+            swerveModulePositions[i] = this._modules[i].getSwerveModulePosition();
+        }
+
+        return swerveModulePositions;
+    }
+
+    public void restartControllers() {
+        vision_xController.reset();
+        vision_yController.reset();
+        vision_thetaController.reset();
+
+        vision_xController.setTolerance(LimelightConstants.xTol);
+        vision_yController.setTolerance(LimelightConstants.yTol);
+        vision_thetaController.setTolerance(LimelightConstants.thetaTol);
+
+        vision_xController.setSetpoint(0);
+        vision_yController.setSetpoint(0);
+        vision_thetaController.setSetpoint(DrivetrainConstants.installAngle.getDegrees());
+    }
+
+    public void setVisionPIDsByInputs(double xp, double xi, double xd, double yp, double yi, double yd, double tp,
+            double ti, double td) {
+        vision_xController.setP(xp);
+        vision_xController.setI(xi);
+        vision_xController.setD(xd);
+
+        vision_yController.setP(yp);
+        vision_yController.setI(yi);
+        vision_yController.setD(yd);
+
+        vision_thetaController.setP(tp);
+        vision_thetaController.setI(ti);
+        vision_thetaController.setD(td);
+    }
+
+    public void driveByVisionControllers(double Xangle, double Yangle) {
+        double x = 0;
+        double y = 0;
+        double t = vision_thetaController.calculate(this.getPose().getRotation().getDegrees());
+
+        if (Math.abs(this.getPose().getRotation().getDegrees()
+                - DrivetrainConstants.installAngle.getDegrees()) < LimelightConstants.spinToleranceDegrees) {
+            // Don't move until we're somewhat aligned
+            x = vision_xController.calculate(Xangle);
+            y = vision_yController.calculate(Yangle);
+        }
+
+        this.drive(x, y, t, true);
+    }
+
+    public void setVisionPIDFromSDB() {
+        this.setVisionPIDsByInputs(SmartDashboard.getNumber("xKP", 0), 0, 0, SmartDashboard.getNumber("yKP", 0), 0, 0,
+                SmartDashboard.getNumber("tKP", 0), 0, 0);
+    }
+
+    public void visionInitSDB() {
+        SmartDashboard.putNumber("xKP", 0);
+        SmartDashboard.putNumber("yKP", 0);
+        SmartDashboard.putNumber("tKP", 0);
+        SmartDashboard.putData("update vision SDB", new InstantCommand(() -> this.setVisionPIDFromSDB()));
+    }
 }

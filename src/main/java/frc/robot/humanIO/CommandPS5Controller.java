@@ -372,7 +372,7 @@ public class CommandPS5Controller extends CommandGenericHID {
         return m_hid.touchpad(loop).castTo(Trigger::new);
     }
 
-        /**
+    /**
      * Constructs an event instance around the touchpad's digital signal.
      *
      * @return an event instance representing the mute's digital signal attached
@@ -395,7 +395,6 @@ public class CommandPS5Controller extends CommandGenericHID {
     public Trigger mute(EventLoop loop) {
         return m_hid.mute(loop).castTo(Trigger::new);
     }
-
 
     /**
      * Get the X axis value of left side of the controller.
@@ -456,7 +455,7 @@ public class CommandPS5Controller extends CommandGenericHID {
     }
 
     /**
-     * Get the combined axis value of the controller the triggers. 
+     * Get the combined axis value of the controller the triggers.
      *
      * @return the axis value.
      */
