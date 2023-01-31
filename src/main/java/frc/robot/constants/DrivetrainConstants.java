@@ -95,9 +95,7 @@ public class DrivetrainConstants {
 
     public static final int pigeonId = 9;
 
-    public static final double spinKP = 0.05;
-    public static final double spinKI = 0.0;
-    public static final double spinKD = 0.0;
+    public static final PIDFGains spinGains = new PIDFGains(0.05, 0, 0, 0);
     public static final double spinTol = 10;
 
 }

@@ -62,21 +62,15 @@ public class Drivetrain extends SubsystemBase {
         m_logY = new DoubleLogEntry(log, "/drivetrain/position/y");
         m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
 
-        vision_xController = new PIDController(
-                LimelightConstants.xKP,
-                LimelightConstants.xKI,
-                LimelightConstants.xKD);
-        vision_yController = new PIDController(
-                LimelightConstants.yKP,
-                LimelightConstants.yKI,
-                LimelightConstants.yKD);
-        vision_thetaController = new PIDController(
-                LimelightConstants.thetaKP,
-                LimelightConstants.thetaKI,
-                LimelightConstants.thetaKD);
+        vision_xController = new PIDController(LimelightConstants.xGains.kP, LimelightConstants.xGains.kI,
+                LimelightConstants.xGains.kD);
+        vision_yController = new PIDController(LimelightConstants.yGains.kP, LimelightConstants.yGains.kI,
+                LimelightConstants.yGains.kD);
+        vision_thetaController = new PIDController(LimelightConstants.thetaGains.kP, LimelightConstants.thetaGains.kI,
+                LimelightConstants.thetaGains.kD);
 
-        spin_Controller = new PIDController(DrivetrainConstants.spinKP, DrivetrainConstants.spinKI,
-                DrivetrainConstants.spinKD);
+        spin_Controller = new PIDController(DrivetrainConstants.spinGains.kP, DrivetrainConstants.spinGains.kI,
+                DrivetrainConstants.spinGains.kD);
 
         restartControllers();
     }
