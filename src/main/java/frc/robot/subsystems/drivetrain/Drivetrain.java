@@ -165,24 +165,6 @@ public class Drivetrain extends SubsystemBase {
         return swerveModulePositions;
     }
 
-    public Command getMoveByTranslation2dCommand(Translation2d GoalOffsetTrans, AutoFactory factory) {
-        Translation2d currentTrans = new Translation2d(this.getPose().getX(), this.getPose().getY());
-        PathPlannerTrajectory transTrajectory = PathPlanner.generatePath(
-                new PathConstraints(AutonomousConstants.kMaxSpeedMetersPerSecond,
-                        AutonomousConstants.kMaxAccelerationMetersPerSecondSquared),
-                new PathPoint(currentTrans,
-                        LimelightConstants.installAngle, this.getPose().getRotation()), // if not calibrated, will be
-                                                                                        // jittery (as in to dierction
-                                                                                        // of
-                // travel)
-                new PathPoint(currentTrans.plus(GoalOffsetTrans),
-                        LimelightConstants.installAngle, this.getPose().getRotation()));
-        System.out.println("currentTrans " + currentTrans.getX() + ", " + currentTrans.getY());
-        System.out.println("currentTrans " + currentTrans.plus(GoalOffsetTrans).getX() + ", "
-                + currentTrans.plus(GoalOffsetTrans).getY());
-        return factory.createfollow(transTrajectory);
-    }
-
     public void restartControllers() {
         vision_xController.reset();
         vision_yController.reset();
