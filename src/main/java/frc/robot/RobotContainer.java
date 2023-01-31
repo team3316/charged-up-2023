@@ -60,10 +60,6 @@ public class RobotContainer {
         initChooser();
         // Configure the trigger bindings
         configureBindings();
-        SmartDashboard.putNumber("xKP", 0);
-        SmartDashboard.putNumber("yKP", 0);
-        SmartDashboard.putNumber("tKP", 0);
-        SmartDashboard.putData("update vision SDB", new InstantCommand(() -> m_drivetrain.visionPIDBySDB()));
 
         m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.drive(
                 _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,

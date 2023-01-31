@@ -15,6 +15,7 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.LimelightConstants;
@@ -197,9 +198,15 @@ public class Drivetrain extends SubsystemBase {
         this.drive(x, y, t, true);
     }
 
-
-    public void visionPIDBySDB() {
+    public void setVisionPIDFromSDB() {
         this.setVisionPIDsByInputs(SmartDashboard.getNumber("xKP", 0), 0, 0, SmartDashboard.getNumber("yKP", 0), 0, 0,
                 SmartDashboard.getNumber("tKP", 0), 0, 0);
+    }
+
+    public void visionInitSDB() {
+        SmartDashboard.putNumber("xKP", 0);
+        SmartDashboard.putNumber("yKP", 0);
+        SmartDashboard.putNumber("tKP", 0);
+        SmartDashboard.putData("update vision SDB", new InstantCommand(() -> this.setVisionPIDFromSDB()));
     }
 }
