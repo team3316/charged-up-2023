@@ -11,8 +11,8 @@ public class FunnelConstants {
     public static final double installPercent = 0;
     public static final double closedPercent = 0;
 
-    public static final int TalonSRXFollowerPort = 21;
-    public static final int TalonSRXLeaderPort = 20;
+    public static final int talonSRXFollowerPort = 21;
+    public static final int talonSRXLeaderPort = 20;
     public static final int solenoidForwardPort = 1;
     public static final int solenoidReversePort = 2;
 
