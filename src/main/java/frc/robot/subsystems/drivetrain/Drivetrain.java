@@ -42,7 +42,6 @@ public class Drivetrain extends SubsystemBase {
     private static PIDController vision_xController;
     private static PIDController vision_yController;
     private static PIDController vision_thetaController;
-    private static PIDController spin_Controller;
 
     public Drivetrain() {
         this._modules = new SwerveModule[] {
@@ -68,9 +67,6 @@ public class Drivetrain extends SubsystemBase {
                 LimelightConstants.yGains.kD);
         vision_thetaController = new PIDController(LimelightConstants.thetaGains.kP, LimelightConstants.thetaGains.kI,
                 LimelightConstants.thetaGains.kD);
-
-        spin_Controller = new PIDController(DrivetrainConstants.spinGains.kP, DrivetrainConstants.spinGains.kI,
-                DrivetrainConstants.spinGains.kD);
 
         restartControllers();
     }
@@ -169,17 +165,14 @@ public class Drivetrain extends SubsystemBase {
         vision_xController.reset();
         vision_yController.reset();
         vision_thetaController.reset();
-        spin_Controller.reset();
 
         vision_xController.setTolerance(LimelightConstants.xTol);
         vision_yController.setTolerance(LimelightConstants.yTol);
         vision_thetaController.setTolerance(LimelightConstants.thetaTol);
-        spin_Controller.setTolerance(DrivetrainConstants.spinTol);
 
         vision_xController.setSetpoint(0);
         vision_yController.setSetpoint(0);
         vision_thetaController.setSetpoint(LimelightConstants.installAngle.getDegrees());
-        spin_Controller.setSetpoint(LimelightConstants.installAngle.getDegrees());
     }
 
     public void setVisionPIDsByInputs(double xp, double xi, double xd, double yp, double yi, double yd, double tp,
@@ -198,27 +191,22 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void driveByVisionControllers(double Xangle, double Yangle) {
-        if (!this.atInstallAngle()) {
-            this.spinToInstallAngle();
-            return;
+        double x = 0;
+        double y = 0;
+        double t = vision_thetaController.calculate(this.getPose().getRotation().getDegrees());
+
+        if (Math.abs(this.getPose().getRotation().getDegrees()) < LimelightConstants.spinToleranceDegrees) {
+            // Don't move until we're somewhat aligned
+            x = vision_xController.calculate(Xangle);
+            y = vision_yController.calculate(Yangle);
         }
-        this.drive(vision_xController.calculate(Xangle),
-                vision_yController.calculate(Yangle),
-                vision_thetaController.calculate(this.getPose().getRotation().getDegrees()),
-                true);
+
+        this.drive(x, y, t, true);
     }
 
     public boolean controllersAtSetpoint() {
         return vision_xController.atSetpoint() && vision_yController.atSetpoint()
                 && vision_thetaController.atSetpoint();
-    }
-
-    public boolean atInstallAngle() {
-        return spin_Controller.atSetpoint();
-    }
-
-    public void spinToInstallAngle() {
-        this.drive(0, 0, spin_Controller.calculate(getPose().getRotation().getDegrees()), false);
     }
 
     public void visionPIDBySDB() {

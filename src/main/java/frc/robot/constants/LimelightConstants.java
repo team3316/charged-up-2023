@@ -18,6 +18,8 @@ public class LimelightConstants {
     public static final PIDFGains thetaGains = new PIDFGains(0.05, 0.0, 0.0, 0.0);
     public static final double thetaTol = 1;
 
+    public static final double spinToleranceDegrees = 10;
+
     public static final Rotation2d limelightRotationsOffset = new Rotation2d(Math.PI * 0.5);
 
     public static final double pipeLineRetroReflective = 0;
