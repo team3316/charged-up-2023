@@ -43,9 +43,11 @@ public class Funnel extends SubsystemBase {
     this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort,
         FunnelConstants.solenoidReversePort);
 
-    // We only use this SparkMax with Percent Output. So no need for all params
     this._followerRoller = new TalonSRX(FunnelConstants.talonSRXFollowerPort);
     this._leaderRoller = new TalonSRX(FunnelConstants.talonSRXLeaderPort);
+    _followerRoller.follow(_leaderRoller);
+    _followerRoller.setInverted(InvertType.OpposeMaster);
+
   }
 
   public FunnelState getFunnelState() {
@@ -60,8 +62,6 @@ public class Funnel extends SubsystemBase {
     _funnelSolenoid.set(state.solenoidState);
 
     _leaderRoller.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
-    _followerRoller.follow(_leaderRoller);
-    _followerRoller.setInverted(InvertType.OpposeMaster); 
 
     _currentState = state;
 
