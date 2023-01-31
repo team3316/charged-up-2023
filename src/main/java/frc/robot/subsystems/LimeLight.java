@@ -31,11 +31,11 @@ public class LimeLight extends SubsystemBase {
         return hasTarget.getDouble(0) == 1;
     }
 
-    public double getXAngle() {
+    private double getXAngle() {
         return LimelightConstants.AlignLimeLightToPigeonPhase * tx.getDouble(0);
     }
 
-    public double getYAngle() {
+    private double getYAngle() {
         return ty.getDouble(0);
     }
 
