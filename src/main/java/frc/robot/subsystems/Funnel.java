@@ -56,6 +56,8 @@ public class Funnel extends SubsystemBase {
       return;
     }
 
+    _funnelSolenoid.set(state.solenoidState);
+
     _followerRoller.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
     _leaderRoller.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
 
