@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.humanIO.ShuffleboardTabs;
+import frc.robot.utils.OneTimeBoolean;
 
 public class Robot extends TimedRobot {
 
@@ -17,8 +18,7 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
-    private boolean _debug = false;
-    private boolean _debugInitCalled = false;
+    private OneTimeBoolean _debug = new OneTimeBoolean();
 
     private GenericEntry debugWidget = ShuffleboardTabs.CONFIG.tab.add("debug", _debug)
             .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
@@ -29,7 +29,10 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         m_robotContainer = new RobotContainer();
         addPeriodic(() -> {
-            if (_debug && !debugWidget.getBoolean(false)) {
+            if (_debug.update(debugWidget.getBoolean(false))) {
+                if (_debug.firstTime())
+                    m_robotContainer.debugInit(ShuffleboardTabs.CONFIG.tab);
+
                 m_robotContainer.updateTelemetry();
                 m_robotContainer.debugPeriodic(ShuffleboardTabs.CONFIG.tab);
             }
@@ -39,11 +42,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-        _debug = debugWidget.getBoolean(_debug);
-        if (!_debugInitCalled && _debug) {
-            m_robotContainer.debugInit(ShuffleboardTabs.CONFIG.tab);
-            _debugInitCalled = true;
-        }
         CommandScheduler.getInstance().run();
     }
 

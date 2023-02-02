@@ -2,7 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
-public interface GlobalDebug {
+public interface GlobalDebuggable {
     void debugInit(ShuffleboardTab tab);
 
     void debugPeriodic(ShuffleboardTab tab);
