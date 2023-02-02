@@ -4,22 +4,24 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.FunnelConstants;
-import frc.robot.motors.DBugSparkMax;
-import frc.robot.motors.PIDFGains;
 
 public class Funnel extends SubsystemBase {
 
-  private CANSparkMax _rollers;
+  private TalonSRX _followerRoller;
+  private TalonSRX _leaderRoller;
   private FunnelState _currentState;
   private DoubleSolenoid _funnelSolenoid;
 
@@ -41,8 +43,21 @@ public class Funnel extends SubsystemBase {
     this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort,
         FunnelConstants.solenoidReversePort);
 
-    // We only use this SparkMax with Percent Output. So no need for all params
-    this._rollers = DBugSparkMax.create(FunnelConstants.sparkMaxPort, new PIDFGains(0), 1, 1, 0);
+    TalonSRXConfiguration talonConfig = new TalonSRXConfiguration();
+    talonConfig.continuousCurrentLimit = 5; // Low torque application
+    talonConfig.openloopRamp = 1.0; // Seconds from 0 to 100%
+    talonConfig.voltageCompSaturation = 12; // For consistency
+
+    this._followerRoller = new TalonSRX(FunnelConstants.talonSRXFollowerPort);
+    this._leaderRoller = new TalonSRX(FunnelConstants.talonSRXLeaderPort);
+    _followerRoller.configFactoryDefault();
+    _leaderRoller.configFactoryDefault();
+    _followerRoller.configAllSettings(talonConfig);
+    _leaderRoller.configAllSettings(talonConfig);
+
+    _followerRoller.follow(_leaderRoller);
+    _followerRoller.setInverted(InvertType.OpposeMaster);
+
   }
 
   public FunnelState getFunnelState() {
@@ -55,7 +70,8 @@ public class Funnel extends SubsystemBase {
     }
 
     _funnelSolenoid.set(state.solenoidState);
-    _rollers.set(state.rollerPercent);
+
+    _leaderRoller.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
 
     _currentState = state;
 
