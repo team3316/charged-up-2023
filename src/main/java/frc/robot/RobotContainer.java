@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +17,7 @@ import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
+import frc.robot.humanIO.ShuffleboardTabs;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
@@ -27,11 +29,13 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
  * This class is where the bulk of the robot should be declared (subsystems,
  * commands, and trigger mappings).
  */
-public class RobotContainer {
+public class RobotContainer implements GlobalDebug {
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final Funnel m_Funnel = new Funnel();
     private final Manipulator m_Manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
+
+    private final ShuffleboardTab debugTab = ShuffleboardTabs.CONFIG.tab;
 
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
@@ -43,6 +47,8 @@ public class RobotContainer {
     private boolean _fieldRelative = true;
 
     private SendableChooser<Command> chooser;
+
+    private GlobalDebug[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -111,5 +117,17 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return this.chooser.getSelected();
+    }
+
+    public void debugInit(ShuffleboardTab tab) {
+        for (GlobalDebug i : debuggedObjects) {
+            i.debugInit(tab);
+        }
+    }
+
+    public void debugPeriodic(ShuffleboardTab tab) {
+        for (GlobalDebug i : debuggedObjects) {
+            i.debugPeriodic(tab);
+        }
     }
 }
