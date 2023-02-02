@@ -7,10 +7,12 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,14 +47,14 @@ public class Funnel extends SubsystemBase {
     talonConfig.continuousCurrentLimit = 5; // Low torque application
     talonConfig.openloopRamp = 1.0; // Seconds from 0 to 100%
     talonConfig.voltageCompSaturation = 12; // For consistency
-    
+
     this._followerRoller = new TalonSRX(FunnelConstants.talonSRXFollowerPort);
     this._leaderRoller = new TalonSRX(FunnelConstants.talonSRXLeaderPort);
     _followerRoller.configFactoryDefault();
     _leaderRoller.configFactoryDefault();
     _followerRoller.configAllSettings(talonConfig);
     _leaderRoller.configAllSettings(talonConfig);
-    
+
     _followerRoller.follow(_leaderRoller);
     _followerRoller.setInverted(InvertType.OpposeMaster);
 
