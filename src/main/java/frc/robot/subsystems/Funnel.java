@@ -41,8 +41,18 @@ public class Funnel extends SubsystemBase {
     this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort,
         FunnelConstants.solenoidReversePort);
 
+    TalonSRXConfiguration talonConfig = new TalonSRXConfiguration();
+    talonConfig.continuousCurrentLimit = 5; // Low torque application
+    talonConfig.openloopRamp = 1.0; // Seconds from 0 to 100%
+    talonConfig.voltageCompSaturation = 12; // For consistency
+    
     this._followerRoller = new TalonSRX(FunnelConstants.talonSRXFollowerPort);
     this._leaderRoller = new TalonSRX(FunnelConstants.talonSRXLeaderPort);
+    _followerRoller.configFactoryDefault();
+    _leaderRoller.configFactoryDefault();
+    _followerRoller.configAllSettings(talonConfig);
+    _leaderRoller.configAllSettings(talonConfig);
+    
     _followerRoller.follow(_leaderRoller);
     _followerRoller.setInverted(InvertType.OpposeMaster);
 
