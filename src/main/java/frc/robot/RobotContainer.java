@@ -24,8 +24,9 @@ import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
-import frc.robot.subsystems.Manipulator.ManipulatorState;
+import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /**
@@ -38,6 +39,7 @@ public class RobotContainer {
     private final Manipulator m_manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
     private final Arm m_arm = new Arm();
+    private final LimeLight m_limeLight = new LimeLight();
 
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 

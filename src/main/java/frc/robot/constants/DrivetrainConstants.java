@@ -1,5 +1,6 @@
 package frc.robot.constants;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.robot.motors.PIDFGains;
@@ -94,4 +95,7 @@ public class DrivetrainConstants {
             TLModule.position, BRModule.position, BLModule.position);
 
     public static final int pigeonId = 9;
+
+    public static final Rotation2d installAngle = Rotation2d.fromDegrees(-90);
+
 }
