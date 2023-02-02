@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -17,6 +18,7 @@ public class Manipulator extends SubsystemBase {
 
     private ManipulatorState _currentState;
     private DigitalInput _gamePieceDetector;
+    private Debouncer _GPDetectorDebouncer = new Debouncer(ManipulatorConstants.debounceTimeSeconds, Debouncer.DebounceType.kBoth);
 
     private DoubleSolenoid _solenoid;
 
@@ -55,7 +57,7 @@ public class Manipulator extends SubsystemBase {
     }
 
     public boolean isHoldingGamePiece() {
-        return this._gamePieceDetector.get();
+        return _GPDetectorDebouncer.calculate(this._gamePieceDetector.get());
     }
 
     @Override

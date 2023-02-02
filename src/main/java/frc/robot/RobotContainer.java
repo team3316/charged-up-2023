@@ -9,23 +9,25 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
-import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.AutoRollerGripper;
-import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared (subsystems,
@@ -33,17 +35,18 @@ import frc.robot.subsystems.Arm;
  */
 public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
-    private final LimeLight m_LimeLight = new LimeLight();
-
-    private final Funnel m_Funnel = new Funnel();
-    private final Manipulator m_Manipulator = new Manipulator();
+    private final Funnel m_funnel = new Funnel();
+    private final Manipulator m_manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
     private final Arm m_arm = new Arm();
+    private final LimeLight m_limeLight = new LimeLight();
 
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
 
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
+    private final CommandPS5Controller _operatorController = new CommandPS5Controller(
+            JoysticksConstants.operatorPort);
 
     private boolean _fieldRelative = true;
 
@@ -78,31 +81,36 @@ public class RobotContainer {
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
-        _driverController.R1().whileTrue(
-                new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
-                        new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_LimeLight.getFieldTX(),
-                                m_LimeLight.getFieldTY()), m_drivetrain)));
+        /* Operator triggers */
+        // Collect sequence
+        _operatorController.L1().onTrue(
+                Commands.sequence(
+                        Commands.parallel(
+                                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                                m_funnel.setFunnelStateCommand(FunnelState.COLLECT),
+                                m_arm.getSetStateCommand(ArmState.COLLECT)),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                        new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
-        _driverController.L1()
-                .toggleOnTrue(new StartEndCommand(() -> m_LimeLight.setPipeLine(LimelightConstants.pipeLineAprilTags),
-                        () -> m_LimeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective), m_LimeLight));
+        // Drive arm state sequence
+        _operatorController.triangle().onTrue(
+                Commands.sequence(
+                        new ConditionalCommand(
+                                m_funnel.setFunnelStateCommand(FunnelState.INSTALL),
+                                null,
+                                m_manipulator::isHoldingGamePiece),
+                        m_arm.getSetStateCommand(ArmState.DRIVE),
+                        m_funnel.setFunnelStateCommand(FunnelState.CLOSED)));
 
-        _driverController.povUp().onTrue(
-                m_Funnel.setFunnelStateCommand(FunnelState.COLLECT));
-        _driverController.povDown().onTrue(
-                m_Funnel.setFunnelStateCommand(FunnelState.CLOSED));
-        _driverController.povLeft().onTrue(
-                m_Funnel.setFunnelStateCommand(FunnelState.INSTALL));
+        // Set arm to scoring pos
+        _operatorController.circle().onTrue(m_arm.getSetStateCommand(ArmState.MID_CONE));
+        _operatorController.square().onTrue(m_arm.getSetStateCommand(ArmState.MID_CUBE));
+        _operatorController.cross().onTrue(m_arm.getSetStateCommand(ArmState.LOW));
 
-        _driverController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
-        _driverController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
-        _driverController.R3().whileTrue(m_autoRollerGripper.getIntakeCommand());
-        _driverController.L3().whileTrue(m_autoRollerGripper.getEjectCommand());
+        // Install GP
+        _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
 
-        _driverController.triangle().onTrue(
-                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.HOLD));
-        _driverController.cross().onTrue(
-                m_Manipulator.setManipulatorStateCommand(Manipulator.ManipulatorState.OPEN));
     }
 
     private void addToChooser(String pathName) {
