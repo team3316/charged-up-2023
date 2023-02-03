@@ -101,7 +101,7 @@ public class RobotContainer {
                 Commands.sequence(
                         new ConditionalCommand(
                                 m_funnel.setFunnelStateCommand(FunnelState.INSTALL),
-                                null,
+                                new InstantCommand(),
                                 m_manipulator::isHoldingGamePiece),
                         m_arm.getSetStateCommand(ArmState.DRIVE),
                         m_funnel.setFunnelStateCommand(FunnelState.CLOSED)));
