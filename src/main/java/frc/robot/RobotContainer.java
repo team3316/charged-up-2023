@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -52,6 +53,8 @@ public class RobotContainer {
 
     private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
     private SendableChooser<Command> chooser;
+
+    private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -146,5 +149,17 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return this.chooser.getSelected();
+    }
+
+    public void debugInit(ShuffleboardTab tab) {
+        for (GlobalDebuggable i : debuggedObjects) {
+            i.debugInit(tab);
+        }
+    }
+
+    public void debugPeriodic(ShuffleboardTab tab) {
+        for (GlobalDebuggable i : debuggedObjects) {
+            i.debugPeriodic(tab);
+        }
     }
 }

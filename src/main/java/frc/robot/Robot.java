@@ -4,21 +4,40 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.humanIO.ShuffleboardTabs;
+import frc.robot.utils.OneTimeBoolean;
 
 public class Robot extends TimedRobot {
+
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
+
+    private OneTimeBoolean _debug = new OneTimeBoolean();
+
+    private GenericEntry debugWidget = ShuffleboardTabs.CONFIG.tab.add("debug", _debug)
+            .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
 
     private static double LOGGING_PERIOD_SECONDS = 0.2;
 
     @Override
     public void robotInit() {
         m_robotContainer = new RobotContainer();
-        addPeriodic(m_robotContainer::updateTelemetry, LOGGING_PERIOD_SECONDS);
+        addPeriodic(() -> {
+            if (_debug.update(debugWidget.getBoolean(false))) {
+                if (_debug.firstTime())
+                    m_robotContainer.debugInit(ShuffleboardTabs.CONFIG.tab);
+
+                m_robotContainer.updateTelemetry();
+                m_robotContainer.debugPeriodic(ShuffleboardTabs.CONFIG.tab);
+            }
+        }, LOGGING_PERIOD_SECONDS);
+
     }
 
     @Override
