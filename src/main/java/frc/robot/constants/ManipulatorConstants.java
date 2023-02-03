@@ -13,4 +13,5 @@ public class ManipulatorConstants {
     public static final DoubleSolenoid.Value solenoidOpenState = DoubleSolenoid.Value.kReverse;
     public static final DoubleSolenoid.Value solenoidClosedState = DoubleSolenoid.Value.kForward;
 
+    public static final double debounceTimeSeconds = 0.2;
 }
