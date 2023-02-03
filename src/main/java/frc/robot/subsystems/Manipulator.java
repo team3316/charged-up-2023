@@ -4,8 +4,7 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,12 +12,15 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ManipulatorConstants;
+import frc.robot.utils.Hysteresis;
 
 public class Manipulator extends SubsystemBase {
 
+    private static final double ADC_RESOLUTION = 4096; // 12 bits
     private ManipulatorState _currentState;
-    private DigitalInput _gamePieceDetector;
-    private Debouncer _GPDetectorDebouncer = new Debouncer(ManipulatorConstants.debounceTimeSeconds, Debouncer.DebounceType.kBoth);
+    private AnalogInput _gamePieceDetector;
+    private Hysteresis _hysteresis = new Hysteresis(ManipulatorConstants.GPDetectorThreshold,
+            ManipulatorConstants.GPDetectorHysteresis);
 
     private DoubleSolenoid _solenoid;
 
@@ -35,7 +37,7 @@ public class Manipulator extends SubsystemBase {
 
     /** Creates a new Manipulator. */
     public Manipulator() {
-        this._gamePieceDetector = new DigitalInput(ManipulatorConstants.sensorID);
+        this._gamePieceDetector = new AnalogInput(ManipulatorConstants.sensorID);
         this._solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 ManipulatorConstants.solenoidForwardChannel,
                 ManipulatorConstants.solenoidReverseChannel);
@@ -57,7 +59,7 @@ public class Manipulator extends SubsystemBase {
     }
 
     public boolean isHoldingGamePiece() {
-        return _GPDetectorDebouncer.calculate(this._gamePieceDetector.get());
+        return _hysteresis.update(this._gamePieceDetector.getValue() / ADC_RESOLUTION);
     }
 
     @Override
