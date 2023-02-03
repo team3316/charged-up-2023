@@ -29,6 +29,7 @@ import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.utils.GlobalDebuggable;
 
 /**
  * This class is where the bulk of the robot should be declared (subsystems,
