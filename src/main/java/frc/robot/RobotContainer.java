@@ -8,21 +8,22 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.AutoRollerGripper;
-import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
-import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.Arm;
+import frc.robot.utils.DynamicCommand;
 
 /**
  * This class is where the bulk of the robot should be declared (subsystems,
@@ -43,7 +44,7 @@ public class RobotContainer {
     private boolean _fieldRelative = true;
 
     private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
-    private SendableChooser<Command> chooser;
+    private SendableChooser<CommandBase> chooser;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -51,7 +52,7 @@ public class RobotContainer {
     public RobotContainer() {
         m_compressor.enableDigital();
 
-        this.chooser = new SendableChooser<Command>();
+        this.chooser = new SendableChooser<CommandBase>();
         initChooser();
         // Configure the trigger bindings
         configureBindings();
@@ -75,6 +76,14 @@ public class RobotContainer {
 
         _driverController.cross().onTrue(
                 new InstantCommand(() -> m_drivetrain.setModulesAngle(SmartDashboard.getNumber("module angles", 0))));
+
+        _driverController.PS()
+                .whileTrue(Commands.sequence(
+                        new DynamicCommand(() -> getAutonomousCommand(), m_drivetrain),
+                        new InstantCommand(() -> m_drivetrain.drive(0, 0, 0, false)),
+                        new WaitCommand(0.5),
+                        _autoFactory.createAuto(m_drivetrain, "engage-2"))
+                        .finallyDo((interrupted) -> m_drivetrain.setModulesAngle(90)));
     }
 
     private void addToChooser(String pathName) {
@@ -83,6 +92,7 @@ public class RobotContainer {
 
     private void initChooser() {
         SmartDashboard.putData("autonomous", this.chooser);
+        addToChooser("engage");
         addToChooser("1-gp-engage");
         addToChooser("1-gp-leaveCommunity");
         addToChooser("bot-2-gp-engage");
@@ -97,6 +107,7 @@ public class RobotContainer {
     public void stop() {
         m_autoRollerGripper.stop();
         m_arm.stop();
+        m_drivetrain.calibrateSteering();
     }
 
     public void updateTelemetry() {
@@ -108,7 +119,7 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
+    public CommandBase getAutonomousCommand() {
         return this.chooser.getSelected();
     }
 }

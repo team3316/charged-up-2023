@@ -82,6 +82,9 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
         // Update the odometry in the periodic block
         this._odometry.update(getRotation2d(), getSwerveModulePositions());
+        Pose2d pose = getPose();
+        SmartDashboard.putNumber("odo x", pose.getX());
+        SmartDashboard.putNumber("odo y", pose.getY());
         // updateSDB();
     }
 
