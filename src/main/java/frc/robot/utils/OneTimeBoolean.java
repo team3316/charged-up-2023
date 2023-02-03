@@ -1,8 +1,8 @@
 package frc.robot.utils;
 
 public class OneTimeBoolean {
-    private boolean _triggered;
-    private boolean _value;
+    private boolean _triggered = false;
+    private boolean _value = false;
 
     public boolean update(boolean value) {
         _value = value;
