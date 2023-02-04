@@ -209,4 +209,15 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("tKP", 0);
         SmartDashboard.putData("update vision SDB", new InstantCommand(() -> this.setVisionPIDFromSDB()));
     }
+
+    public double getDriveVelocity() {
+        return _modules[0].getDriveVelocity();
+    }
+
+    public void setDrivePercent(double percent) {
+        _modules[0].setDrivePercent(percent);
+        _modules[1].setDrivePercent(percent);
+        _modules[2].setDrivePercent(percent);
+        _modules[3].setDrivePercent(percent);
+    }
 }
