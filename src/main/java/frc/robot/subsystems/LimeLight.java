@@ -4,11 +4,13 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.LimelightConstants;
 
 public class LimeLight extends SubsystemBase {
@@ -50,4 +52,9 @@ public class LimeLight extends SubsystemBase {
     public void setPipeLine(double id) {
         pipeLine.setNumber(id);
     }
+    public boolean atTargetAngle(){
+
+        return DrivetrainConstants.installAngle == new Rotation2d(this.getXAngle(),this.getYAngle());
+    }
+
 }

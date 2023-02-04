@@ -114,6 +114,18 @@ public class RobotContainer {
         // Install GP
         _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
 
+        // Install gameObjects
+        _operatorController.options().whileTrue(
+                Commands.sequence(
+                        new ConditionalCommand(
+                                new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
+                                        new RunCommand(
+                                                () -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
+                                                        m_limeLight.getFieldTY()),
+                                                m_drivetrain).alongWith(m_arm.getSetStateCommand(ArmState.MID_CONE))
+                                                .until(m_limeLight::atTargetAngle)),
+                                new InstantCommand(),
+                                m_limeLight::hasTarget)));
     }
 
     private void addToChooser(String pathName) {
