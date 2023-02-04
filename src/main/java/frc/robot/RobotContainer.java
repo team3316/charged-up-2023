@@ -29,6 +29,7 @@ import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.utils.GlobalDebuggable;
 
 /**
  * This class is where the bulk of the robot should be declared (subsystems,
@@ -101,7 +102,7 @@ public class RobotContainer {
                 Commands.sequence(
                         new ConditionalCommand(
                                 m_funnel.setFunnelStateCommand(FunnelState.INSTALL),
-                                null,
+                                new InstantCommand(),
                                 m_manipulator::isHoldingGamePiece),
                         m_arm.getSetStateCommand(ArmState.DRIVE),
                         m_funnel.setFunnelStateCommand(FunnelState.CLOSED)));

@@ -20,7 +20,7 @@ public class Robot extends TimedRobot {
 
     private OneTimeBoolean _debug = new OneTimeBoolean();
 
-    private GenericEntry debugWidget = ShuffleboardTabs.CONFIG.tab.add("debug", _debug)
+    private GenericEntry debugWidget = ShuffleboardTabs.CONFIG.tab.add("debug", false)
             .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
 
     private static double LOGGING_PERIOD_SECONDS = 0.2;
