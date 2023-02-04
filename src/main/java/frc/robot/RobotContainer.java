@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -30,6 +31,7 @@ import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.DynamicCommand;
+import frc.robot.utils.GlobalDebuggable;
 
 /**
  * This class is where the bulk of the robot should be declared (subsystems,
@@ -54,6 +56,8 @@ public class RobotContainer {
 
     private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
     private SendableChooser<CommandBase> chooser;
+
+    private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -111,7 +115,7 @@ public class RobotContainer {
                 Commands.sequence(
                         new ConditionalCommand(
                                 m_funnel.setFunnelStateCommand(FunnelState.INSTALL),
-                                null,
+                                new InstantCommand(),
                                 m_manipulator::isHoldingGamePiece),
                         m_arm.getSetStateCommand(ArmState.DRIVE),
                         m_funnel.setFunnelStateCommand(FunnelState.CLOSED)));
@@ -161,5 +165,17 @@ public class RobotContainer {
      */
     public CommandBase getAutonomousCommand() {
         return this.chooser.getSelected();
+    }
+
+    public void debugInit(ShuffleboardTab tab) {
+        for (GlobalDebuggable i : debuggedObjects) {
+            i.debugInit(tab);
+        }
+    }
+
+    public void debugPeriodic(ShuffleboardTab tab) {
+        for (GlobalDebuggable i : debuggedObjects) {
+            i.debugPeriodic(tab);
+        }
     }
 }
