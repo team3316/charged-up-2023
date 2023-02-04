@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
@@ -30,7 +29,6 @@ import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.utils.DynamicCommand;
 import frc.robot.utils.GlobalDebuggable;
 
 /**
@@ -90,14 +88,6 @@ public class RobotContainer {
         _driverController.cross().onTrue(
                 new InstantCommand(() -> m_drivetrain.setModulesAngle(SmartDashboard.getNumber("module angles", 0))));
 
-        _driverController.PS()
-                .whileTrue(Commands.sequence(
-                        new DynamicCommand(() -> getAutonomousCommand(), m_drivetrain),
-                        new InstantCommand(() -> m_drivetrain.drive(0, 0, 0, false)),
-                        new WaitCommand(0.5),
-                        _autoFactory.createAuto(m_drivetrain, "engage-2"))
-                        .finallyDo((interrupted) -> m_drivetrain.setModulesAngle(90)));
-
         /* Operator triggers */
         // Collect sequence
         _operatorController.L1().onTrue(
@@ -131,7 +121,7 @@ public class RobotContainer {
     }
 
     private void addToChooser(String pathName) {
-        this.chooser.addOption(pathName, _autoFactory.createAuto(m_drivetrain, pathName));
+        this.chooser.addOption(pathName, _autoFactory.createAuto(pathName));
     }
 
     private void initChooser() {
