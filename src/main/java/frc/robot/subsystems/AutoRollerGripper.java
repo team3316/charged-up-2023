@@ -4,11 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -20,15 +15,14 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.RollerGripperConstants;
+import frc.robot.motors.DBugSparkMax;
 
 public class AutoRollerGripper extends SubsystemBase {
 
-    private TalonSRX _talonLeader, _talonFollower;
+    private DBugSparkMax _leader, _follower;
     private DigitalInput _rollerLimitSwitch;
 
     private DoubleSolenoid _doubleSolenoid;
-
-    private TalonSRXConfiguration _talonConfig = new TalonSRXConfiguration();
 
     private FolderState currentFolderState;
 
@@ -56,13 +50,10 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public AutoRollerGripper() {
-        _talonLeader = new TalonSRX(RollerGripperConstants.talonLeaderPort);
-        _talonFollower = new TalonSRX(RollerGripperConstants.talonFollowerPort);
-        _talonFollower.follow(_talonLeader);
-        _talonFollower.setInverted(InvertType.OpposeMaster);
-
-        _talonLeader.configAllSettings(_talonConfig);
-        _talonFollower.configAllSettings(_talonConfig);
+        _leader = DBugSparkMax.create(0);
+        _follower = DBugSparkMax.create(0);
+        _follower.follow(_leader);
+        _follower.setInverted(true);
 
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 RollerGripperConstants.solenoidForwardChannel,
@@ -88,12 +79,12 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public void setRollersState(RollersState state) {
-        _talonLeader.set(TalonSRXControlMode.PercentOutput, state.percentOutput);
+        _leader.set(state.percentOutput);
 
     }
 
     public void stop() {
-        _talonLeader.set(TalonSRXControlMode.PercentOutput, 0);
+        _leader.set(0);
         _doubleSolenoid.set(Value.kOff);
     }
 
