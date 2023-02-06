@@ -67,6 +67,10 @@ public class RobotContainer {
 
         this.chooser = new SendableChooser<Command>();
         initChooser();
+
+        mRobotCharacteizer = new RobotCharacteizer(m_drivetrain::setDrivePercent, m_drivetrain::getDriveVelocity,
+                m_drivetrain);
+
         // Configure the trigger bindings
         configureBindings();
 
@@ -75,9 +79,6 @@ public class RobotContainer {
                 _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
                 _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
                 _fieldRelative), m_drivetrain));
-
-        mRobotCharacteizer = new RobotCharacteizer(m_drivetrain::setDrivePercent, m_drivetrain::getDriveVelocity,
-                m_drivetrain);
     }
 
     /**
@@ -85,8 +86,8 @@ public class RobotContainer {
      */
     private void configureBindings() {
         SmartDashboard.putData("High Acceleration Forward", mRobotCharacteizer.getHighAccelerationCommand(true));
-        SmartDashboard.putData("Low Acceleration Forward", mRobotCharacteizer.getHighAccelerationCommand(false));
-        SmartDashboard.putData("High Acceleration Reverse", mRobotCharacteizer.getLowAccelerationCommand(true));
+        SmartDashboard.putData("High Acceleration Reverse", mRobotCharacteizer.getHighAccelerationCommand(false));
+        SmartDashboard.putData("Low Acceleration Forward", mRobotCharacteizer.getLowAccelerationCommand(true));
         SmartDashboard.putData("Low Acceleration Reverse", mRobotCharacteizer.getLowAccelerationCommand(false));
 
         _driverController.options().onTrue(
