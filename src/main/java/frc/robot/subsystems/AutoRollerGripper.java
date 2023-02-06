@@ -50,8 +50,8 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public AutoRollerGripper() {
-        _leader = DBugSparkMax.create(0);
-        _follower = DBugSparkMax.create(0);
+        _leader = DBugSparkMax.create(RollerGripperConstants.sparkMaxLeaderPort);
+        _follower = DBugSparkMax.create(RollerGripperConstants.sparkMaxFollowerPort);
         _follower.follow(_leader);
         _follower.setInverted(true);
 
