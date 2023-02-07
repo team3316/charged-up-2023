@@ -62,6 +62,20 @@ public class Drivetrain extends SubsystemBase {
                 LimelightConstants.thetaGains.kD);
 
         restartControllers();
+
+        initSDB();
+    }
+
+    private void initSDB(){
+        SmartDashboard.putNumber("drive kp", 0.0);
+        SmartDashboard.putNumber("drive kd", 0.0);
+        SmartDashboard.putData(new InstantCommand(() -> updatePID()));
+    }
+
+    private void updatePID(){
+        for(int i = 0; i < _modules.length; i++){
+            this._modules[i].setModulePID();
+        }
     }
 
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {

@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.motors.DBugSparkMax;
 
@@ -47,6 +48,12 @@ public class SwerveModule {
         canCoder.configMagnetOffset(360 - zeroAngle, 30);
 
         return canCoder;
+    }
+
+    public void setModulePID() {
+        this._driveMotor.getPIDController().setP(SmartDashboard.getNumber("drive kp", 0.0));
+        this._driveMotor.getPIDController().setD(SmartDashboard.getNumber("drive kd", 0.0));
+        this._steerMotor.getPIDController().setP(SmartDashboard.getNumber("steer kp", 0.0));
     }
 
     public void calibrateSteering() {
