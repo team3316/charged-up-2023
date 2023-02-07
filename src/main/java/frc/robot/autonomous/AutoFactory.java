@@ -29,8 +29,6 @@ public class AutoFactory {
     private HashMap<String, Command> _eventMap = new HashMap<>();
 
     public AutoFactory(Drivetrain drivetrain) {
-        _eventMap.put("engage_stop", new InstantCommand(() -> drivetrain.setModulesAngle(90)));
-
         _autoBuilder = new SwerveAutoBuilder(
                 drivetrain::getPose,
                 drivetrain::resetPose,
@@ -43,9 +41,8 @@ public class AutoFactory {
                 drivetrain);
 
         // add event markers here (and add the subsystem to the constructor)
-        // for example:
-        // _eventMap.put("marker1", new PrintCommand("Passed marker 1"));
-        // _eventMap.put("intakeDown", new IntakeDown());
+        _eventMap.put("engage_stop", new InstantCommand(() -> drivetrain.setModulesAngle(90)));
+
     }
 
     public CommandBase createAuto(String pathName) {
