@@ -140,6 +140,9 @@ public class RobotContainer {
         addToChooser("bot-2-gp");
         addToChooser("bot-3-gp-engage");
         addToChooser("bot-3-gp");
+        addToChooser("straight");
+        addToChooser("s-carve");
+        addToChooser("rotate");
     }
 
     /**
