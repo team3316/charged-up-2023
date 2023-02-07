@@ -64,6 +64,13 @@ public class Drivetrain extends SubsystemBase {
         restartControllers();
     }
 
+    public void setModulesAngle(double angle) {
+        SwerveModuleState state = new SwerveModuleState(0, Rotation2d.fromDegrees(angle));
+        for (int i = 0; i < _modules.length; i++) {
+            _modules[i].setAngle(state);
+        }
+    }
+
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         fieldRelative = fieldRelative && this._pigeon.getState() == PigeonState.Ready;
         SmartDashboard.putBoolean("Field Relative", fieldRelative);
@@ -92,6 +99,7 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
         // Update the odometry in the periodic block
         this._odometry.update(getRotation2d(), getSwerveModulePositions());
+
         // updateSDB();
     }
 

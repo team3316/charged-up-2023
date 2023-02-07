@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -53,7 +53,7 @@ public class RobotContainer {
     private boolean _fieldRelative = true;
 
     private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
-    private SendableChooser<Command> chooser;
+    private SendableChooser<CommandBase> chooser;
 
     private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
 
@@ -63,7 +63,7 @@ public class RobotContainer {
     public RobotContainer() {
         m_compressor.enableDigital();
 
-        this.chooser = new SendableChooser<Command>();
+        this.chooser = new SendableChooser<CommandBase>();
         initChooser();
         // Configure the trigger bindings
         configureBindings();
@@ -118,11 +118,12 @@ public class RobotContainer {
     }
 
     private void addToChooser(String pathName) {
-        this.chooser.addOption(pathName, _autoFactory.createAuto(m_drivetrain, pathName));
+        this.chooser.addOption(pathName, _autoFactory.createAuto(pathName));
     }
 
     private void initChooser() {
         SmartDashboard.putData("autonomous", this.chooser);
+        addToChooser("engage");
         addToChooser("1-gp-engage");
         addToChooser("1-gp-leaveCommunity");
         addToChooser("bot-2-gp-engage");
@@ -137,6 +138,7 @@ public class RobotContainer {
     public void stop() {
         m_autoRollerGripper.stop();
         m_arm.stop();
+        m_drivetrain.calibrateSteering();
     }
 
     public void updateTelemetry() {
@@ -148,7 +150,7 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
+    public CommandBase getAutonomousCommand() {
         return this.chooser.getSelected();
     }
 
