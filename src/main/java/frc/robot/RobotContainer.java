@@ -85,9 +85,6 @@ public class RobotContainer {
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
-        _driverController.cross().onTrue(
-                new InstantCommand(() -> m_drivetrain.setModulesAngle(SmartDashboard.getNumber("module angles", 0))));
-
         /* Operator triggers */
         // Collect sequence
         _operatorController.L1().onTrue(
