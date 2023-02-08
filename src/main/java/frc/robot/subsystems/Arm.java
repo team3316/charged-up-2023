@@ -10,6 +10,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -41,7 +45,63 @@ public class Arm extends SubsystemBase {
         }
     }
 
+    private Constraints trapezoidConstraints = ArmConstants.trapezoidConstraints;
+    private double startTime = Timer.getFPGATimestamp();
+    private final DoubleArrayLogEntry mLog = new DoubleArrayLogEntry(DataLogManager.getLog(), "/arm/calibrate");
+
+    public void log(TrapezoidProfile.State state) {
+        double[] record = { Timer.getFPGATimestamp() - startTime, getAngle(), getVelocity(), state.position,
+                state.velocity };
+        mLog.append(record);
+    }
+
+    private void loadFromSDB() {
+        double movementRange = SmartDashboard.getNumber("movementRange", ArmConstants.movementRange);
+        double movementTime = SmartDashboard.getNumber("movementTime", ArmConstants.movementTime);
+
+        double maxVelocityDegreesPerSec = movementRange * 2 / movementTime;
+
+        this.trapezoidConstraints = new Constraints(maxVelocityDegreesPerSec,
+                maxVelocityDegreesPerSec / (movementTime / 2));
+
+        this._feedForward = new ArmFeedforward(SmartDashboard.getNumber("staticGain", ArmConstants.staticGain),
+                SmartDashboard.getNumber("gravityGain", ArmConstants.gravityGain),
+                SmartDashboard.getNumber("velocityGain", ArmConstants.velocityGain),
+                SmartDashboard.getNumber("accelerationGain", ArmConstants.accelerationGain));
+
+        _leader.config_kP(0, SmartDashboard.getNumber("kP", ArmConstants.kP), 20);
+        _leader.config_kI(0, SmartDashboard.getNumber("kI", 0.0), 20);
+        _leader.config_kD(0, SmartDashboard.getNumber("kD", 0.0), 20);
+
+        _leader.configPeakOutputForward(SmartDashboard.getNumber("kMaxOutput", ArmConstants.kMaxOutput), 20);
+        _leader.configPeakOutputReverse(-SmartDashboard.getNumber("kMaxOutput", ArmConstants.kMaxOutput), 20);
+    }
+
+    public void setPercentSDB() {
+        _leader.set(ControlMode.PercentOutput, SmartDashboard.getNumber("PercentOutput", 0.0));
+    }
+
+    private void initSDB() {
+        SmartDashboard.putNumber("movementRange", ArmConstants.movementRange);
+        SmartDashboard.putNumber("movementTime", ArmConstants.movementTime);
+        SmartDashboard.putNumber("staticGain", ArmConstants.staticGain);
+        SmartDashboard.putNumber("gravityGain", ArmConstants.gravityGain);
+        SmartDashboard.putNumber("velocityGain", ArmConstants.velocityGain);
+        SmartDashboard.putNumber("accelerationGain", ArmConstants.accelerationGain);
+        SmartDashboard.putNumber("kP", ArmConstants.kP);
+        SmartDashboard.putNumber("kI", 0);
+        SmartDashboard.putNumber("kD", 0);
+        SmartDashboard.putNumber("kMaxOutput", ArmConstants.kMaxOutput);
+
+        SmartDashboard.putNumber("PercentOutput", 0.0);
+
+        SmartDashboard.putData("loadFromSDB", new InstantCommand(() -> this.loadFromSDB()));
+        SmartDashboard.putData("setPercentSDB", new InstantCommand(() -> this.setPercentSDB()));
+        SmartDashboard.putData("stop", new InstantCommand(() -> this.stop()));
+    }
+
     public Arm() {
+        initSDB();
         _leader = new TalonFX(ArmConstants.leaderCANID);
         _follower = new TalonFX(ArmConstants.followerCANID);
 
@@ -105,10 +165,12 @@ public class Arm extends SubsystemBase {
         _leader.set(ControlMode.Position, angleToTicks(state.position), DemandType.ArbitraryFeedForward, feedForward);
         SmartDashboard.putNumber("State arm velocity", state.velocity);
         SmartDashboard.putNumber("State arm position", state.position);
+        log(state);
     }
 
     private CommandBase generateSetStateCommand(ArmState requiredState) {
-        TrapezoidProfile profile = new TrapezoidProfile(ArmConstants.trapezoidConstraints,
+        startTime = Timer.getFPGATimestamp();
+        TrapezoidProfile profile = new TrapezoidProfile(trapezoidConstraints,
                 new TrapezoidProfile.State(requiredState.stateAngle, 0),
                 new TrapezoidProfile.State(getAngle(), getVelocity()));
 
