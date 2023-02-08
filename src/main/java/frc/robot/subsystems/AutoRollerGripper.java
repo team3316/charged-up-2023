@@ -52,8 +52,7 @@ public class AutoRollerGripper extends SubsystemBase {
     public AutoRollerGripper() {
         _leader = DBugSparkMax.create(RollerGripperConstants.sparkMaxLeaderPort);
         _follower = DBugSparkMax.create(RollerGripperConstants.sparkMaxFollowerPort);
-        _follower.follow(_leader);
-        _follower.setInverted(true);
+        _follower.follow(_leader, true);
 
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 RollerGripperConstants.solenoidForwardChannel,
@@ -89,7 +88,7 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public boolean hasCone() {
-        return _rollerLimitSwitch.get();
+        return !_rollerLimitSwitch.get();
     }
 
     public CommandBase getIntakeCommand() {
