@@ -17,8 +17,8 @@ public class DrivetrainConstants {
                                                           // percent
         public static final double steeringKp = 0.0124; // in 1 / wheel degrees
 
-        public static final double driveKs = (0.0197 + 0.0198) / 2; // in percent
-        public static final double driveKv = 1 / (3.681 + 3.699); // in percent
+        public static final double driveKs = 0.0196; // in percent //y = -0.3663x
+        public static final double driveKv = 1 / 3.653; // in percent / (m/s)
 
         private static final double neoMaxSpeed = 5600;
         private static final double driveRatio = 1.0 / 8.14;
@@ -72,10 +72,10 @@ public class DrivetrainConstants {
     public static final double sideWheelDistMeters = 0.5102;
 
     // TODO: update cancoder offsets
-    public final static double cancoderTLOffset = 14.0;// 10.1;
-    public final static double cancoderTROffset = 65.4;// 243 - 180;// 234.3;
-    public final static double cancoderBLOffset = 92.8;// 109.6;
-    public final static double cancoderBROffset = 159.6;// 159.3;
+    public final static double cancoderTLOffset = 213.2;
+    public final static double cancoderTROffset = 144.0;
+    public final static double cancoderBLOffset = 2.5;
+    public final static double cancoderBROffset = 290.4;
 
     // TODO: update CAN IDs
     public static final SwerveModuleConstants TLModule = new SwerveModuleConstants(
