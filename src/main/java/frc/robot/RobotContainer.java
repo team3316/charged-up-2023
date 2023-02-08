@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -36,7 +38,8 @@ import frc.robot.utils.GlobalDebuggable;
  * commands, and trigger mappings).
  */
 public class RobotContainer {
-    private final Drivetrain m_drivetrain = new Drivetrain();
+    private final DataLog log = DataLogManager.getLog();
+    private final Drivetrain m_drivetrain = new Drivetrain(log);
     private final Funnel m_funnel = new Funnel();
     private final Manipulator m_manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
@@ -52,7 +55,7 @@ public class RobotContainer {
 
     private boolean _fieldRelative = true;
 
-    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain, log);
     private SendableChooser<Command> chooser;
 
     private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug

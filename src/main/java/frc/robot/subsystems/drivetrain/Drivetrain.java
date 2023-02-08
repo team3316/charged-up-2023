@@ -13,7 +13,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,7 +35,7 @@ public class Drivetrain extends SubsystemBase {
     private static PIDController vision_yController;
     private static PIDController vision_thetaController;
 
-    public Drivetrain() {
+    public Drivetrain(DataLog log) {
         this._modules = new SwerveModule[] {
                 new SwerveModule(DrivetrainConstants.TRModule),
                 new SwerveModule(DrivetrainConstants.TLModule),
@@ -49,10 +48,9 @@ public class Drivetrain extends SubsystemBase {
         this._odometry = new SwerveDriveOdometry(DrivetrainConstants.kinematics, getRotation2d(),
                 getSwerveModulePositions());
 
-        DataLog log = DataLogManager.getLog();
-        m_logX = new DoubleLogEntry(log, "/drivetrain/position/x");
-        m_logY = new DoubleLogEntry(log, "/drivetrain/position/y");
-        m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
+        m_logX = new DoubleLogEntry(log, "/drivetrain/position/real_x");
+        m_logY = new DoubleLogEntry(log, "/drivetrain/position/real_y");
+        m_logR = new DoubleLogEntry(log, "/drivetrain/position/real_rotation");
 
         vision_xController = new PIDController(LimelightConstants.xGains.kP, LimelightConstants.xGains.kI,
                 LimelightConstants.xGains.kD);
