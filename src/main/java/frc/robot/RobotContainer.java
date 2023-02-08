@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
@@ -22,6 +23,7 @@ import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
+import frc.robot.subsystems.AutoRollerGripper.RollersState;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
@@ -115,6 +117,9 @@ public class RobotContainer {
         // Install GP
         _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
 
+        _operatorController.L3()
+                .whileTrue(new StartEndCommand(() -> m_autoRollerGripper.getIntakeCommand().schedule(),
+                        () -> m_autoRollerGripper.getEjectCommand().schedule(), m_autoRollerGripper));
     }
 
     private void addToChooser(String pathName) {
