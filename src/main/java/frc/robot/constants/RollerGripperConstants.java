@@ -8,8 +8,8 @@ public class RollerGripperConstants {
     public final static int rollerLimitSwitchPort = 1;
 
     // TODO: calibrate values when system is built
-    public final static double rollerIntakePercent = 0.70; // percent
-    public final static double rollerEjectPercent = -0.70; // percent
+    public final static double rollerIntakePercent = 0.3; // percent
+    public final static double rollerEjectPercent = -0.3; // percent
     public final static double rollerOffPercent = 0; // percent
 
     public final static double ejectSleepDurationSeconds = 0.5; // seconds
