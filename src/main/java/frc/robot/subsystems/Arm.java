@@ -11,7 +11,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,12 +48,19 @@ public class Arm extends SubsystemBase {
 
     private Constraints trapezoidConstraints = ArmConstants.trapezoidConstraints;
     private double startTime = Timer.getFPGATimestamp();
-    private final DoubleArrayLogEntry mLog = new DoubleArrayLogEntry(DataLogManager.getLog(), "/arm/calibrate");
+    private final DataLog log = DataLogManager.getLog();
+    private final DoubleLogEntry time = new DoubleLogEntry(log, "/arm/calibrate/time");
+    private final DoubleLogEntry angle = new DoubleLogEntry(log, "/arm/calibrate/angle");
+    private final DoubleLogEntry velocity = new DoubleLogEntry(log, "/arm/calibrate/velocity");
+    private final DoubleLogEntry stateAngle = new DoubleLogEntry(log, "/arm/calibrate/stateAngle");
+    private final DoubleLogEntry stateVelocity = new DoubleLogEntry(log, "/arm/calibrate/stateVelocity");
 
     public void log(TrapezoidProfile.State state) {
-        double[] record = { Timer.getFPGATimestamp() - startTime, getAngle(), getVelocity(), state.position,
-                state.velocity };
-        mLog.append(record);
+        time.append(Timer.getFPGATimestamp() - startTime);
+        angle.append(getAngle());
+        velocity.append(getVelocity());
+        stateAngle.append(state.position);
+        stateVelocity.append(state.velocity);
     }
 
     private void loadFromSDB() {
