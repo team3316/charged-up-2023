@@ -17,8 +17,9 @@ public class DrivetrainConstants {
                                                           // percent
         public static final double steeringKp = 0.0124; // in 1 / wheel degrees
 
-        public static final double driveKs = (0.0197 + 0.0198) / 2; // in percent
-        public static final double driveKv = 1 / (3.681 + 3.699); // in percent
+        public static final double driveKs = 0.0196; // in percent //y = -0.3663x
+        public static final double driveKv = 1 / 3.653; // in percent / (m/s)
+        public static final double driveKa = 1 / 4.9; // in percent / (m/s^2)
 
         private static final double neoMaxSpeed = 5600;
         private static final double driveRatio = 1.0 / 8.14;
