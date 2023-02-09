@@ -55,7 +55,7 @@ public class RobotContainer {
 
     private boolean _fieldRelative = true;
 
-    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain,log);
     private SendableChooser<CommandBase> chooser;
 
 
