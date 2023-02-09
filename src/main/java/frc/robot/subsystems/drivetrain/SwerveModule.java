@@ -83,6 +83,11 @@ public class SwerveModule {
             this._driveMotor.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
     }
 
+    public void setAngle(SwerveModuleState desiredState) {
+        // Optimize the reference state to avoid spinning further than 90 degrees
+        this._steerMotor.setReference(desiredState.angle.getDegrees(), ControlType.kPosition);
+    }
+
     public static SwerveModuleState optimize(SwerveModuleState desiredState, double currentAngle) {
         // desired angle diff in [-360, +360]
         double _angleDiff = (desiredState.angle.getDegrees() - currentAngle) % 360;

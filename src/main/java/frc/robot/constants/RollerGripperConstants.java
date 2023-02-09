@@ -3,8 +3,8 @@ package frc.robot.constants;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class RollerGripperConstants {
-    public final static int talonLeaderPort = 17;
-    public final static int talonFollowerPort = 18;
+    public final static int sparkMaxLeaderPort = 17;
+    public final static int sparkMaxFollowerPort = 18;
     public final static int rollerLimitSwitchPort = 1;
 
     // TODO: calibrate values when system is built
@@ -16,6 +16,7 @@ public class RollerGripperConstants {
     public final static double intakeSleepDurationSeconds = 0.5; // seconds
 
     public final static double ejectDurationSeconds = 0.02; // seconds
+    
 
     public final static int solenoidForwardChannel = 4;
     public final static int solenoidReverseChannel = 5;

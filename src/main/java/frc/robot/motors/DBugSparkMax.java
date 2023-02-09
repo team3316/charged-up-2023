@@ -76,4 +76,7 @@ public class DBugSparkMax extends CANSparkMax {
         return sparkMax;
     }
 
+    public static DBugSparkMax create(int id) {
+        return create(id, new PIDFGains(0), 1, 1, 0);
+    }
 }

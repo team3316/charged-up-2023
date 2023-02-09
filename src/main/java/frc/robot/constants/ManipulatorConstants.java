@@ -13,5 +13,6 @@ public class ManipulatorConstants {
     public static final DoubleSolenoid.Value solenoidOpenState = DoubleSolenoid.Value.kReverse;
     public static final DoubleSolenoid.Value solenoidClosedState = DoubleSolenoid.Value.kForward;
 
-    public static final double debounceTimeSeconds = 0.2;
+    public static final double GPDetectorThreshold = 0.4;
+    public static final double GPDetectorHysteresis = 0.1;
 }

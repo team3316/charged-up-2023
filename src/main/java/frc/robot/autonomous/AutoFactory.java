@@ -1,6 +1,7 @@
 package frc.robot.autonomous;
 
 import java.util.HashMap;
+import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -14,6 +15,12 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -46,31 +53,31 @@ public class AutoFactory {
         this._logR = new DoubleLogEntry(log, "/drivetrain/position/desired_rotation");
 
         // add event markers here (and add the subsystem to the constructor)
-        // for example:
-        // _eventMap.put("marker1", new PrintCommand("Passed marker 1"));
-        // _eventMap.put("intakeDown", new IntakeDown());
+        _eventMap.put("engage_stop", new InstantCommand(() -> drivetrain.setModulesAngle(90)));
+
     }
 
-    public CommandBase createAuto(Drivetrain drivetrain, String pathName) {
+    public CommandBase createAuto(String pathName) {
         Timer time = new Timer();
-        PathPlannerTrajectory path = PathPlanner.loadPath(pathName,
+        List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup(pathName,
                 new PathConstraints(AutonomousConstants.kMaxSpeedMetersPerSecond,
                         AutonomousConstants.kMaxAccelerationMetersPerSecondSquared));
         return _autoBuilder.fullAuto(path).alongWith(new FunctionalCommand(
                 () -> time.start(),
                 () -> {
-                    this._logX.append(path.sample(time.get()).poseMeters.getX());
-                    this._logY.append(path.sample(time.get()).poseMeters.getY());
-                    this._logR.append(path.sample(time.get()).poseMeters.getRotation().getDegrees());
+                    this._logX.append(path.get(0).sample(time.get()).poseMeters.getX());
+                    this._logY.append(path.get(0).sample(time.get()).poseMeters.getY());
+                    this._logR.append(path.get(0).sample(time.get()).poseMeters.getRotation().getDegrees());
                 },
                 (interrupted) -> {
                     time.stop();
                     time.reset();
                 },
                 () -> false));
-    }
+            }
 
     public CommandBase createfollow(PathPlannerTrajectory path) {
         return _autoBuilder.followPath(path);
     }
+
 }
