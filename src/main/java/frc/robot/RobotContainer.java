@@ -45,7 +45,7 @@ public class RobotContainer {
     private final Arm m_arm = new Arm();
     private final LimeLight m_limeLight = new LimeLight();
 
-    private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+    private final Compressor m_compressor = new Compressor(22,PneumaticsModuleType.REVPH);
 
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
@@ -116,6 +116,7 @@ public class RobotContainer {
 
         // Install GP
         _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+
 
         _operatorController.L3()
                 .whileTrue(new StartEndCommand(() -> m_autoRollerGripper.getIntakeCommand().schedule(),
