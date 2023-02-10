@@ -86,18 +86,9 @@ public class SwerveModule {
         if (state.speedMetersPerSecond == 0) {
             this.stop();
         } else {
-            setDrive(state.speedMetersPerSecond);
+            this._driveMotor.setReference(state.speedMetersPerSecond, ControlType.kVelocity, 0,
+                    _driveFF.calculate(state.speedMetersPerSecond), ArbFFUnits.kPercentOut);
         }
-    }
-
-    public void setDrive(double speedMetersPerSecond) {
-
-        double time = Timer.getFPGATimestamp();
-        this._driveMotor.setReference(speedMetersPerSecond, ControlType.kVelocity, 0,
-                _driveFF.calculate(getDriveVelocity(), speedMetersPerSecond, time -
-                        _driveSetpointTimestamp),
-                ArbFFUnits.kPercentOut);
-        _driveSetpointTimestamp = time;
     }
 
     public void setAngle(SwerveModuleState desiredState) {
