@@ -11,10 +11,9 @@ import frc.robot.motors.PIDFGains;
 public class DrivetrainConstants {
     public static class SwerveModuleConstants {
         // TODO: update pidf gains
-        public static final double driveKp = 0.612; // in seconds per meter
+        public static final double driveKp = 0; // in seconds per meter
         public static final double driveKd = 0; // in seconds per meter
-        public static final double driveKf = 0.75 / 2.81; // percent to motor / m/s at that
-                                                          // percent
+
         public static final double steeringKp = 0.0124; // in 1 / wheel degrees
 
         public static final double driveKs = 0.0196; // in percent //y = -0.3663x
@@ -45,7 +44,7 @@ public class DrivetrainConstants {
 
         public final Translation2d position;
         public final int idDrive;
-        public final PIDFGains driveGains = new PIDFGains(driveKp, 0, driveKd, driveKf);
+        public final PIDFGains driveGains = new PIDFGains(driveKp, 0, driveKd, 0);
         public final int idSteering;
         public final PIDFGains steeringGains = new PIDFGains(steeringKp);
         public final double cancoderZeroAngle;
