@@ -65,30 +65,28 @@ public class DrivetrainConstants {
     public static final double maxRotationSpeedRadPerSec = 11.5;
 
     // TODO: update robot dimensions
-    public static final double frontWheelDistMeters = 0.6703;
-    public static final double sideWheelDistMeters = 0.5102;
+    public static final double frontWheelDistMeters = 0.4803;
+    public static final double sideWheelDistMeters = 0.6703;
 
-    // TODO: update cancoder offsets
-    public final static double cancoderTLOffset = 14.0;// 10.1;
-    public final static double cancoderTROffset = 65.4;// 243 - 180;// 234.3;
-    public final static double cancoderBLOffset = 92.8;// 109.6;
-    public final static double cancoderBROffset = 159.6;// 159.3;
-
+    public final static double cancoderTLOffset = 33.2;
+    public final static double cancoderTROffset = 324.0;
+    public final static double cancoderBLOffset = 182.8;
+    public final static double cancoderBROffset = 110.4;
     // TODO: update CAN IDs
     public static final SwerveModuleConstants TLModule = new SwerveModuleConstants(
-            new Translation2d(-frontWheelDistMeters / 2, sideWheelDistMeters / 2), 3, 4,
+            new Translation2d(sideWheelDistMeters / 2, frontWheelDistMeters / 2), 3, 4,
             cancoderTLOffset, 11);
 
     public static final SwerveModuleConstants TRModule = new SwerveModuleConstants(
-            new Translation2d(frontWheelDistMeters / 2, sideWheelDistMeters / 2), 1, 2,
+            new Translation2d(sideWheelDistMeters / 2, -frontWheelDistMeters / 2), 1, 2,
             cancoderTROffset, 10);
 
     public static final SwerveModuleConstants BLModule = new SwerveModuleConstants(
-            new Translation2d(-frontWheelDistMeters / 2, -sideWheelDistMeters / 2), 5, 6,
+            new Translation2d(-sideWheelDistMeters / 2, frontWheelDistMeters / 2), 5, 6,
             cancoderBLOffset, 12);
 
     public static final SwerveModuleConstants BRModule = new SwerveModuleConstants(
-            new Translation2d(frontWheelDistMeters / 2, -sideWheelDistMeters / 2), 7, 8,
+            new Translation2d(-sideWheelDistMeters / 2, -frontWheelDistMeters / 2), 7, 8,
             cancoderBROffset, 13);
 
     public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(TRModule.position,
