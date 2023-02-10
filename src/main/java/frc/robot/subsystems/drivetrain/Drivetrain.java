@@ -12,11 +12,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.LimelightConstants;
@@ -32,8 +30,7 @@ public class Drivetrain extends SubsystemBase {
 
     private SwerveDriveOdometry _odometry;
 
-    private DoubleLogEntry m_logX, m_logY, m_logR, m_logwV;
-    DoubleArrayLogEntry m_logV;
+    private DoubleLogEntry m_logX, m_logY, m_logR, m_logwV, m_logV;
 
     private static PIDController vision_xController;
     private static PIDController vision_yController;
@@ -56,7 +53,7 @@ public class Drivetrain extends SubsystemBase {
         m_logY = new DoubleLogEntry(log, "/drivetrain/position/real_y");
         m_logR = new DoubleLogEntry(log, "/drivetrain/position/real_rotation");
         m_logwV = new DoubleLogEntry(log, "/drivetrain/calibration/wanted_v");
-        m_logV = new DoubleArrayLogEntry(log, "/drivetrain/calibration/real_v");
+        m_logV = new DoubleLogEntry(log, "/drivetrain/calibration/real_v");
 
         vision_xController = new PIDController(LimelightConstants.xGains.kP, LimelightConstants.xGains.kI,
                 LimelightConstants.xGains.kD);
@@ -132,11 +129,7 @@ public class Drivetrain extends SubsystemBase {
         m_logX.append(pose.getX());
         m_logY.append(pose.getY());
         m_logR.append(pose.getRotation().getDegrees());
-        m_logV.append(new double[] { _modules[0].getDriveVelocity(),
-                _modules[1].getDriveVelocity(),
-                _modules[2].getDriveVelocity(),
-                _modules[3].getDriveVelocity()
-        });
+        m_logV.append(getDriveVelocity());
     }
 
     public void disabledInit() {
