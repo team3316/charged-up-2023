@@ -12,9 +12,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.LimelightConstants;
@@ -29,7 +31,9 @@ public class Drivetrain extends SubsystemBase {
     private PigeonIMU _pigeon;
 
     private SwerveDriveOdometry _odometry;
-    private DoubleLogEntry m_logX, m_logY, m_logR;
+
+    private DoubleLogEntry m_logX, m_logY, m_logR, m_logwV;
+    DoubleArrayLogEntry m_logV;
 
     private static PIDController vision_xController;
     private static PIDController vision_yController;
@@ -51,6 +55,8 @@ public class Drivetrain extends SubsystemBase {
         m_logX = new DoubleLogEntry(log, "/drivetrain/position/real_x");
         m_logY = new DoubleLogEntry(log, "/drivetrain/position/real_y");
         m_logR = new DoubleLogEntry(log, "/drivetrain/position/real_rotation");
+        m_logwV = new DoubleLogEntry(log, "/drivetrain/calibration/wanted_v");
+        m_logV = new DoubleArrayLogEntry(log, "/drivetrain/calibration/real_v");
 
         vision_xController = new PIDController(LimelightConstants.xGains.kP, LimelightConstants.xGains.kI,
                 LimelightConstants.xGains.kD);
@@ -64,14 +70,16 @@ public class Drivetrain extends SubsystemBase {
         initSDB();
     }
 
-    private void initSDB(){
+    private void initSDB() {
+        SmartDashboard.putData("set angles", new InstantCommand(() -> setModulesAngle(0)));
         SmartDashboard.putNumber("drive kp", 0.0);
         SmartDashboard.putNumber("drive kd", 0.0);
-        SmartDashboard.putData(new InstantCommand(() -> updatePID()));
+        SmartDashboard.putNumber("steer kp", 0.0);
+        SmartDashboard.putData("update pid", new InstantCommand(() -> updatePID()));
     }
 
-    private void updatePID(){
-        for(int i = 0; i < _modules.length; i++){
+    private void updatePID() {
+        for (int i = 0; i < _modules.length; i++) {
             this._modules[i].setModulePID();
         }
     }
@@ -103,6 +111,9 @@ public class Drivetrain extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates,
                 DrivetrainConstants.SwerveModuleConstants.freeSpeedMetersPerSecond);
 
+        ChassisSpeeds speeds = DrivetrainConstants.kinematics.toChassisSpeeds(moduleStates);
+        m_logwV.append(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+
         for (int i = 0; i < this._modules.length; i++) {
             this._modules[i].setDesiredState(moduleStates[i]);
         }
@@ -113,6 +124,7 @@ public class Drivetrain extends SubsystemBase {
         this._odometry.update(getRotation2d(), getSwerveModulePositions());
 
         // updateSDB();
+        updateTelemetry();
     }
 
     public void updateTelemetry() {
@@ -120,6 +132,11 @@ public class Drivetrain extends SubsystemBase {
         m_logX.append(pose.getX());
         m_logY.append(pose.getY());
         m_logR.append(pose.getRotation().getDegrees());
+        m_logV.append(new double[] { _modules[0].getDriveVelocity(),
+                _modules[1].getDriveVelocity(),
+                _modules[2].getDriveVelocity(),
+                _modules[3].getDriveVelocity()
+        });
     }
 
     public void disabledInit() {
