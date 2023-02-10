@@ -71,9 +71,6 @@ public class RobotContainer {
         this.chooser = new SendableChooser<CommandBase>();
         initChooser();
 
-        mRobotCharacteizer = new RobotCharacteizer(m_drivetrain::setDrivePercent, m_drivetrain::getDriveVelocity,
-                m_drivetrain);
-
         // Configure the trigger bindings
         configureBindings();
 
@@ -88,11 +85,6 @@ public class RobotContainer {
      * Use this method to define your trigger->command mappings.
      */
     private void configureBindings() {
-        SmartDashboard.putData("High Acceleration Forward", mRobotCharacteizer.getHighAccelerationCommand(true));
-        SmartDashboard.putData("High Acceleration Reverse", mRobotCharacteizer.getHighAccelerationCommand(false));
-        SmartDashboard.putData("Low Acceleration Forward", mRobotCharacteizer.getLowAccelerationCommand(true));
-        SmartDashboard.putData("Low Acceleration Reverse", mRobotCharacteizer.getLowAccelerationCommand(false));
-
         _driverController.options().onTrue(
                 new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative mode
 
