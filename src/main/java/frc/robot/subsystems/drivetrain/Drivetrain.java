@@ -129,7 +129,7 @@ public class Drivetrain extends SubsystemBase {
         m_logX.append(pose.getX());
         m_logY.append(pose.getY());
         m_logR.append(pose.getRotation().getDegrees());
-        m_logV.append(getDriveVelocity());
+        m_logV.append(Math.abs(getDriveVelocity()));
     }
 
     public void disabledInit() {
