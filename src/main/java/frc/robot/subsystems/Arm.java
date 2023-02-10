@@ -24,7 +24,7 @@ import frc.robot.constants.ArmConstants;
 import frc.robot.utils.DynamicCommand;
 
 public class Arm extends SubsystemBase {
-    private static final int TICKS_PER_REVOLUTION = 4096;
+    private static final int TICKS_PER_REVOLUTION = 2048;
     private TalonFX _leader;
     private TalonFX _follower;
     private ArmFeedforward _feedForward;
