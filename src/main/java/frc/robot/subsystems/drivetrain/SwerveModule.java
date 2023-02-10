@@ -3,10 +3,13 @@ package frc.robot.subsystems.drivetrain;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.motors.DBugSparkMax;
@@ -18,8 +21,11 @@ public class SwerveModule {
 
     private DBugSparkMax _driveMotor;
     private DBugSparkMax _steerMotor;
-
+    private SimpleMotorFeedforward _driveFF = new SimpleMotorFeedforward(SwerveModuleConstants.driveKs,
+            SwerveModuleConstants.driveKv, SwerveModuleConstants.driveKa);
     private CANCoder _absEncoder;
+
+    private double _driveSetpointTimestamp = Timer.getFPGATimestamp();
 
     public SwerveModule(SwerveModuleConstants constants) {
         this._absEncoder = createCANCoder(constants.canCoderId, constants.cancoderZeroAngle);
@@ -77,10 +83,21 @@ public class SwerveModule {
         if (state.speedMetersPerSecond != 0) // Avoid steering in place
             this._steerMotor.setReference(state.angle.getDegrees(), ControlType.kPosition);
 
-        if (state.speedMetersPerSecond == 0)
+        if (state.speedMetersPerSecond == 0) {
             this.stop();
-        else
-            this._driveMotor.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
+        } else {
+            setDrive(state.speedMetersPerSecond);
+        }
+    }
+
+    public void setDrive(double speedMetersPerSecond) {
+
+        double time = Timer.getFPGATimestamp();
+        this._driveMotor.setReference(speedMetersPerSecond, ControlType.kVelocity, 0,
+                _driveFF.calculate(getDriveVelocity(), speedMetersPerSecond, time -
+                        _driveSetpointTimestamp),
+                ArbFFUnits.kPercentOut);
+        _driveSetpointTimestamp = time;
     }
 
     public void setAngle(SwerveModuleState desiredState) {
