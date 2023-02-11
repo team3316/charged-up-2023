@@ -119,8 +119,9 @@ public class RobotContainer {
 
 
         _operatorController.L3()
-                .whileTrue(new StartEndCommand(() -> m_autoRollerGripper.getIntakeCommand().schedule(),
-                        () -> m_autoRollerGripper.getEjectCommand().schedule(), m_autoRollerGripper));
+                .onTrue(new InstantCommand(() -> m_autoRollerGripper.getIntakeCommand().schedule()));
+
+        _operatorController.R1().onTrue(m_autoRollerGripper.getEjectCommand());
     }
 
     private void addToChooser(String pathName) {
