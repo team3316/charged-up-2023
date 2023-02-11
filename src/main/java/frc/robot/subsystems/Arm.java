@@ -127,6 +127,7 @@ public class Arm extends SubsystemBase {
         _leaderConfig.peakOutputReverse = -ArmConstants.kMaxOutput;
 
         _leader.configAllSettings(_leaderConfig);
+        _leader.setInverted(InvertType.InvertMotorOutput);
 
         _follower.configAllSettings(new TalonFXConfiguration());
         _follower.follow(_leader);
@@ -138,9 +139,9 @@ public class Arm extends SubsystemBase {
 
     private ArmState getInitialState() {
         if (_leader.isRevLimitSwitchClosed() == 1) {
-            return ArmState.LOW;
-        } else if (_leader.isFwdLimitSwitchClosed() == 1) {
             return ArmState.COLLECT;
+        } else if (_leader.isFwdLimitSwitchClosed() == 1) {
+            return ArmState.LOW;
         } else {
             return ArmState.DRIVE;
         }
@@ -204,7 +205,7 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (_leader.isFwdLimitSwitchClosed() == 1) {
+        if (_leader.isRevLimitSwitchClosed() == 1) {
             _leader.setSelectedSensorPosition(angleToTicks(ArmConstants.collectAngle));
         }
         updateSDB();
