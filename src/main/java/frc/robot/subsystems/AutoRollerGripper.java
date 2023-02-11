@@ -10,10 +10,12 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.constants.RollerGripperConstants;
 import frc.robot.motors.DBugSparkMax;
 
@@ -62,6 +64,8 @@ public class AutoRollerGripper extends SubsystemBase {
                 RollerGripperConstants.solenoidReverseChannel);
 
         _rollerLimitSwitch = new DigitalInput(RollerGripperConstants.rollerLimitSwitchPort);
+
+        SmartDashboard.putNumber("intake precent", SmartDashboard.getNumber("intake precent", 0));
     }
 
     public void periodic() {
@@ -95,14 +99,19 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public CommandBase getIntakeCommand() {
-        return new StartEndCommand(
-                () -> {
-                    setRollersState(RollersState.INTAKE);
-                },
-                () -> {
-                    new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds).andThen(
-                            new InstantCommand(() -> setRollersState(RollersState.OFF)));
-                }).until(this::hasCone);
+        // return new StartEndCommand(
+        // () -> {
+        // setRollersState(RollersState.INTAKE);
+        // },
+        // () -> {
+        // new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds).andThen(
+        // new InstantCommand(() -> setRollersState(RollersState.OFF)));
+        // }, this).until(this::hasCone);
+        return Commands.sequence(
+                new InstantCommand(() -> _leader.set(SmartDashboard.getNumber("intake precent", 0))),
+                new WaitUntilCommand(this::hasCone),
+                new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds),
+                new InstantCommand(() -> setRollersState(RollersState.OFF)));
     }
 
     public CommandBase getEjectCommand() {
