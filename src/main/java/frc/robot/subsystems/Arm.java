@@ -198,6 +198,8 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Current arm angle", getAngle());
         SmartDashboard.putString("Target arm state", getTargetState().toString());
         SmartDashboard.putNumber("Current arm velocity", getVelocity());
+        SmartDashboard.putBoolean("fwd limit", _leader.isFwdLimitSwitchClosed() == 1);
+        SmartDashboard.putBoolean("rev limit", _leader.isRevLimitSwitchClosed() == 1);
     }
 
     @Override
