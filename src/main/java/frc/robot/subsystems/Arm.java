@@ -145,6 +145,7 @@ public class Arm extends SubsystemBase {
         _leaderConfig.slot0.kP = ArmConstants.kP;
         _leaderConfig.peakOutputForward = ArmConstants.kMaxOutput;
         _leaderConfig.peakOutputReverse = -ArmConstants.kMaxOutput;
+        _leaderConfig.neutralDeadband = 0.001;
 
         _leader.configAllSettings(_leaderConfig);
         _leader.setInverted(InvertType.InvertMotorOutput);
