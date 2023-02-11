@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.constants.ArmConstants;
@@ -89,6 +90,20 @@ public class Arm extends SubsystemBase {
         _leader.set(ControlMode.PercentOutput, SmartDashboard.getNumber("PercentOutput", 0.0));
     }
 
+    public void setFeedFFSDB() {
+        double feedForward = _feedForward.calculate(Math.toRadians(getAngle()), Math.toRadians(0)); // for kg
+        // double feedForward = _feedForward.calculate(Math.toRadians(getAngle()),
+        // Math.toRadians(0.00001)); // for ks
+
+        // double feedForward = _feedForward.calculate(Math.toRadians(getAngle()),
+        // Math.toRadians(0.00001))+0.3; // for kv
+
+        // double feedForward = _feedForward.calculate(Math.toRadians(getAngle()),
+        // Math.toRadians(50)); // for checking kv
+
+        _leader.set(ControlMode.PercentOutput, feedForward);
+    }
+
     private void initSDB() {
         SmartDashboard.putNumber("movementRange", ArmConstants.movementRange);
         SmartDashboard.putNumber("movementTime", ArmConstants.movementTime);
@@ -100,11 +115,16 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("kI", 0);
         SmartDashboard.putNumber("kD", 0);
         SmartDashboard.putNumber("kMaxOutput", ArmConstants.kMaxOutput);
+        SmartDashboard.putData("COLLECT", getSetStateCommand(ArmState.COLLECT));
+        SmartDashboard.putData("CONE", getSetStateCommand(ArmState.MID_CONE));
+        SmartDashboard.putData("LOW", getSetStateCommand(ArmState.LOW));
+        SmartDashboard.putData("DRIVE", getSetStateCommand(ArmState.DRIVE));
 
         SmartDashboard.putNumber("PercentOutput", 0.0);
 
         SmartDashboard.putData("loadFromSDB", new InstantCommand(() -> this.loadFromSDB()));
         SmartDashboard.putData("setPercentSDB", new InstantCommand(() -> this.setPercentSDB()));
+        SmartDashboard.putData("setFeedFFSDB", new RunCommand(() -> this.setFeedFFSDB()));
         SmartDashboard.putData("stop", new InstantCommand(() -> this.stop()));
     }
 
