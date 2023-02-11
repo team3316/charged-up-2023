@@ -17,14 +17,13 @@ public class ArmConstants {
             maxAccelerationDegreesPerSecSqrd);
 
     // Arm gains
-    public static final double kP = 0.03;
-    public static final double kMaxOutput = 0.4;
+    public static final double kP = 0.01;
+    public static final double kMaxOutput = 0.8;
 
     // Arm feedforward
-    // TODO: Calibrate
-    public static final double gravityGain = -0.1; // in Motor%
-    public static final double velocityGain = 0.000965; // in Motor% sec/deg
-    public static final double staticGain = 0.02; // in Motor%
+    public static final double gravityGain = 0.017; // in Motor%
+    public static final double velocityGain = 0.3 / Math.toRadians(104); // in Motor% sec/deg
+    public static final double staticGain = 0.009; // in Motor%
     public static final double accelerationGain = 0; // in Motor% sec^2/deg
 
     // State Angles
