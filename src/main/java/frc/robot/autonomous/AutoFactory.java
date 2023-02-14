@@ -39,10 +39,6 @@ public class AutoFactory {
                 true, // Should the path be automatically mirrored depending on alliance color.
                 drivetrain);
 
-        this._logX = new DoubleLogEntry(log, "/drivetrain/position/desired_x");
-        this._logY = new DoubleLogEntry(log, "/drivetrain/position/desired_y");
-        this._logR = new DoubleLogEntry(log, "/drivetrain/position/desired_rotation");
-
         // add event markers here (and add the subsystem to the constructor)
         _eventMap.put("engage_stop", new InstantCommand(() -> drivetrain.setModulesAngle(90)));
 
