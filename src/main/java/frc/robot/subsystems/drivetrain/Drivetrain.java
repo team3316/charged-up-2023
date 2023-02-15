@@ -267,10 +267,6 @@ public class Drivetrain extends SubsystemBase {
                 posErrorX,
                 posErrorY,
                 rotationError);
-
-        var moduleStates = DrivetrainConstants.kinematics.toSwerveModuleStates(speeds);
-
-        setDesiredStates(moduleStates);
     }
 
     public void logPosError(Translation2d translation, Rotation2d rotation) {
