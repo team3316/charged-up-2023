@@ -90,12 +90,13 @@ public class RobotContainer {
         _operatorController.L1().onTrue(
                 Commands.sequence(
                         Commands.parallel(
-                                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                                 m_funnel.setFunnelStateCommand(FunnelState.COLLECT),
                                 m_arm.getSetStateCommand(ArmState.COLLECT)),
-                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+                        Commands.parallel(
+                                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                                m_funnel.setFunnelStateCommand(FunnelState.CLOSED))));
 
         // Drive arm state sequence
         _operatorController.triangle().onTrue(
@@ -111,9 +112,22 @@ public class RobotContainer {
         _operatorController.circle().onTrue(m_arm.getSetStateCommand(ArmState.MID_CONE));
         _operatorController.square().onTrue(m_arm.getSetStateCommand(ArmState.MID_CUBE));
         _operatorController.cross().onTrue(m_arm.getSetStateCommand(ArmState.LOW));
+        
+        // Score sequences
+        _operatorController.povDown().onTrue(m_arm.getSetStateCommand(null));
+        _operatorController.povUp().onTrue(m_arm.getSetStateCommand(ArmState.MID_CONE));
+        
 
         // Install GP
         _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+
+        // Go to collect state sequence
+        _operatorController.cross().onTrue(
+                Commands.sequence(
+                        m_arm.getSetStateCommand(ArmState.DRIVE),
+                        m_funnel.setFunnelStateCommand(FunnelState.INSTALL),
+                        m_arm.getSetStateCommand(ArmState.COLLECT),
+                        m_funnel.setFunnelStateCommand(FunnelState.CLOSED)));
 
     }
 
