@@ -8,9 +8,9 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,6 +28,8 @@ public class AutoFactory {
     private HashMap<String, Command> _eventMap = new HashMap<>();
 
     public AutoFactory(Drivetrain drivetrain, DataLog log) {
+        PPSwerveControllerCommand.setLoggingCallbacks(null, null, drivetrain::logSpeedsError, drivetrain::logPosError);
+
         _autoBuilder = new SwerveAutoBuilder(
                 drivetrain::getPose,
                 drivetrain::resetPose,

@@ -6,6 +6,7 @@ import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,6 +33,8 @@ public class Drivetrain extends SubsystemBase {
     private SwerveDriveOdometry _odometry;
 
     private DoubleLogEntry m_logX, m_logY, m_logR, m_logwV, m_logV;
+
+    private Double posErrorX, posErrorY, rotationError;
 
     private static PIDController vision_xController;
     private static PIDController vision_yController;
@@ -249,5 +253,29 @@ public class Drivetrain extends SubsystemBase {
         _modules[1].setDrivePercent(percent);
         _modules[2].setDrivePercent(percent);
         _modules[3].setDrivePercent(percent);
+    }
+
+    public void logSpeedsError(ChassisSpeeds speeds) {
+        ChassisSpeeds realSpeeds = DrivetrainConstants.kinematics.toChassisSpeeds(
+                _modules[0].getState(), _modules[1].getState(), _modules[2].getState(), _modules[3].getState());
+
+        System.out.printf("%f,%f,%f,%f,%f,%f,%f\n",
+                Timer.getFPGATimestamp(),
+                speeds.vxMetersPerSecond - realSpeeds.vxMetersPerSecond,
+                speeds.vyMetersPerSecond - realSpeeds.vyMetersPerSecond,
+                speeds.omegaRadiansPerSecond - realSpeeds.omegaRadiansPerSecond,
+                posErrorX,
+                posErrorY,
+                rotationError);
+
+        var moduleStates = DrivetrainConstants.kinematics.toSwerveModuleStates(speeds);
+
+        setDesiredStates(moduleStates);
+    }
+
+    public void logPosError(Translation2d translation, Rotation2d rotation) {
+        posErrorX = translation.getX();
+        posErrorY = translation.getY();
+        rotationError = rotation.getDegrees();
     }
 }
