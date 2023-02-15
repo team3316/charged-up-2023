@@ -19,7 +19,7 @@ import frc.robot.constants.ArmConstants;
 import frc.robot.utils.DynamicCommand;
 
 public class Arm extends SubsystemBase {
-    private static final int TICKS_PER_REVOLUTION = 4096;
+    private static final int TICKS_PER_REVOLUTION = 2048;
     private TalonFX _leader;
     private TalonFX _follower;
     private ArmFeedforward _feedForward;
@@ -57,8 +57,10 @@ public class Arm extends SubsystemBase {
         _leaderConfig.slot0.kP = ArmConstants.kP;
         _leaderConfig.peakOutputForward = ArmConstants.kMaxOutput;
         _leaderConfig.peakOutputReverse = -ArmConstants.kMaxOutput;
+        _leaderConfig.neutralDeadband = 0.001;
 
         _leader.configAllSettings(_leaderConfig);
+        _leader.setInverted(InvertType.InvertMotorOutput);
 
         _follower.configAllSettings(new TalonFXConfiguration());
         _follower.follow(_leader);
@@ -69,10 +71,10 @@ public class Arm extends SubsystemBase {
     }
 
     private ArmState getInitialState() {
-        if (_leader.isRevLimitSwitchClosed() == 1) {
-            return ArmState.LOW;
-        } else if (_leader.isFwdLimitSwitchClosed() == 1) {
+        if (isRevLimitSwitchClosed()) {
             return ArmState.COLLECT;
+        } else if (isFwdLimitSwitchClosed()) {
+            return ArmState.LOW;
         } else {
             return ArmState.DRIVE;
         }
@@ -124,15 +126,25 @@ public class Arm extends SubsystemBase {
         return ticksToAngle(_leader.getSelectedSensorVelocity()) * 10;
     }
 
+    private boolean isFwdLimitSwitchClosed() {
+        return _leader.isFwdLimitSwitchClosed() == 1;
+    }
+
+    private boolean isRevLimitSwitchClosed() {
+        return _leader.isRevLimitSwitchClosed() == 1;
+    }
+
     private void updateSDB() {
         SmartDashboard.putNumber("Current arm angle", getAngle());
         SmartDashboard.putString("Target arm state", getTargetState().toString());
         SmartDashboard.putNumber("Current arm velocity", getVelocity());
+        SmartDashboard.putBoolean("fwd limit", isFwdLimitSwitchClosed());
+        SmartDashboard.putBoolean("rev limit", isRevLimitSwitchClosed());
     }
 
     @Override
     public void periodic() {
-        if (_leader.isFwdLimitSwitchClosed() == 1) {
+        if (isRevLimitSwitchClosed()) {
             _leader.setSelectedSensorPosition(angleToTicks(ArmConstants.collectAngle));
         }
         updateSDB();
