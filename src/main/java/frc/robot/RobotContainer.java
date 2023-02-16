@@ -22,9 +22,10 @@ import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
+import frc.robot.subsystems.Funnel.FunnelPosition;
+import frc.robot.subsystems.Funnel.FunnelRollersState;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Funnel;
-import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
@@ -90,23 +91,24 @@ public class RobotContainer {
         _operatorController.L1().onTrue(
                 Commands.sequence(
                         Commands.parallel(
+                                m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                                m_funnel.setFunnelStateCommand(FunnelState.COLLECT),
-                                m_arm.getSetStateCommand(ArmState.COLLECT)),
+                                m_arm.getSetStateCommand(ArmState.COLLECT),
+                                m_funnel.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         Commands.parallel(
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                                m_funnel.setFunnelStateCommand(FunnelState.CLOSED))));
+                                m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED))));
 
         // Drive arm state sequence
         _operatorController.triangle().onTrue(
                 Commands.sequence(
                         new ConditionalCommand(
-                                m_funnel.setFunnelStateCommand(FunnelState.INSTALL),
+                                m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
                                 new InstantCommand(),
                                 m_manipulator::isHoldingGamePiece),
                         m_arm.getSetStateCommand(ArmState.DRIVE),
-                        m_funnel.setFunnelStateCommand(FunnelState.CLOSED)));
+                        m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED)));
 
         // Set arm to scoring pos
         _operatorController.circle().onTrue(m_arm.getSetStateCommand(ArmState.MID_CONE));
@@ -125,9 +127,9 @@ public class RobotContainer {
         _operatorController.cross().onTrue(
                 Commands.sequence(
                         m_arm.getSetStateCommand(ArmState.DRIVE),
-                        m_funnel.setFunnelStateCommand(FunnelState.INSTALL),
+                        m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
                         m_arm.getSetStateCommand(ArmState.COLLECT),
-                        m_funnel.setFunnelStateCommand(FunnelState.CLOSED)));
+                        m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED)));
 
     }
 
@@ -152,6 +154,7 @@ public class RobotContainer {
     public void stop() {
         m_autoRollerGripper.stop();
         m_arm.stop();
+        m_funnel.stop();
         m_drivetrain.calibrateSteering();
     }
 

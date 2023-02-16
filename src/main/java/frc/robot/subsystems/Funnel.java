@@ -20,65 +20,97 @@ import frc.robot.constants.FunnelConstants;
 
 public class Funnel extends SubsystemBase {
 
-  private TalonSRX _followerRoller;
-  private TalonSRX _leaderRoller;
-  private FunnelState _currentState;
-  private DoubleSolenoid _funnelSolenoid;
+    private TalonSRX _followerRoller;
+    private TalonSRX _leaderRoller;
+    private FunnelPosition _currentPosition;
+    private FunnelRollersState _currentRollersState;
+    private DoubleSolenoid _funnelSolenoid;
 
-  public enum FunnelState {
-    COLLECT(FunnelConstants.openState, FunnelConstants.collectPercent),
-    INSTALL(FunnelConstants.openState, FunnelConstants.installPercent),
-    CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent);
+    public enum FunnelPosition {
+        OPEN(FunnelConstants.openState),
+        CLOSED(FunnelConstants.closedState);
 
-    public final DoubleSolenoid.Value solenoidState;
-    public final double rollerPercent;
+        public final DoubleSolenoid.Value solenoidState;
 
-    private FunnelState(Value solenoidState, double rollerPercent) {
-      this.solenoidState = solenoidState;
-      this.rollerPercent = rollerPercent;
-    }
-  };
-
-  public Funnel() {
-    this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort,
-        FunnelConstants.solenoidReversePort);
-
-    TalonSRXConfiguration talonConfig = new TalonSRXConfiguration();
-    talonConfig.continuousCurrentLimit = 5; // Low torque application
-    talonConfig.openloopRamp = 1.0; // Seconds from 0 to 100%
-    talonConfig.voltageCompSaturation = 12; // For consistency
-
-    this._followerRoller = new TalonSRX(FunnelConstants.talonSRXFollowerPort);
-    this._leaderRoller = new TalonSRX(FunnelConstants.talonSRXLeaderPort);
-    _followerRoller.configFactoryDefault();
-    _leaderRoller.configFactoryDefault();
-    _followerRoller.configAllSettings(talonConfig);
-    _leaderRoller.configAllSettings(talonConfig);
-
-    _followerRoller.follow(_leaderRoller);
-    _followerRoller.setInverted(InvertType.OpposeMaster);
-
-  }
-
-  public FunnelState getFunnelState() {
-    return _currentState;
-  }
-
-  public void setFunnelState(FunnelState state) {
-    if (state == getFunnelState()) {
-      return;
+        private FunnelPosition(DoubleSolenoid.Value solenoidState) {
+            this.solenoidState = solenoidState;
+        }
     }
 
-    _funnelSolenoid.set(state.solenoidState);
+    public enum FunnelRollersState {
+        COLLECT(FunnelConstants.collectPercent),
+        OFF(FunnelConstants.closedPercent);
 
-    _leaderRoller.set(TalonSRXControlMode.PercentOutput, state.rollerPercent);
+        public double rollersPrecent;
 
-    _currentState = state;
+        private FunnelRollersState(double rollerPercent) {
+            this.rollersPrecent = rollerPercent;
+        }
+    }
 
-    SmartDashboard.putString("Funnel State", this._currentState.toString());
-  }
+    public Funnel() {
+        this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort,
+                FunnelConstants.solenoidReversePort);
 
-  public CommandBase setFunnelStateCommand(FunnelState state) {
-    return new InstantCommand(() -> setFunnelState(state), this);
-  }
+        TalonSRXConfiguration talonConfig = new TalonSRXConfiguration();
+        talonConfig.continuousCurrentLimit = 5; // Low torque application
+        talonConfig.openloopRamp = 1.0; // Seconds from 0 to 100%
+        talonConfig.voltageCompSaturation = 12; // For consistency
+
+        this._followerRoller = new TalonSRX(FunnelConstants.talonSRXFollowerPort);
+        this._leaderRoller = new TalonSRX(FunnelConstants.talonSRXLeaderPort);
+        _followerRoller.configFactoryDefault();
+        _leaderRoller.configFactoryDefault();
+        _followerRoller.configAllSettings(talonConfig);
+        _leaderRoller.configAllSettings(talonConfig);
+
+        _followerRoller.follow(_leaderRoller);
+        _followerRoller.setInverted(InvertType.OpposeMaster);
+
+    }
+
+    public void stop() {
+        _funnelSolenoid.set(DoubleSolenoid.Value.kOff);
+        _leaderRoller.set(TalonSRXControlMode.PercentOutput, 0);
+    }
+
+    public FunnelPosition getFunnelPosition() {
+        return _currentPosition;
+    }
+
+    public FunnelRollersState getFunnelRollersState() {
+        return _currentRollersState;
+    }
+
+    private void setFunnelPosition(FunnelPosition targetPosition) {
+        if (_currentPosition == targetPosition) {
+            return;
+        }
+
+        _funnelSolenoid.set(targetPosition.solenoidState);
+
+        _currentPosition = targetPosition;
+
+        SmartDashboard.putString("Funnel Position", targetPosition.toString());
+    }
+
+    private void setFunnelRollersState(FunnelRollersState targetState) {
+        if (_currentRollersState == targetState) {
+            return;
+        }
+
+        _leaderRoller.set(TalonSRXControlMode.PercentOutput, targetState.rollersPrecent);
+
+        _currentRollersState = targetState;
+
+        SmartDashboard.putString("Funnel Rollers State", targetState.toString());
+    }
+
+    public CommandBase setFunnelPositionCommand(FunnelPosition targetPositon) {
+        return new InstantCommand(() -> setFunnelPosition(targetPositon), this);
+    }
+
+    public CommandBase setFunnelRollersStateCommand(FunnelRollersState targetState) {
+        return new InstantCommand(() -> setFunnelRollersState(targetState), this);
+    }
 }

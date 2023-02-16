@@ -8,7 +8,6 @@ public class FunnelConstants {
     public static final DoubleSolenoid.Value closedState = DoubleSolenoid.Value.kReverse;
 
     public static final double collectPercent = -0.15;
-    public static final double installPercent = 0;
     public static final double closedPercent = 0;
 
     public static final int talonSRXFollowerPort = 21;
