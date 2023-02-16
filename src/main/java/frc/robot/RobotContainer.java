@@ -59,7 +59,7 @@ public class RobotContainer {
 
     private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
 
-    private boolean _scoreMidCube;
+    private boolean _scoreMidCube = false;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -77,6 +77,8 @@ public class RobotContainer {
                 _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
                 _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
                 _fieldRelative), m_drivetrain));
+
+        SmartDashboard.putBoolean("target GP", this._scoreMidCube);
     }
 
     /**
@@ -119,11 +121,13 @@ public class RobotContainer {
         _operatorController.circle().onTrue(new InstantCommand(() -> {
             this._scoreMidCube = true;
             m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
+            SmartDashboard.putBoolean("target GP", this._scoreMidCube);
         }));
         // Set cone as wanted GP
         _operatorController.square().onTrue(new InstantCommand(() -> {
             this._scoreMidCube = false;
             m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
+            SmartDashboard.putBoolean("target GP", this._scoreMidCube);
         }));
 
         // Score sequences
