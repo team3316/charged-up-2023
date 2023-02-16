@@ -100,7 +100,7 @@ public class RobotContainer {
         // Collect sequence
         _operatorController.L1().onTrue(
                 Commands.sequence(
-                        Commands.parallel(
+                        Commands.sequence(
                                 m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                                 m_arm.getSetStateCommand(ArmState.COLLECT),
