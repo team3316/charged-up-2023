@@ -3,12 +3,13 @@ package frc.robot.constants;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class RollerGripperConstants {
-    public final static int sparkMaxLeaderPort = 17;
-    public final static int sparkMaxFollowerPort = 18;
+    public final static int sparkMaxTopPort = 17;
+    public final static int sparkMaxBottomPort = 18;
     public final static int rollerLimitSwitchPort = 1;
 
     // TODO: calibrate values when system is built
-    public final static double rollerIntakePercent = +0.7; // percent
+    public final static double rollerTopIntakePercent = +0.7; // percent
+    public final static double rollerBottomIntakePercent = +0.7; // percent
     public final static double rollerEjectPercent = -0.7; // percent
     public final static double rollerOffPercent = 0; // percent
 
