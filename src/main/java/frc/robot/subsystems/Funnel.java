@@ -71,7 +71,7 @@ public class Funnel extends SubsystemBase {
 
     public void stop() {
         _funnelSolenoid.set(DoubleSolenoid.Value.kOff);
-        _leaderRoller.set(TalonSRXControlMode.PercentOutput, 0);
+        this.setFunnelRollersState(FunnelRollersState.OFF);
     }
 
     public FunnelPosition getFunnelPosition() {
