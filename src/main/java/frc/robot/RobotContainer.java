@@ -19,6 +19,7 @@ import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
@@ -58,6 +59,8 @@ public class RobotContainer {
 
     private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
 
+    private boolean _scoreMidCube;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -86,6 +89,11 @@ public class RobotContainer {
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
+        _driverController.triangle()
+                .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
+                        new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
+                                m_limeLight.getFieldTY()), m_drivetrain)));
+
         /* Operator triggers */
         // Collect sequence
         _operatorController.L1().onTrue(
@@ -103,22 +111,28 @@ public class RobotContainer {
         // Drive arm state sequence
         _operatorController.triangle().onTrue(
                 Commands.sequence(
-                        new ConditionalCommand(
-                                m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
-                                new InstantCommand(),
-                                m_manipulator::isHoldingGamePiece),
+                        m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
                         m_arm.getSetStateCommand(ArmState.DRIVE),
                         m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED)));
 
-        // Set arm to scoring pos
-        _operatorController.circle().onTrue(m_arm.getSetStateCommand(ArmState.MID_CONE));
-        _operatorController.square().onTrue(m_arm.getSetStateCommand(ArmState.MID_CUBE));
-        _operatorController.cross().onTrue(m_arm.getSetStateCommand(ArmState.LOW));
-        
+        // Set cube as wanted GP
+        _operatorController.circle().onTrue(new InstantCommand(() -> {
+            this._scoreMidCube = true;
+            m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
+        }));
+        // Set cone as wanted GP
+        _operatorController.square().onTrue(new InstantCommand(() -> {
+            this._scoreMidCube = false;
+            m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
+        }));
+
         // Score sequences
-        _operatorController.povDown().onTrue(m_arm.getSetStateCommand(null));
-        _operatorController.povUp().onTrue(m_arm.getSetStateCommand(ArmState.MID_CONE));
-        
+        _operatorController.povDown().onTrue(m_arm.getSetStateCommand(ArmState.LOW));
+        _operatorController.povUp().onTrue(
+                new ConditionalCommand(
+                        m_arm.getSetStateCommand(ArmState.MID_CUBE),
+                        m_arm.getSetStateCommand(ArmState.MID_CONE),
+                        () -> _scoreMidCube));
 
         // Install GP
         _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
