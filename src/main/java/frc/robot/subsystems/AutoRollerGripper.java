@@ -95,7 +95,7 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public boolean hasCone() {
-        return !_rollerLimitSwitch.get();
+        return !_rollerLimitSwitch.get(); //limitSwitch is NC 
     }
 
     public CommandBase getIntakeCommand() {
