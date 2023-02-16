@@ -57,8 +57,8 @@ public class AutoRollerGripper extends SubsystemBase {
         _bottomSparkMax = DBugSparkMax.create(RollerGripperConstants.sparkMaxBottomPort);
         _bottomSparkMax.setInverted(true);
 
-        _topSparkMax.setSmartCurrentLimit(20);
-        _bottomSparkMax.setSmartCurrentLimit(20);
+        _topSparkMax.setSmartCurrentLimit(RollerGripperConstants.currentLimitAmp);
+        _bottomSparkMax.setSmartCurrentLimit(RollerGripperConstants.currentLimitAmp);
 
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 RollerGripperConstants.solenoidForwardChannel,
