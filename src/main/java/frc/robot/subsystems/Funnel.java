@@ -10,7 +10,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -83,10 +82,6 @@ public class Funnel extends SubsystemBase {
     }
 
     private void setFunnelPosition(FunnelPosition targetPosition) {
-        if (_currentPosition == targetPosition) {
-            return;
-        }
-
         _funnelSolenoid.set(targetPosition.solenoidState);
 
         _currentPosition = targetPosition;
@@ -95,10 +90,6 @@ public class Funnel extends SubsystemBase {
     }
 
     private void setFunnelRollersState(FunnelRollersState targetState) {
-        if (_currentRollersState == targetState) {
-            return;
-        }
-
         _leaderRoller.set(TalonSRXControlMode.PercentOutput, targetState.rollersPrecent);
 
         _currentRollersState = targetState;
