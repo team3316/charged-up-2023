@@ -12,6 +12,6 @@ public class FunnelConstants {
 
     public static final int talonSRXFollowerPort = 21;
     public static final int talonSRXLeaderPort = 20;
-    public static final int solenoidForwardPort = 0;
-    public static final int solenoidReversePort = 1;
+    public static final int solenoidForwardPort = 2;
+    public static final int solenoidReversePort = 3;
 }

@@ -16,10 +16,9 @@ public class RollerGripperConstants {
     public final static double intakeSleepDurationSeconds = 0.5; // seconds
 
     public final static double ejectDurationSeconds = 0.02; // seconds
-    
 
-    public final static int solenoidForwardChannel = 4;
-    public final static int solenoidReverseChannel = 5;
+    public final static int solenoidForwardChannel = 0;
+    public final static int solenoidReverseChannel = 1;
     // TODO: update when piston position is known
     public final static DoubleSolenoid.Value stateWhenFoldedIn = DoubleSolenoid.Value.kForward;
     public final static DoubleSolenoid.Value stateWhenFoldedOut = DoubleSolenoid.Value.kReverse;
