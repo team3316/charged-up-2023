@@ -106,7 +106,8 @@ public class RobotContainer {
                                 m_arm.getSetStateCommand(ArmState.COLLECT),
                                 m_funnel.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                        Commands.parallel(
+                        Commands.sequence(
+                                m_funnel.setFunnelRollersStateCommand(FunnelRollersState.OFF),
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                                 m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED))));
 
