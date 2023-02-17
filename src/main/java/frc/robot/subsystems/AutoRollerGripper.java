@@ -20,7 +20,7 @@ import frc.robot.motors.DBugSparkMax;
 
 public class AutoRollerGripper extends SubsystemBase {
 
-    private DBugSparkMax _topSparkMax, _bottomSparkMax;
+    private DBugSparkMax _rightSparkMax, _leftSparkMax;
     private DigitalInput _rollerLimitSwitch;
 
     private DoubleSolenoid _doubleSolenoid;
@@ -39,26 +39,26 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public enum RollersState {
-        INTAKE(RollerGripperConstants.rollerTopIntakePercent, RollerGripperConstants.rollerBottomIntakePercent),
+        INTAKE(RollerGripperConstants.rollerRightIntakePercent, RollerGripperConstants.rollerLeftIntakePercent),
         EJECT(RollerGripperConstants.rollerEjectPercent, RollerGripperConstants.rollerEjectPercent),
         OFF(RollerGripperConstants.rollerOffPercent, RollerGripperConstants.rollerOffPercent);
 
-        private final double topPrecent;
-        private final double bottomPrecent;
+        private final double _rightPrecent;
+        private final double _leftPrecent;
 
-        RollersState(double topPrecent, double BottomPrecent) {
-            this.topPrecent = topPrecent;
-            this.bottomPrecent = BottomPrecent;
+        RollersState(double rightPrecent, double leftPrecent) {
+            this._rightPrecent = rightPrecent;
+            this._leftPrecent = leftPrecent;
         }
     }
 
     public AutoRollerGripper() {
-        _topSparkMax = DBugSparkMax.create(RollerGripperConstants.sparkMaxTopPort);
-        _bottomSparkMax = DBugSparkMax.create(RollerGripperConstants.sparkMaxBottomPort);
-        _bottomSparkMax.setInverted(true);
+        _rightSparkMax = DBugSparkMax.create(RollerGripperConstants.sparkMaxRightPort);
+        _leftSparkMax = DBugSparkMax.create(RollerGripperConstants.sparkMaxLeftPort);
+        _leftSparkMax.setInverted(true);
 
-        _topSparkMax.setSmartCurrentLimit(RollerGripperConstants.currentLimitAmp);
-        _bottomSparkMax.setSmartCurrentLimit(RollerGripperConstants.currentLimitAmp);
+        _rightSparkMax.setSmartCurrentLimit(RollerGripperConstants.currentLimitAmp);
+        _leftSparkMax.setSmartCurrentLimit(RollerGripperConstants.currentLimitAmp);
 
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 RollerGripperConstants.solenoidForwardChannel,
@@ -84,8 +84,8 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public void setRollersState(RollersState state) {
-        _topSparkMax.set(state.topPrecent);
-        _bottomSparkMax.set(state.bottomPrecent);
+        _rightSparkMax.set(state._rightPrecent);
+        _leftSparkMax.set(state._leftPrecent);
 
     }
 
@@ -95,7 +95,7 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public boolean hasCone() {
-        return !_rollerLimitSwitch.get(); //limitSwitch is NC 
+        return !_rollerLimitSwitch.get(); // limitSwitch is NC
     }
 
     public CommandBase getIntakeCommand() {
