@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
@@ -62,9 +63,11 @@ public class Funnel extends SubsystemBase {
         _leaderRoller.configFactoryDefault();
         _followerRoller.configAllSettings(talonConfig);
         _leaderRoller.configAllSettings(talonConfig);
+        _leaderRoller.setNeutralMode(NeutralMode.Coast);
 
         _followerRoller.follow(_leaderRoller);
         _followerRoller.setInverted(InvertType.OpposeMaster);
+        _followerRoller.setNeutralMode(NeutralMode.Coast);
 
     }
 
