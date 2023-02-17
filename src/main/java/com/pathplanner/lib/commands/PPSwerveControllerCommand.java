@@ -227,11 +227,12 @@ public class PPSwerveControllerCommand extends CommandBase {
     if (logActiveTrajectory != null) {
       logActiveTrajectory.accept(transformedTrajectory);
     }
-
+    
+    PathPlannerServer.sendActivePath(transformedTrajectory.getStates());
+    
     timer.reset();
     timer.start();
 
-    PathPlannerServer.sendActivePath(transformedTrajectory.getStates());
   }
 
   @Override
