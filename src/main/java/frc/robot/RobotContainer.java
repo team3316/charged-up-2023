@@ -22,6 +22,7 @@ import frc.robot.constants.JoysticksConstants;
 import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.Funnel.FunnelPosition;
 import frc.robot.subsystems.Funnel.FunnelRollersState;
@@ -39,10 +40,13 @@ import frc.robot.utils.GlobalDebuggable;
  */
 public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
-    private final Funnel m_funnel = new Funnel();
     private final Manipulator m_manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
+
+    private final Funnel m_funnel = new Funnel();
     private final Arm m_arm = new Arm();
+    private final ArmFunnelSuperStructure m_ArmFunnelSuperStructure = new ArmFunnelSuperStructure(m_arm, m_funnel);
+
     private final LimeLight m_limeLight = new LimeLight();
 
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
@@ -101,22 +105,19 @@ public class RobotContainer {
         _operatorController.L1().onTrue(
                 Commands.sequence(
                         Commands.sequence(
-                                m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                                m_arm.getSetStateCommand(ArmState.COLLECT),
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelPosition.OPEN),
                                 m_funnel.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         Commands.sequence(
                                 m_funnel.setFunnelRollersStateCommand(FunnelRollersState.OFF),
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                                m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED))));
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                        FunnelPosition.CLOSED))));
 
         // Drive arm state sequence
         _operatorController.triangle().onTrue(
-                Commands.sequence(
-                        m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
-                        m_arm.getSetStateCommand(ArmState.DRIVE),
-                        m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED)));
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelPosition.CLOSED));
 
         // Set cube as wanted GP
         _operatorController.circle().onTrue(new InstantCommand(() -> {
@@ -132,11 +133,12 @@ public class RobotContainer {
         }));
 
         // Score sequences
-        _operatorController.povDown().onTrue(m_arm.getSetStateCommand(ArmState.LOW));
+        _operatorController.povDown()
+                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelPosition.CLOSED));
         _operatorController.povUp().onTrue(
                 new ConditionalCommand(
-                        m_arm.getSetStateCommand(ArmState.MID_CUBE),
-                        m_arm.getSetStateCommand(ArmState.MID_CONE),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelPosition.CLOSED),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelPosition.CLOSED),
                         () -> _scoreMidCube));
 
         // Install GP
@@ -144,11 +146,7 @@ public class RobotContainer {
 
         // Go to collect state sequence
         _operatorController.cross().onTrue(
-                Commands.sequence(
-                        m_arm.getSetStateCommand(ArmState.DRIVE),
-                        m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
-                        m_arm.getSetStateCommand(ArmState.COLLECT),
-                        m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED)));
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelPosition.CLOSED));
 
     }
 
