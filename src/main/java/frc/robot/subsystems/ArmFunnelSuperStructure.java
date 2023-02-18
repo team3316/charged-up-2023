@@ -59,4 +59,9 @@ public class ArmFunnelSuperStructure {
         return armMovementSequence;
 
     }
+
+    public void stop() {
+        m_arm.stop();
+        m_funnel.stop();
+    }
 }
