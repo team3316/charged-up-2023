@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.Funnel.FunnelPosition;
 import frc.robot.subsystems.Funnel.FunnelRollersState;
+import frc.robot.utils.DynamicCommand;
 
 public class ArmFunnelSuperStructure {
     private final Arm m_arm;
@@ -15,7 +16,7 @@ public class ArmFunnelSuperStructure {
         m_funnel = funnel;
     }
 
-    public CommandBase getSetStateCommand(ArmState wantedArmState, FunnelPosition wantedFunnelState) {
+    public CommandBase generateSetStateCommand(ArmState wantedArmState, FunnelPosition wantedFunnelState) {
         /**
          * If arm in collect and moves out or arm is out and move to collect:
          * open -> drive -> closed -> continue
@@ -66,6 +67,10 @@ public class ArmFunnelSuperStructure {
 
     public CommandBase setFunnelRollersStateCommand(FunnelRollersState state) {
         return m_funnel.setFunnelRollersStateCommand(state);
+    }
+
+    public CommandBase getSetStateCommand(ArmState wantedArmState, FunnelPosition wantedFunnelState) {
+        return new DynamicCommand(() -> generateSetStateCommand(wantedArmState, wantedFunnelState), m_arm, m_funnel);
     }
 
     public void stop() {
