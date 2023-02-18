@@ -19,7 +19,7 @@ public class ArmFunnelSuperStructure {
         CommandBase armMovementSequence = new InstantCommand();
         if (arm == m_arm.getTargetState()) {
             switch (arm) {
-                case COLLECT:
+                case COLLECT: // moving to COLLECT from not COLLECT
                     armMovementSequence = Commands.sequence(
                             m_arm.getSetStateCommand(ArmState.DRIVE),
                             m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
@@ -27,22 +27,28 @@ public class ArmFunnelSuperStructure {
                     break;
 
                 case DRIVE:
-                    if (m_arm.getTargetState() == ArmState.COLLECT)
+                    if (m_arm.getTargetState() == ArmState.COLLECT) // moving to DRIVE to COLLECT
+                    {
                         armMovementSequence = Commands.sequence(
                                 m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
                                 m_arm.getSetStateCommand(ArmState.DRIVE));
+                    } else
+                        armMovementSequence = Commands.sequence(m_arm.getSetStateCommand(ArmState.DRIVE)); // moving
+                                                                                                           // from SCORE
+                                                                                                           // to DRIVE
+
                     break;
 
                 default:
-                    if (m_arm.getTargetState() == ArmState.COLLECT) {
+                    if (m_arm.getTargetState() == ArmState.COLLECT) { // moving from COLLECT to SCORE
                         armMovementSequence = Commands.sequence(
                                 m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
                                 m_arm.getSetStateCommand(ArmState.DRIVE),
                                 m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED),
                                 m_arm.getSetStateCommand(arm));
                     } else
-                        armMovementSequence = Commands.sequence(
-                                m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED),
+                        armMovementSequence = Commands.sequence( // moving from DRIVE/SCORE to different SCORE
+                                m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED), // safety
                                 m_arm.getSetStateCommand(arm));
 
             }
