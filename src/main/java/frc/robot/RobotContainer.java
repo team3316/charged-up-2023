@@ -43,9 +43,8 @@ public class RobotContainer {
     private final Manipulator m_manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
 
-    private final Funnel m_funnel = new Funnel();
-    private final Arm m_arm = new Arm();
-    private final ArmFunnelSuperStructure m_ArmFunnelSuperStructure = new ArmFunnelSuperStructure(m_arm, m_funnel);
+    private final ArmFunnelSuperStructure m_ArmFunnelSuperStructure = new ArmFunnelSuperStructure(new Arm(),
+            new Funnel());
 
     private final LimeLight m_limeLight = new LimeLight();
 
@@ -110,7 +109,7 @@ public class RobotContainer {
                                 m_ArmFunnelSuperStructure.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         Commands.sequence(
-                            m_ArmFunnelSuperStructure.setFunnelRollersStateCommand(FunnelRollersState.OFF),
+                                m_ArmFunnelSuperStructure.setFunnelRollersStateCommand(FunnelRollersState.OFF),
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
                                         FunnelPosition.CLOSED))));
