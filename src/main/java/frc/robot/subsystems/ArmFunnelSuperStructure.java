@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.Funnel.FunnelPosition;
+import frc.robot.subsystems.Funnel.FunnelRollersState;
 
 public class ArmFunnelSuperStructure {
     private final Arm m_arm;
@@ -61,6 +62,10 @@ public class ArmFunnelSuperStructure {
                     m_funnel.setFunnelPositionCommand(wantedFunnelState));
 
         return m_funnel.setFunnelPositionCommand(wantedFunnelState).andThen(m_arm.getSetStateCommand(wantedArmState));
+    }
+
+    public CommandBase setFunnelRollersStateCommand(FunnelRollersState state) {
+        return m_funnel.setFunnelRollersStateCommand(state);
     }
 
     public void stop() {
