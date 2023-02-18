@@ -141,6 +141,10 @@ public class RobotContainer {
         m_drivetrain.calibrateSteering();
     }
 
+    public void calibrateSteering() {
+        m_drivetrain.calibrateSteering();
+    }
+
     public void updateTelemetry() {
         m_drivetrain.updateTelemetry();
     }
