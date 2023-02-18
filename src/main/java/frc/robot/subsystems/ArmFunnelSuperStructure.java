@@ -17,7 +17,36 @@ public class ArmFunnelSuperStructure {
 
     public CommandBase getSetStateCommand(ArmState arm, FunnelPosition funnel) {
         CommandBase armMovementSequence = new InstantCommand();
-        if (arm == m_arm.getTargetState()) {
+
+        /**
+         * If arm in collect and moves out or arm is out and move to collect:
+         *      open -> drive -> closed -> continue
+         *      open -> collect -> final state -> continue
+         * 
+         * 1 collect-to-drive = sequence(open, drive, close)
+         * 2 drive-to-collect = sequence(open, collect, final_state)
+         * 
+         * If arm is > drive
+         *      close -> drive -> continue
+         * 
+         * 3 closed-to = sequence(close, target)
+         * 
+         *          collect     drive       mid cone    mid cube    low
+         * collect      x       (1+3)         (1+3)       (1+3)    (1+3)
+         * drive      (3+2)      (3)           (3)         (3)      (3)
+         * mid cone   (3+2)      (3)           (3)         (3)      (3)
+         * mid cube   (3+2)      (3)           (3)         (3)      (3)
+         * low        (3+2)      (3)           (3)         (3)      (3)
+         * 
+         * if (pos == target) return ();
+         *   else if (pos == collect) return (1+3);
+         *     else if (tar == collect) return (3+2);
+         *         else return 3
+         * 
+         */
+
+
+        if (arm != m_arm.getTargetState()) {
             switch (arm) {
                 case COLLECT: // moving to COLLECT from not COLLECT
                     armMovementSequence = Commands.sequence(
