@@ -64,7 +64,6 @@ public class DrivetrainConstants {
 
     public static final double maxRotationSpeedRadPerSec = 11.5;
 
-    // TODO: update robot dimensions
     public static final double frontWheelDistMeters = 0.4803;
     public static final double sideWheelDistMeters = 0.6703;
 
@@ -72,7 +71,6 @@ public class DrivetrainConstants {
     public final static double cancoderTROffset = 324.0;
     public final static double cancoderBLOffset = 182.8;
     public final static double cancoderBROffset = 110.4;
-    // TODO: update CAN IDs
     public static final SwerveModuleConstants TLModule = new SwerveModuleConstants(
             new Translation2d(sideWheelDistMeters / 2, frontWheelDistMeters / 2), 3, 4,
             cancoderTLOffset, 11);
