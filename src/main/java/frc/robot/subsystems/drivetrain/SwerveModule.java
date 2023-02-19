@@ -43,6 +43,8 @@ public class SwerveModule {
                 SwerveModuleConstants.steeringPositionConversionFactor,
                 SwerveModuleConstants.steeringVelocityConversionFactor,
                 _absEncoder.getAbsolutePosition());
+
+        this._driveMotor.setMeasurementPeriod(0);
     }
 
     private static CANCoder createCANCoder(int id, double zeroAngle) {
