@@ -98,6 +98,8 @@ public class RobotContainer {
      * Use this method to define your trigger->command mappings.
      */
     private void configureBindings() {
+        _driverController.cross().onTrue(_autoFactory.createfollow(m_limeLight.getCollectionTrajectory()));
+
         _driverController.options().onTrue(
                 new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field
         // relative mode
