@@ -2,6 +2,7 @@ package frc.robot.subsystems.drivetrain;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,6 +36,7 @@ public class Drivetrain extends SubsystemBase {
     private DoubleLogEntry m_logX, m_logY, m_logR, m_logwV, m_logV;
 
     private Double posErrorX, posErrorY, rotationError;
+    private PathPlannerState state;
 
     private static PIDController vision_xController;
     private static PIDController vision_yController;
@@ -124,7 +126,7 @@ public class Drivetrain extends SubsystemBase {
         // Update the odometry in the periodic block
         this._odometry.update(getRotation2d(), getSwerveModulePositions());
 
-        // updateSDB();
+        updateSDB();
         updateTelemetry();
     }
 
@@ -148,10 +150,15 @@ public class Drivetrain extends SubsystemBase {
             SmartDashboard.putNumber("abs " + i, this._modules[i].getAbsAngle());
         }
 
+        Pose2d pose = getPose();
+        SmartDashboard.putNumber("xpos", pose.getX());
+        SmartDashboard.putNumber("ypos", pose.getY());
+
         SmartDashboard.putNumber("rotation", getRotation2d().getRadians());
     }
 
     public Pose2d getPose() {
+        // System.out.println("getting pose at:" + Timer.getFPGATimestamp());
         return this._odometry.getPoseMeters();
     }
 
@@ -259,11 +266,17 @@ public class Drivetrain extends SubsystemBase {
         ChassisSpeeds realSpeeds = DrivetrainConstants.kinematics.toChassisSpeeds(
                 _modules[0].getState(), _modules[1].getState(), _modules[2].getState(), _modules[3].getState());
 
-        System.out.printf("%f,%f,%f,%f,%f,%f,%f\n",
-                Timer.getFPGATimestamp(),
-                speeds.vxMetersPerSecond - realSpeeds.vxMetersPerSecond,
-                speeds.vyMetersPerSecond - realSpeeds.vyMetersPerSecond,
-                speeds.omegaRadiansPerSecond - realSpeeds.omegaRadiansPerSecond,
+        System.out.printf("%f,%f,%f,%f,%f,%f\n",
+                state.timeSeconds,
+                state.velocityMetersPerSecond,
+                Math.hypot(realSpeeds.vxMetersPerSecond,
+                        realSpeeds.vyMetersPerSecond),
+                // speeds.vxMetersPerSecond,
+                // speeds.vyMetersPerSecond,
+                // speeds.omegaRadiansPerSecond,
+                // realSpeeds.vxMetersPerSecond,
+                // realSpeeds.vyMetersPerSecond,
+                // realSpeeds.omegaRadiansPerSecond,
                 posErrorX,
                 posErrorY,
                 rotationError);
@@ -273,5 +286,9 @@ public class Drivetrain extends SubsystemBase {
         posErrorX = translation.getX();
         posErrorY = translation.getY();
         rotationError = rotation.getDegrees();
+    }
+
+    public void logState(PathPlannerState state) {
+        this.state = state;
     }
 }

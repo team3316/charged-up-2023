@@ -28,7 +28,8 @@ public class AutoFactory {
     private HashMap<String, Command> _eventMap = new HashMap<>();
 
     public AutoFactory(Drivetrain drivetrain, DataLog log) {
-        PPSwerveControllerCommand.setLoggingCallbacks(null, null, drivetrain::logSpeedsError, drivetrain::logPosError);
+        PPSwerveControllerCommand.setLoggingCallbacks(null, drivetrain::logState, drivetrain::logSpeedsError,
+                drivetrain::logPosError);
 
         _autoBuilder = new SwerveAutoBuilder(
                 drivetrain::getPose,
