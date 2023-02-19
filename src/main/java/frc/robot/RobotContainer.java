@@ -138,7 +138,7 @@ public class RobotContainer {
     public void stop() {
         m_autoRollerGripper.stop();
         m_arm.stop();
-        m_drivetrain.calibrateSteering();
+        m_drivetrain.stop();
     }
 
     public void calibrateSteering() {
