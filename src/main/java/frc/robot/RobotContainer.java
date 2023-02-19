@@ -22,6 +22,7 @@ import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
@@ -115,6 +116,11 @@ public class RobotContainer {
         // Install GP
         _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
 
+        // Auto roller gripper
+        _operatorController.share().onFalse(m_autoRollerGripper.getIntakeCommand());
+        _operatorController.options().onFalse(m_autoRollerGripper.getEjectCommand());
+        _operatorController.PS().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _operatorController.mute().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.IN));
     }
 
     private void addToChooser(String pathName) {
