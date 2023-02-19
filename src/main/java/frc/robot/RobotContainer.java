@@ -55,8 +55,9 @@ public class RobotContainer {
 
     private boolean _fieldRelative = true;
 
-    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain, log);
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain,log);
     private SendableChooser<CommandBase> chooser;
+
 
     private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
 
@@ -147,9 +148,6 @@ public class RobotContainer {
     public void stop() {
         m_autoRollerGripper.stop();
         m_arm.stop();
-    }
-
-    public void calibrateSteering() {
         m_drivetrain.calibrateSteering();
     }
 
