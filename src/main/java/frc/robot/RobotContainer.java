@@ -24,10 +24,11 @@ import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
-import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.AutoRollerGripper;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
@@ -159,6 +160,11 @@ public class RobotContainer {
         _operatorController.povDown().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
 
+        // Auto roller gripper
+        _operatorController.share().onFalse(m_autoRollerGripper.getIntakeCommand());
+        _operatorController.options().onFalse(m_autoRollerGripper.getEjectCommand());
+        _operatorController.PS().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _operatorController.mute().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.IN));
     }
 
     private void addToChooser(String pathName) {
