@@ -217,4 +217,10 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("tKP", 0);
         SmartDashboard.putData("update vision SDB", new InstantCommand(() -> this.setVisionPIDFromSDB()));
     }
+
+    public void stop() {
+        for (SwerveModule swerveModule : _modules) {
+            swerveModule.stop();
+        }
+    }
 }

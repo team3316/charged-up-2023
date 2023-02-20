@@ -14,19 +14,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
-import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Arm.ArmState;
+import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelPosition;
 import frc.robot.subsystems.Funnel.FunnelRollersState;
-import frc.robot.subsystems.AutoRollerGripper;
-import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
@@ -41,7 +37,8 @@ public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final Funnel m_funnel = new Funnel();
     private final Manipulator m_manipulator = new Manipulator();
-    private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
+    // private final AutoRollerGripper m_autoRollerGripper = new
+    // AutoRollerGripper();
     private final Arm m_arm = new Arm();
     private final LimeLight m_limeLight = new LimeLight();
 
@@ -85,70 +82,108 @@ public class RobotContainer {
      * Use this method to define your trigger->command mappings.
      */
     private void configureBindings() {
-        _driverController.options().onTrue(
-                new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative mode
+        // _driverController.options().onTrue(
+        // new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field
+        // relative mode
 
         _driverController.share().onTrue(
-                new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
+        new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
-        _driverController.triangle()
-                .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
-                        new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
-                                m_limeLight.getFieldTY()), m_drivetrain)));
+        // _driverController.triangle()
+        // .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(),
+        // m_drivetrain).andThen(
+        // new RunCommand(() ->
+        // m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
+        // m_limeLight.getFieldTY()), m_drivetrain)));
 
-        /* Operator triggers */
-        // Collect sequence
-        _operatorController.L1().onTrue(
-                Commands.sequence(
-                        Commands.sequence(
-                                m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
-                                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                                m_arm.getSetStateCommand(ArmState.COLLECT),
-                                m_funnel.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
-                        new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                        Commands.sequence(
-                                m_funnel.setFunnelRollersStateCommand(FunnelRollersState.OFF),
-                                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                                m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED))));
+        // /* Operator triggers */
+        // // Collect sequence
+        // _operatorController.L1().onTrue(
+        // Commands.sequence(
+        // Commands.sequence(
+        // m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
+        // m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+        // m_arm.getSetStateCommand(ArmState.COLLECT),
+        // m_funnel.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
+        // new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+        // Commands.sequence(
+        // m_funnel.setFunnelRollersStateCommand(FunnelRollersState.OFF),
+        // m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+        // m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED))));
 
-        // Drive arm state sequence
-        _operatorController.triangle().onTrue(
-                Commands.sequence(
+        // // Drive arm state sequence
+        // _operatorController.triangle().onTrue(
+        // Commands.sequence(
+        // m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
+        // m_arm.getSetStateCommand(ArmState.DRIVE),
+        // m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED)));
+
+        // // Set cube as wanted GP
+        // _operatorController.circle().onTrue(new InstantCommand(() -> {
+        // this._scoreMidCube = true;
+        // m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
+        // SmartDashboard.putBoolean("target GP", this._scoreMidCube);
+        // }));
+        // // Set cone as wanted GP
+        // _operatorController.square().onTrue(new InstantCommand(() -> {
+        // this._scoreMidCube = false;
+        // m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
+        // SmartDashboard.putBoolean("target GP", this._scoreMidCube);
+        // }));
+
+        // // Score sequences
+        // _operatorController.povDown().onTrue(m_arm.getSetStateCommand(ArmState.LOW));
+        // _operatorController.povUp().onTrue(
+        // new ConditionalCommand(
+        // m_arm.getSetStateCommand(ArmState.MID_CUBE),
+        // m_arm.getSetStateCommand(ArmState.MID_CONE),
+        // () -> _scoreMidCube));
+
+        // // Install GP
+        // _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+
+        // // Go to collect state sequence
+        // _operatorController.cross().onTrue(
+        // Commands.sequence(
+        // m_arm.getSetStateCommand(ArmState.DRIVE),
+        // m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
+        // m_arm.getSetStateCommand(ArmState.COLLECT),
+        // m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED)));
+
+        _driverController.circle()
+                .onTrue(new ConditionalCommand(m_funnel.setFunnelRollersStateCommand(FunnelRollersState.COLLECT),
+                        m_funnel.setFunnelRollersStateCommand(FunnelRollersState.OFF),
+                        () -> m_funnel.getFunnelRollersState() == FunnelRollersState.OFF));
+        _driverController.R1()
+                .onTrue(new ConditionalCommand(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                        () -> m_manipulator.getManipulatorState() == ManipulatorState.OPEN));
+        _driverController.L1()
+                .onTrue(new ConditionalCommand(m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED),
                         m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
-                        m_arm.getSetStateCommand(ArmState.DRIVE),
-                        m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED)));
-
-        // Set cube as wanted GP
-        _operatorController.circle().onTrue(new InstantCommand(() -> {
-            this._scoreMidCube = true;
-            m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
-            SmartDashboard.putBoolean("target GP", this._scoreMidCube);
-        }));
-        // Set cone as wanted GP
-        _operatorController.square().onTrue(new InstantCommand(() -> {
-            this._scoreMidCube = false;
-            m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
-            SmartDashboard.putBoolean("target GP", this._scoreMidCube);
-        }));
-
-        // Score sequences
-        _operatorController.povDown().onTrue(m_arm.getSetStateCommand(ArmState.LOW));
-        _operatorController.povUp().onTrue(
-                new ConditionalCommand(
-                        m_arm.getSetStateCommand(ArmState.MID_CUBE),
-                        m_arm.getSetStateCommand(ArmState.MID_CONE),
-                        () -> _scoreMidCube));
-
-        // Install GP
-        _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
-
-        // Go to collect state sequence
-        _operatorController.cross().onTrue(
-                Commands.sequence(
-                        m_arm.getSetStateCommand(ArmState.DRIVE),
-                        m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
-                        m_arm.getSetStateCommand(ArmState.COLLECT),
-                        m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED)));
+                        () -> m_funnel.getFunnelPosition() == FunnelPosition.OPEN));
+        _driverController.square().onTrue(Commands.sequence(
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                Commands.waitSeconds(0.7),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                Commands.waitSeconds(0.7),
+                m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED),
+                Commands.waitSeconds(1.5),
+                m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
+                Commands.waitSeconds(0.7),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+        // _operatorController.L1().onTrue(
+        // Commands.sequence(
+        // Commands.sequence(
+        // m_funnel.setFunnelPositionCommand(FunnelPosition.OPEN),
+        // m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+        // m_arm.getSetStateCommand(ArmState.COLLECT),
+        // m_funnel.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
+        // new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+        // Commands.sequence(
+        // m_funnel.setFunnelRollersStateCommand(FunnelRollersState.OFF),
+        // m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+        // m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED))));
 
     }
 
@@ -171,9 +206,13 @@ public class RobotContainer {
      * Called when we disable the robot to make sure nothing moves after we enable
      */
     public void stop() {
-        m_autoRollerGripper.stop();
+        // m_autoRollerGripper.stop();
         m_arm.stop();
         m_funnel.stop();
+        m_drivetrain.stop();
+    }
+
+    public void calibrateSteering() {
         m_drivetrain.calibrateSteering();
     }
 

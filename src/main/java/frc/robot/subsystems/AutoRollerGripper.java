@@ -10,16 +10,17 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.constants.RollerGripperConstants;
 import frc.robot.motors.DBugSparkMax;
 
 public class AutoRollerGripper extends SubsystemBase {
 
-    private DBugSparkMax _leader, _follower;
+    private DBugSparkMax _rightSparkMax, _leftSparkMax;
     private DigitalInput _rollerLimitSwitch;
 
     private DoubleSolenoid _doubleSolenoid;
@@ -38,22 +39,26 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public enum RollersState {
-        INTAKE(RollerGripperConstants.rollerIntakePercent),
-        EJECT(RollerGripperConstants.rollerEjectPercent),
-        OFF(RollerGripperConstants.rollerOffPercent);
+        INTAKE(RollerGripperConstants.rollerRightIntakePercent, RollerGripperConstants.rollerLeftIntakePercent),
+        EJECT(RollerGripperConstants.rollerEjectPercent, RollerGripperConstants.rollerEjectPercent),
+        OFF(RollerGripperConstants.rollerOffPercent, RollerGripperConstants.rollerOffPercent);
 
-        private final double percentOutput;
+        private final double _rightPrecent;
+        private final double _leftPrecent;
 
-        RollersState(double percentOutput) {
-            this.percentOutput = percentOutput;
+        RollersState(double rightPrecent, double leftPrecent) {
+            this._rightPrecent = rightPrecent;
+            this._leftPrecent = leftPrecent;
         }
     }
 
     public AutoRollerGripper() {
-        _leader = DBugSparkMax.create(RollerGripperConstants.sparkMaxLeaderPort);
-        _follower = DBugSparkMax.create(RollerGripperConstants.sparkMaxFollowerPort);
-        _follower.follow(_leader);
-        _follower.setInverted(true);
+        _rightSparkMax = DBugSparkMax.create(RollerGripperConstants.sparkMaxRightPort);
+        _leftSparkMax = DBugSparkMax.create(RollerGripperConstants.sparkMaxLeftPort);
+        _leftSparkMax.setInverted(true);
+
+        _rightSparkMax.setSmartCurrentLimit(RollerGripperConstants.currentLimitAmp);
+        _leftSparkMax.setSmartCurrentLimit(RollerGripperConstants.currentLimitAmp);
 
         _doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH,
                 RollerGripperConstants.solenoidForwardChannel,
@@ -79,42 +84,38 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public void setRollersState(RollersState state) {
-        _leader.set(state.percentOutput);
+        _rightSparkMax.set(state._rightPrecent);
+        _leftSparkMax.set(state._leftPrecent);
 
     }
 
     public void stop() {
-        _leader.set(0);
+        setRollersState(RollersState.OFF);
         _doubleSolenoid.set(Value.kOff);
     }
 
     public boolean hasCone() {
-        return _rollerLimitSwitch.get();
+        return !_rollerLimitSwitch.get(); // limitSwitch is NC
     }
 
     public CommandBase getIntakeCommand() {
-        return new StartEndCommand(
-                () -> {
-                    setRollersState(RollersState.INTAKE);
-                },
-                () -> {
-                    new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds).andThen(
-                            new InstantCommand(() -> setRollersState(RollersState.OFF)));
-                }).until(this::hasCone);
+        return Commands.sequence(
+                new InstantCommand(() -> this.setRollersState(RollersState.INTAKE)),
+                new WaitUntilCommand(this::hasCone),
+                new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds),
+                new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
     }
 
     public CommandBase getEjectCommand() {
-        return new InstantCommand(() -> {
-            setRollersState(RollersState.EJECT);
-        }).andThen(new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
-                new InstantCommand(() -> {
-                    setRollersState(RollersState.OFF);
-                }));
+        return Commands.sequence(
+                new InstantCommand(() -> this.setRollersState(RollersState.EJECT)),
+                new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
+                new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
     }
 
     public CommandBase getFoldCommand(FolderState fState) {
         return new InstantCommand(() -> {
-            setFolderState(fState);
+            this.setFolderState(fState);
         });
     }
 }
