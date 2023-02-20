@@ -55,6 +55,7 @@ public class SwerveModule {
 
     public void stop() {
         _driveMotor.set(0);
+        _steerMotor.set(0);
     }
 
     public SwerveModuleState getState() {
