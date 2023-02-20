@@ -20,6 +20,7 @@ import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
@@ -134,11 +135,8 @@ public class RobotContainer {
 
         // // Score sequences
         // _operatorController.povDown().onTrue(m_arm.getSetStateCommand(ArmState.LOW));
-        // _operatorController.povUp().onTrue(
-        // new ConditionalCommand(
-        // m_arm.getSetStateCommand(ArmState.MID_CUBE),
-        // m_arm.getSetStateCommand(ArmState.MID_CONE),
-        // () -> _scoreMidCube));
+        _operatorController.triangle().onTrue(m_arm.getSetStateCommand(ArmState.DRIVE));
+        _operatorController.cross().onTrue(m_arm.getSetStateCommand(ArmState.COLLECT));
 
         // // Install GP
         // _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
@@ -187,10 +185,10 @@ public class RobotContainer {
         // m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED))));
 
         // Auto roller gripper
-        _operatorController.share().onFalse(m_autoRollerGripper.getIntakeCommand());
-        _operatorController.options().onFalse(m_autoRollerGripper.getEjectCommand());
-        _operatorController.PS().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
-        _operatorController.mute().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.IN));
+        _driverController.triangle().onFalse(m_autoRollerGripper.getIntakeCommand());
+        _driverController.options().onFalse(m_autoRollerGripper.getEjectCommand());
+        _driverController.PS().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _driverController.mute().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.IN));
     }
 
     private void addToChooser(String pathName) {
@@ -212,7 +210,7 @@ public class RobotContainer {
      * Called when we disable the robot to make sure nothing moves after we enable
      */
     public void stop() {
-        // m_autoRollerGripper.stop();
+        m_autoRollerGripper.stop();
         m_arm.stop();
         m_funnel.stop();
         m_drivetrain.stop();
