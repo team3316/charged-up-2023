@@ -20,6 +20,8 @@ import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.AutoRollerGripper;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelPosition;
 import frc.robot.subsystems.Funnel.FunnelRollersState;
@@ -37,8 +39,7 @@ public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final Funnel m_funnel = new Funnel();
     private final Manipulator m_manipulator = new Manipulator();
-    // private final AutoRollerGripper m_autoRollerGripper = new
-    // AutoRollerGripper();
+    private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
     private final Arm m_arm = new Arm();
     private final LimeLight m_limeLight = new LimeLight();
 
@@ -87,7 +88,7 @@ public class RobotContainer {
         // relative mode
 
         _driverController.share().onTrue(
-        new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
+                new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
         // _driverController.triangle()
         // .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(),
@@ -185,6 +186,11 @@ public class RobotContainer {
         // m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
         // m_funnel.setFunnelPositionCommand(FunnelPosition.CLOSED))));
 
+        // Auto roller gripper
+        _operatorController.share().onFalse(m_autoRollerGripper.getIntakeCommand());
+        _operatorController.options().onFalse(m_autoRollerGripper.getEjectCommand());
+        _operatorController.PS().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _operatorController.mute().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.IN));
     }
 
     private void addToChooser(String pathName) {
