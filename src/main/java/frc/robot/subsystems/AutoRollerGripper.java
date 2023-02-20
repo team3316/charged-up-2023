@@ -78,9 +78,8 @@ public class AutoRollerGripper extends SubsystemBase {
     public void setFolderState(FolderState state) {
         _doubleSolenoid.set(state.pneumaticState);
 
-        SmartDashboard.putString("Auto Gripper State", currentFolderState.toString());
-
         currentFolderState = state;
+        SmartDashboard.putString("Auto Gripper State", currentFolderState.toString());
     }
 
     public void setRollersState(RollersState state) {
@@ -99,18 +98,22 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public CommandBase getIntakeCommand() {
-        return Commands.sequence(
-                new InstantCommand(() -> this.setRollersState(RollersState.INTAKE)),
-                new WaitUntilCommand(this::hasCone),
-                new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds),
-                new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+        CommandBase command = Commands.sequence(
+            new InstantCommand(() -> this.setRollersState(RollersState.INTAKE)),
+            new WaitUntilCommand(this::hasCone),
+            new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds),
+            new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+        command.addRequirements(this);
+        return command;
     }
 
     public CommandBase getEjectCommand() {
-        return Commands.sequence(
-                new InstantCommand(() -> this.setRollersState(RollersState.EJECT)),
-                new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
-                new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+        CommandBase command = Commands.sequence(
+            new InstantCommand(() -> this.setRollersState(RollersState.EJECT)),
+            new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
+            new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+        command.addRequirements(this);
+        return command;
     }
 
     public CommandBase getFoldCommand(FolderState fState) {
