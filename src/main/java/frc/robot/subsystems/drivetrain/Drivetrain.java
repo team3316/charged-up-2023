@@ -207,14 +207,18 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void setVisionPIDFromSDB() {
-        this.setVisionPIDsByInputs(SmartDashboard.getNumber("xKP", 0), 0, 0, SmartDashboard.getNumber("yKP", 0), 0, 0,
-                SmartDashboard.getNumber("tKP", 0), 0, 0);
+        this.setVisionPIDsByInputs(SmartDashboard.getNumber("xKP", 0), 0, SmartDashboard.getNumber("xKD", 0),
+                SmartDashboard.getNumber("yKP", 0), 0, SmartDashboard.getNumber("yKD", 0),
+                SmartDashboard.getNumber("tKP", 0), 0, SmartDashboard.getNumber("tKD", 0));
     }
 
     public void visionInitSDB() {
-        SmartDashboard.putNumber("xKP", 0);
-        SmartDashboard.putNumber("yKP", 0);
-        SmartDashboard.putNumber("tKP", 0);
+        SmartDashboard.putNumber("xKP", LimelightConstants.xGains.kP);
+        SmartDashboard.putNumber("xKD", LimelightConstants.xGains.kD);
+        SmartDashboard.putNumber("yKP", LimelightConstants.yGains.kP);
+        SmartDashboard.putNumber("yKD", LimelightConstants.yGains.kD);
+        SmartDashboard.putNumber("tKP", LimelightConstants.thetaGains.kP);
+        SmartDashboard.putNumber("tKD", LimelightConstants.thetaGains.kD);
         SmartDashboard.putData("update vision SDB", new InstantCommand(() -> this.setVisionPIDFromSDB()));
     }
 }
