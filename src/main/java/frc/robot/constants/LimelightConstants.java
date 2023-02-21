@@ -20,7 +20,7 @@ public class LimelightConstants {
 
     public static final double spinToleranceDegrees = 10;
 
-    public static final Rotation2d limelightRotationsOffset = new Rotation2d(Math.PI * 0.5);
+    public static final Rotation2d limelightAxisToField = Rotation2d.fromDegrees(90);
 
     public static final double pipeLineRetroReflective = 0;
     public static final double pipeLineAprilTags = 1;

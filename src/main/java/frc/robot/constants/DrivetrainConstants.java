@@ -92,6 +92,6 @@ public class DrivetrainConstants {
 
     public static final int pigeonId = 9;
 
-    public static final Rotation2d installAngle = Rotation2d.fromDegrees(-90);
+    public static final Rotation2d installAngle = Rotation2d.fromDegrees(0);
 
 }
