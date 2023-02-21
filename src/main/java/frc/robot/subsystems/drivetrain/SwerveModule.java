@@ -44,7 +44,7 @@ public class SwerveModule {
                 SwerveModuleConstants.steeringVelocityConversionFactor,
                 _absEncoder.getAbsolutePosition());
 
-        this._driveMotor.setAverageDepth(2);
+        this._driveMotor.setAverageDepth(4);
         this._driveMotor.setMeasurementPeriod(8);
 
         System.out.println("measurnment period: " + this._driveMotor.getMeasurementPeriod());
