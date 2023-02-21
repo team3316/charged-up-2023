@@ -217,4 +217,8 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("tKP", 0);
         SmartDashboard.putData("update vision SDB", new InstantCommand(() -> this.setVisionPIDFromSDB()));
     }
+
+    public double getPitch() {
+        return _pigeon.getPitch();
+    }
 }
