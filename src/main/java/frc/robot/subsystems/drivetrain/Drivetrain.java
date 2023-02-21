@@ -250,4 +250,8 @@ public class Drivetrain extends SubsystemBase {
     public void spinAndDrive(double xSpeed, double ySpeed, Rotation2d targetRotation, boolean fieldRelative) {
         this.drive(xSpeed, ySpeed, thetaController.calculate(this.getPose().getRotation().getRadians()), fieldRelative);
     }
+
+    public double getPitch() {
+        return _pigeon.getPitch();
+    }
 }
