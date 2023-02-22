@@ -40,11 +40,11 @@ public class LimeLight extends SubsystemBase {
     }
 
     public double getFieldTY() {
-        return new Translation2d(getXAngle(), getYAngle()).rotateBy(LimelightConstants.limelightRotationsOffset).getY();
+        return new Translation2d(getXAngle(), getYAngle()).rotateBy(LimelightConstants.limelightAxisToField).getY();
     }
 
     public double getFieldTX() {
-        return new Translation2d(getXAngle(), getYAngle()).rotateBy(LimelightConstants.limelightRotationsOffset).getX();
+        return new Translation2d(getXAngle(), getYAngle()).rotateBy(LimelightConstants.limelightAxisToField).getX();
     }
 
     public void setPipeLine(double id) {
