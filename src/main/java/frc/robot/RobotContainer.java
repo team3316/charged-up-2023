@@ -64,7 +64,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         m_compressor.enableDigital();
-        m_drivetrain.visionInitSDB();
+        // m_drivetrain.visionInitSDB();
 
         this.chooser = new SendableChooser<CommandBase>();
         initChooser();
