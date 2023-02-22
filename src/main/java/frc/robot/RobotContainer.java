@@ -94,6 +94,7 @@ public class RobotContainer {
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
+        /* align with vision target */
         _driverController.triangle()
                 .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
                         new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
