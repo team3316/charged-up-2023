@@ -54,11 +54,12 @@ public class Drivetrain extends SubsystemBase {
         m_logY = new DoubleLogEntry(log, "/drivetrain/position/y");
         m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
 
-        vision_xController = new PIDController(LimelightConstants.xGains.kP, LimelightConstants.xGains.kI,
-                LimelightConstants.xGains.kD);
-        vision_yController = new PIDController(LimelightConstants.yGains.kP, LimelightConstants.yGains.kI,
-                LimelightConstants.yGains.kD);
-        vision_thetaController = new PIDController(LimelightConstants.thetaGains.kP, LimelightConstants.thetaGains.kI,
+        vision_xController = new PIDController(LimelightConstants.xGainsRetro.kP, LimelightConstants.xGainsRetro.kI,
+                LimelightConstants.xGainsRetro.kD);
+        vision_yController = new PIDController(LimelightConstants.yGainsRetro.kP, LimelightConstants.yGainsRetro.kI,
+                LimelightConstants.yGainsRetro.kD);
+        vision_thetaController = new PIDController(LimelightConstants.thetaGains.kP,
+                LimelightConstants.thetaGains.kI,
                 LimelightConstants.thetaGains.kD);
 
         restartControllers();
@@ -207,18 +208,43 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void setVisionPIDFromSDB() {
-        this.setVisionPIDsByInputs(SmartDashboard.getNumber("xKP", 0), 0, SmartDashboard.getNumber("xKD", 0),
+        this.setVisionPIDsByInputs(
+                SmartDashboard.getNumber("xKP", 0), 0, SmartDashboard.getNumber("xKD", 0),
                 SmartDashboard.getNumber("yKP", 0), 0, SmartDashboard.getNumber("yKD", 0),
                 SmartDashboard.getNumber("tKP", 0), 0, SmartDashboard.getNumber("tKD", 0));
+
+        vision_xController.setTolerance(SmartDashboard.getNumber("xKTol", 0));
+        vision_yController.setTolerance(SmartDashboard.getNumber("yKTol", 0));
+        vision_thetaController.setTolerance(SmartDashboard.getNumber("tKTol", 0));
     }
 
     public void visionInitSDB() {
-        SmartDashboard.putNumber("xKP", LimelightConstants.xGains.kP);
-        SmartDashboard.putNumber("xKD", LimelightConstants.xGains.kD);
-        SmartDashboard.putNumber("yKP", LimelightConstants.yGains.kP);
-        SmartDashboard.putNumber("yKD", LimelightConstants.yGains.kD);
+        SmartDashboard.putNumber("xKP", LimelightConstants.xGainsRetro.kP);
+        SmartDashboard.putNumber("xKD", LimelightConstants.xGainsRetro.kD);
+        SmartDashboard.putNumber("yKP", LimelightConstants.yGainsRetro.kP);
+        SmartDashboard.putNumber("yKD", LimelightConstants.yGainsRetro.kD);
         SmartDashboard.putNumber("tKP", LimelightConstants.thetaGains.kP);
         SmartDashboard.putNumber("tKD", LimelightConstants.thetaGains.kD);
+
+        SmartDashboard.putNumber("xKTol", LimelightConstants.xTol);
+        SmartDashboard.putNumber("yKTol", LimelightConstants.yTol);
+        SmartDashboard.putNumber("tKTol", LimelightConstants.thetaTol);
+
         SmartDashboard.putData("update vision SDB", new InstantCommand(() -> this.setVisionPIDFromSDB()));
     }
+
+    public void setVisionRetroPID() {
+        setVisionPIDsByInputs(
+                LimelightConstants.xGainsRetro.kP, LimelightConstants.xGainsRetro.kI, LimelightConstants.xGainsRetro.kD,
+                LimelightConstants.yGainsRetro.kP, LimelightConstants.yGainsRetro.kI, LimelightConstants.yGainsRetro.kD,
+                LimelightConstants.thetaGains.kP, LimelightConstants.thetaGains.kI, LimelightConstants.thetaGains.kD);
+    }
+
+    public void setVisionAprilPID() {
+        setVisionPIDsByInputs(
+                LimelightConstants.xGainsApril.kP, LimelightConstants.xGainsApril.kI, LimelightConstants.xGainsApril.kD,
+                LimelightConstants.yGainsApril.kP, LimelightConstants.yGainsApril.kI, LimelightConstants.yGainsApril.kD,
+                LimelightConstants.thetaGains.kP, LimelightConstants.thetaGains.kI, LimelightConstants.thetaGains.kD);
+    }
+
 }

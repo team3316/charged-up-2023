@@ -129,8 +129,14 @@ public class RobotContainer {
                                         m_limeLight.getFieldTY()), m_drivetrain)));
 
         _driverController.L1()
-                .toggleOnTrue(new StartEndCommand(() -> m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags),
-                        () -> m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective),
+                .toggleOnTrue(new StartEndCommand(() -> {
+                    m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
+                    m_drivetrain.setVisionAprilPID();
+                },
+                        () -> {
+                            m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
+                            m_drivetrain.setVisionRetroPID();
+                        },
                         m_limeLight));
 
     }
