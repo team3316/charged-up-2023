@@ -79,4 +79,16 @@ public class DBugSparkMax extends CANSparkMax {
     public static DBugSparkMax create(int id) {
         return create(id, new PIDFGains(0), 1, 1, 0);
     }
+
+    public void setMeasurementPeriod(int period_ms) {
+        this._encoder.setMeasurementPeriod(period_ms);
+    }
+
+    public void setAverageDepth(int depth) {
+        this._encoder.setAverageDepth(depth);
+    }
+
+    public int getMeasurementPeriod() {
+        return this._encoder.getMeasurementPeriod();
+    }
 }

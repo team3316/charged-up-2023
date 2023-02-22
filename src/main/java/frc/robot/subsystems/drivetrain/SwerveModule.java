@@ -36,6 +36,9 @@ public class SwerveModule {
                 SwerveModuleConstants.steeringPositionConversionFactor,
                 SwerveModuleConstants.steeringVelocityConversionFactor,
                 _absEncoder.getAbsolutePosition());
+
+        this._driveMotor.setAverageDepth(4);
+        this._driveMotor.setMeasurementPeriod(8);
     }
 
     private static CANCoder createCANCoder(int id, double zeroAngle) {
@@ -55,6 +58,7 @@ public class SwerveModule {
 
     public void stop() {
         _driveMotor.set(0);
+        _steerMotor.set(0);
     }
 
     public SwerveModuleState getState() {
