@@ -44,7 +44,7 @@ public class ArmFunnelSuperStructure {
          * 
          */
 
-        if (wantedArmState == ArmState.COLLECT || wantedArmState == ArmState.DRIVE)
+        if (wantedArmState != ArmState.COLLECT)
             wantedFunnelState = FunnelPosition.CLOSED;
 
         if (wantedArmState == m_arm.getTargetState())
