@@ -116,6 +116,7 @@ public class RobotContainer {
                                 m_ArmFunnelSuperStructure.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         Commands.sequence(
+
                                 m_ArmFunnelSuperStructure.setFunnelRollersStateCommand(FunnelRollersState.OFF),
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
@@ -130,12 +131,15 @@ public class RobotContainer {
             this._scoreMidCube = true;
             m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
             SmartDashboard.putBoolean("target GP", this._scoreMidCube);
+            m_drivetrain.setVisionAprilPID();
         }));
+
         // Set cone as wanted GP
         _operatorController.square().onTrue(new InstantCommand(() -> {
             this._scoreMidCube = false;
             m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
             SmartDashboard.putBoolean("target GP", this._scoreMidCube);
+            m_drivetrain.setVisionRetroPID();
         }));
 
         // Score sequences
@@ -149,23 +153,6 @@ public class RobotContainer {
 
         // Install GP
         _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
-
-        _driverController.R1().whileTrue(
-                new InstantCommand(() -> m_drivetrain.restartControllers(),
-                        m_drivetrain).andThen(
-                                new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
-                                        m_limeLight.getFieldTY()), m_drivetrain)));
-
-        _driverController.L1()
-                .toggleOnTrue(new StartEndCommand(() -> {
-                    m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
-                    m_drivetrain.setVisionAprilPID();
-                },
-                        () -> {
-                            m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
-                            m_drivetrain.setVisionRetroPID();
-                        },
-                        m_limeLight));
 
         // Go to collect state sequence
         _operatorController.cross().onTrue(
