@@ -17,8 +17,8 @@ public class RollerGripperConstants {
 
     public final static int currentLimitAmp = 20; // in Amps
 
-    public final static int solenoidForwardChannel = 4;
-    public final static int solenoidReverseChannel = 5;
+    public final static int solenoidForwardChannel = 0;
+    public final static int solenoidReverseChannel = 1;
     public final static DoubleSolenoid.Value stateWhenFoldedIn = DoubleSolenoid.Value.kReverse;
     public final static DoubleSolenoid.Value stateWhenFoldedOut = DoubleSolenoid.Value.kForward;
     public final static DoubleSolenoid.Value stateWhenOff = DoubleSolenoid.Value.kOff;
