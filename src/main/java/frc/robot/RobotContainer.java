@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
@@ -69,6 +70,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         m_compressor.enableDigital();
+        // m_drivetrain.visionInitSDB();
 
         this.chooser = new SendableChooser<CommandBase>();
         initChooser();
@@ -76,9 +78,12 @@ public class RobotContainer {
         configureBindings();
 
         m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.drive(
-                _driverController.getLeftY() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                _driverController.getLeftX() * SwerveModuleConstants.freeSpeedMetersPerSecond,
-                _driverController.getCombinedAxis() * DrivetrainConstants.maxRotationSpeedRadPerSec,
+                _driverController.getLeftY() *
+                        SwerveModuleConstants.freeSpeedMetersPerSecond,
+                _driverController.getLeftX() *
+                        SwerveModuleConstants.freeSpeedMetersPerSecond,
+                _driverController.getCombinedAxis() *
+                        DrivetrainConstants.maxRotationSpeedRadPerSec,
                 _fieldRelative), m_drivetrain));
 
         SmartDashboard.putBoolean("target GP", this._scoreMidCube);
@@ -89,7 +94,8 @@ public class RobotContainer {
      */
     private void configureBindings() {
         _driverController.options().onTrue(
-                new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field relative mode
+                new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field
+        // relative mode
 
         _driverController.share().onTrue(
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
@@ -144,6 +150,23 @@ public class RobotContainer {
         // Install GP
         _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
 
+        _driverController.R1().whileTrue(
+                new InstantCommand(() -> m_drivetrain.restartControllers(),
+                        m_drivetrain).andThen(
+                                new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
+                                        m_limeLight.getFieldTY()), m_drivetrain)));
+
+        _driverController.L1()
+                .toggleOnTrue(new StartEndCommand(() -> {
+                    m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
+                    m_drivetrain.setVisionAprilPID();
+                },
+                        () -> {
+                            m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
+                            m_drivetrain.setVisionRetroPID();
+                        },
+                        m_limeLight));
+
         // Go to collect state sequence
         _operatorController.cross().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelPosition.CLOSED));
@@ -171,6 +194,14 @@ public class RobotContainer {
     public void stop() {
         m_autoRollerGripper.stop();
         m_ArmFunnelSuperStructure.stop();
+        m_drivetrain.calibrateSteering();
+    }
+
+    public void calibrateSteering() {
+        m_drivetrain.calibrateSteering();
+    }
+
+    public void calibrateSteering() {
         m_drivetrain.calibrateSteering();
     }
 
