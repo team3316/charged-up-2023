@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
@@ -23,12 +22,12 @@ import frc.robot.constants.JoysticksConstants;
 import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.Arm.ArmState;
-import frc.robot.subsystems.Funnel.FunnelPosition;
-import frc.robot.subsystems.Funnel.FunnelRollersState;
+import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.Funnel.FunnelPosition;
+import frc.robot.subsystems.Funnel.FunnelRollersState;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
@@ -143,16 +142,17 @@ public class RobotContainer {
         }));
 
         // Score sequences
-        _operatorController.povDown()
+        _operatorController.R2()
                 .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelPosition.CLOSED));
-        _operatorController.povUp().onTrue(
+
+        _operatorController.R1().onTrue(
                 new ConditionalCommand(
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelPosition.CLOSED),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelPosition.CLOSED),
                         () -> _scoreMidCube));
 
         // Install GP
-        _operatorController.R1().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+        _operatorController.L2().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
 
         // Go to collect state sequence
         _operatorController.cross().onTrue(
