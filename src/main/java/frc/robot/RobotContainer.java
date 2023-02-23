@@ -107,7 +107,7 @@ public class RobotContainer {
                 new InstantCommand(m_drivetrain::resetYaw)); // toggle field relative mode
 
         /* align with vision target */
-        _driverController.triangle()
+        _driverController.cross()
                 .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
                         new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
                                 m_limeLight.getFieldTY()), m_drivetrain)));
@@ -115,20 +115,20 @@ public class RobotContainer {
         /* Operator triggers */
         // Collect sequence
         _operatorController.L1().onTrue(
+            Commands.sequence(
                 Commands.sequence(
-                        Commands.sequence(
-                                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT)),
-                        new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                        new WaitCommand(0.5),
-                        Commands.sequence(
-                                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)))
-                        .finallyDo(
-                                (interrupted) -> m_ArmFunnelSuperStructure
-                                        .generateSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT)),
+                new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                new WaitCommand(0.5),
+                Commands.sequence(
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)))
+                .finallyDo(
+                        (interrupted) -> m_ArmFunnelSuperStructure
+                                .generateSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
         // Drive arm state sequence
-        _operatorController.triangle().onTrue(
+        _operatorController.povUp().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelState.CLOSED));
 
         // Set cube as wanted GP
@@ -161,7 +161,7 @@ public class RobotContainer {
         _operatorController.L2().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
 
         // Go to collect state sequence
-        _operatorController.cross().onTrue(
+        _operatorController.povDown().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
 
     }
