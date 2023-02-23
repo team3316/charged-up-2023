@@ -43,9 +43,22 @@ public class ArmFunnelSuperStructure {
          * 
          */
 
-        if (wantedArmState == m_arm.getTargetState())
-            return m_funnel.setFunnelStateCommand(wantedFunnelState);
+        if (wantedArmState != ArmState.COLLECT)
+            wantedFunnelState = FunnelState.CLOSED;
 
+        if (wantedArmState == m_arm.getTargetState()) {
+            // TODO: fix this case
+            // if we press "stow" and while the arm is moving press "collect"
+            // we want the arm to keep moving
+            if (wantedArmState == ArmState.COLLECT && m_arm.getInitialState() != ArmState.COLLECT) {
+                return Commands.sequence(
+                        m_funnel.setFunnelStateCommand(FunnelState.OPEN),
+                        m_arm.getSetStateCommand(ArmState.COLLECT),
+                        m_funnel.setFunnelStateCommand(wantedFunnelState));
+            }
+
+            return m_funnel.setFunnelStateCommand(wantedFunnelState);
+        }
         if (m_arm.getTargetState() == ArmState.COLLECT)
             return Commands.sequence(
                     m_funnel.setFunnelStateCommand(FunnelState.OPEN),

@@ -70,7 +70,7 @@ public class Arm extends SubsystemBase {
         _targetState = getInitialState();
     }
 
-    private ArmState getInitialState() {
+    public ArmState getInitialState() {
         if (isRevLimitSwitchClosed()) {
             return ArmState.COLLECT;
         } else if (isFwdLimitSwitchClosed()) {
