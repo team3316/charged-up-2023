@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
@@ -114,19 +115,23 @@ public class RobotContainer {
                                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelPosition.OPEN),
                                 m_ArmFunnelSuperStructure.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                        new WaitCommand(0.5),
                         Commands.sequence(
 
                                 m_ArmFunnelSuperStructure.setFunnelRollersStateCommand(FunnelRollersState.OFF),
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                                        FunnelPosition.CLOSED))));
+                                        FunnelPosition.CLOSED)))
+                        .finallyDo(
+                                (interrupted) -> m_ArmFunnelSuperStructure
+                                        .setFunnelRollersStateCommand(FunnelRollersState.OFF)));
 
         // Drive arm state sequence
         _operatorController.triangle().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelPosition.CLOSED));
 
         // Set cube as wanted GP
-        _operatorController.circle().onTrue(new InstantCommand(() -> {
+        _operatorController.square().onTrue(new InstantCommand(() -> {
             this._scoreMidCube = true;
             m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
             SmartDashboard.putBoolean("target GP", this._scoreMidCube);
@@ -134,7 +139,7 @@ public class RobotContainer {
         }));
 
         // Set cone as wanted GP
-        _operatorController.square().onTrue(new InstantCommand(() -> {
+        _operatorController.circle().onTrue(new InstantCommand(() -> {
             this._scoreMidCube = false;
             m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
             SmartDashboard.putBoolean("target GP", this._scoreMidCube);
