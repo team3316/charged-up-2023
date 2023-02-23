@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -22,31 +23,22 @@ public class Funnel extends SubsystemBase {
 
     private TalonSRX _followerRoller;
     private TalonSRX _leaderRoller;
-    private FunnelPosition _currentPosition;
-    private FunnelRollersState _currentRollersState;
+    private FunnelState _currentState;
     private DoubleSolenoid _funnelSolenoid;
 
-    public enum FunnelPosition {
-        OPEN(FunnelConstants.openState),
-        CLOSED(FunnelConstants.closedState);
+    public enum FunnelState {
+        COLLECT(FunnelConstants.openState, FunnelConstants.collectPercent),
+        OPEN(FunnelConstants.openState, FunnelConstants.openPercent),
+        CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent);
 
         public final DoubleSolenoid.Value solenoidState;
+        public final double rollerPercent;
 
-        private FunnelPosition(DoubleSolenoid.Value solenoidState) {
+        private FunnelState(Value solenoidState, double rollerPercent) {
             this.solenoidState = solenoidState;
+            this.rollerPercent = rollerPercent;
         }
-    }
-
-    public enum FunnelRollersState {
-        COLLECT(FunnelConstants.collectPercent),
-        OFF(FunnelConstants.closedPercent);
-
-        public double rollersPrecent;
-
-        private FunnelRollersState(double rollerPercent) {
-            this.rollersPrecent = rollerPercent;
-        }
-    }
+    };
 
     public Funnel() {
         this._funnelSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, FunnelConstants.solenoidForwardPort,
@@ -73,38 +65,27 @@ public class Funnel extends SubsystemBase {
 
     public void stop() {
         _funnelSolenoid.set(DoubleSolenoid.Value.kOff);
-        this.setFunnelRollersState(FunnelRollersState.OFF);
+        _leaderRoller.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
-    public FunnelPosition getFunnelPosition() {
-        return _currentPosition;
+    public FunnelState getFunnelState() {
+        return _currentState;
     }
 
-    public FunnelRollersState getFunnelRollersState() {
-        return _currentRollersState;
+    private void setFunnelState(FunnelState targetState) {
+        if (_currentState == targetState) {
+            return;
+        }
+
+        _funnelSolenoid.set(targetState.solenoidState);
+        _leaderRoller.set(TalonSRXControlMode.PercentOutput, targetState.rollerPercent);
+
+        _currentState = targetState;
+
+        SmartDashboard.putString("Funnel State", targetState.toString());
     }
 
-    private void setFunnelPosition(FunnelPosition targetPosition) {
-        _funnelSolenoid.set(targetPosition.solenoidState);
-
-        _currentPosition = targetPosition;
-
-        SmartDashboard.putString("Funnel Position", targetPosition.toString());
-    }
-
-    private void setFunnelRollersState(FunnelRollersState targetState) {
-        _leaderRoller.set(TalonSRXControlMode.PercentOutput, targetState.rollersPrecent);
-
-        _currentRollersState = targetState;
-
-        SmartDashboard.putString("Funnel Rollers State", targetState.toString());
-    }
-
-    public CommandBase setFunnelPositionCommand(FunnelPosition targetPositon) {
-        return new InstantCommand(() -> setFunnelPosition(targetPositon), this);
-    }
-
-    public CommandBase setFunnelRollersStateCommand(FunnelRollersState targetState) {
-        return new InstantCommand(() -> setFunnelRollersState(targetState), this);
+    public CommandBase setFunnelStateCommand(FunnelState state) {
+        return new InstantCommand(() -> setFunnelState(state), this);
     }
 }

@@ -24,11 +24,10 @@ import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
+import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Funnel;
-import frc.robot.subsystems.Funnel.FunnelPosition;
-import frc.robot.subsystems.Funnel.FunnelRollersState;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
@@ -119,23 +118,18 @@ public class RobotContainer {
                 Commands.sequence(
                         Commands.sequence(
                                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelPosition.OPEN),
-                                m_ArmFunnelSuperStructure.setFunnelRollersStateCommand(FunnelRollersState.COLLECT)),
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT)),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         new WaitCommand(0.5),
                         Commands.sequence(
-
-                                m_ArmFunnelSuperStructure.setFunnelRollersStateCommand(FunnelRollersState.OFF),
-                                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                                        FunnelPosition.CLOSED)))
+                                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)))
                         .finallyDo(
                                 (interrupted) -> m_ArmFunnelSuperStructure
-                                        .setFunnelRollersStateCommand(FunnelRollersState.OFF)));
+                                        .generateSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
         // Drive arm state sequence
         _operatorController.triangle().onTrue(
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelPosition.CLOSED));
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelState.CLOSED));
 
         // Set cube as wanted GP
         _operatorController.square().onTrue(new InstantCommand(() -> {
@@ -155,12 +149,12 @@ public class RobotContainer {
 
         // Score sequences
         _operatorController.R2()
-                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelPosition.CLOSED));
+                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelState.CLOSED));
 
         _operatorController.R1().onTrue(
                 new ConditionalCommand(
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelPosition.CLOSED),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelPosition.CLOSED),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.CLOSED),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.CLOSED),
                         () -> _scoreMidCube));
 
         // Install GP
@@ -168,7 +162,7 @@ public class RobotContainer {
 
         // Go to collect state sequence
         _operatorController.cross().onTrue(
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelPosition.CLOSED));
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
 
     }
 
