@@ -65,6 +65,7 @@ public class Manipulator extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Has GP", this.isHoldingGamePiece());
+        SmartDashboard.putNumber("IR sensor value", this._gamePieceDetector.getValue() / ADC_RESOLUTION);
     }
 
     public CommandBase setManipulatorStateCommand(ManipulatorState state) {
