@@ -29,7 +29,7 @@ public class ArmConstants {
     // State Angles
     // TODO: Get exact numbers from Guy
     public static final double collectAngle = -54; // in deg
-    public static final double driveAngle = 90; // in deg
+    public static final double driveAngle = 70; // in deg
     public static final double midCubeAngle = 150; // in deg
     public static final double midConeAngle = 150; // in deg
     public static final double lowAngle = 210; // in deg
