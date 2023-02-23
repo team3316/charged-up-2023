@@ -2,9 +2,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.Funnel.FunnelState;
+import frc.robot.utils.DynamicCommand;
 
 public class ArmFunnelSuperStructure {
     private final Arm m_arm;
@@ -64,10 +64,7 @@ public class ArmFunnelSuperStructure {
     }
 
     public CommandBase getSetStateCommand(ArmState wantedArmState, FunnelState wantedFunnelState) {
-        // return new DynamicCommand(() -> generateSetStateCommand(wantedArmState,
-        // wantedFunnelState));
-        return new InstantCommand(() -> generateSetStateCommand(wantedArmState, wantedFunnelState).schedule())
-                .until(() -> (Math.abs(m_arm.getAngle() - wantedArmState.stateAngle) <= 0.1));
+        return new DynamicCommand(() -> generateSetStateCommand(wantedArmState, wantedFunnelState), m_arm, m_funnel);
     }
 
     public void stop() {
