@@ -115,17 +115,12 @@ public class RobotContainer {
         /* Operator triggers */
         // Collect sequence
         _operatorController.L1().onTrue(
-            Commands.sequence(
                 Commands.sequence(
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT)),
-                new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                new WaitCommand(0.5),
-                Commands.sequence(
-                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)))
-                .finallyDo(
-                        (interrupted) -> m_ArmFunnelSuperStructure
-                                .generateSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
+                        new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                        new WaitCommand(0.5),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
         // Drive arm state sequence
         _operatorController.povUp().onTrue(
