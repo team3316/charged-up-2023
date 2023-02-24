@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -25,12 +24,13 @@ import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
-import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.Manipulator.IRSensorState;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.GlobalDebuggable;
@@ -90,9 +90,11 @@ public class RobotContainer {
         if (this._scoreMidCube) {
             m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
             m_drivetrain.setVisionAprilPID();
+            m_manipulator.setIRSensorState(IRSensorState.CUBE);
         } else {
             m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
             m_drivetrain.setVisionRetroPID();
+            m_manipulator.setIRSensorState(IRSensorState.CONE);
         }
     }
 
@@ -133,6 +135,7 @@ public class RobotContainer {
             m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
             SmartDashboard.putBoolean("target GP", this._scoreMidCube);
             m_drivetrain.setVisionAprilPID();
+            m_manipulator.setIRSensorState(IRSensorState.CUBE);
         }));
 
         // Set cone as wanted GP
@@ -141,6 +144,7 @@ public class RobotContainer {
             m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
             SmartDashboard.putBoolean("target GP", this._scoreMidCube);
             m_drivetrain.setVisionRetroPID();
+            m_manipulator.setIRSensorState(IRSensorState.CONE);
         }));
 
         // Score sequences

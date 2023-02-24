@@ -12,6 +12,9 @@ public class ManipulatorConstants {
     public static final DoubleSolenoid.Value solenoidOpenState = DoubleSolenoid.Value.kForward;
     public static final DoubleSolenoid.Value solenoidClosedState = DoubleSolenoid.Value.kReverse;
 
-    public static final double GPDetectorThreshold = 0.3;
-    public static final double GPDetectorHysteresis = 0.1;
+    // ir constants
+    public static final double CONEDetectorThreshold = 0.23;
+    public static final double CONEDetectorHysteresis = 0.1;
+    public static final double CUBEDetectorThreshold = 0.45;
+    public static final double CUBEDetectorHysteresis = 0.1;
 }
