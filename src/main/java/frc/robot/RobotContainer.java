@@ -118,7 +118,8 @@ public class RobotContainer {
 
         // Drive arm state sequence
         _operatorController.povUp().onTrue(
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelState.CLOSED));
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelState.CLOSED)
+                        .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
         // Set cube as wanted GP
         _operatorController.square().onTrue(new InstantCommand(() -> setCubeInternalState()));
@@ -128,12 +129,15 @@ public class RobotContainer {
 
         // Score sequences
         _operatorController.R2()
-                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelState.CLOSED));
+                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelState.CLOSED)
+                        .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
         _operatorController.R1().onTrue(
                 new ConditionalCommand(
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.CLOSED),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.CLOSED),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.CLOSED)
+                                .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.CLOSED)
+                                .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)),
                         () -> _scoreMidCube));
 
         // Install GP
@@ -141,7 +145,8 @@ public class RobotContainer {
 
         // Go to collect state sequence
         _operatorController.povDown().onTrue(
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)
+                        .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
         _driverController.circle().whileTrue(
                 new InstantCommand(() -> m_drivetrain.setKeepHeading(DrivetrainConstants.collectAngle)).andThen(
