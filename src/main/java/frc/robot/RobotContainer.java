@@ -161,10 +161,10 @@ public class RobotContainer {
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
 
         // Auto roller gripper
-        _operatorController.share().onFalse(m_autoRollerGripper.getIntakeCommand());
-        _operatorController.options().onFalse(m_autoRollerGripper.getEjectCommand());
-        _operatorController.PS().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
-        _operatorController.mute().onFalse(m_autoRollerGripper.getFoldCommand(FolderState.IN));
+        _operatorController.share().onTrue(m_autoRollerGripper.getIntakeCommand());
+        _operatorController.options().onTrue(m_autoRollerGripper.getEjectCommand());
+        _operatorController.PS().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _operatorController.mute().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
     }
 
     private void addToChooser(String pathName) {
