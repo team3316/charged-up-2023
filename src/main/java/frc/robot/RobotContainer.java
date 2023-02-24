@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -159,6 +160,15 @@ public class RobotContainer {
         _operatorController.povDown().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
 
+        _driverController.PS().whileTrue(
+                new InstantCommand(() -> m_drivetrain.restartControllers()).andThen(
+                        new RunCommand(() -> m_drivetrain.spinAndDrive(
+                                _driverController.getLeftY() *
+                                        SwerveModuleConstants.freeSpeedMetersPerSecond,
+                                _driverController.getLeftX() *
+                                        SwerveModuleConstants.freeSpeedMetersPerSecond,
+                                DrivetrainConstants.collectAngle,
+                                _fieldRelative), m_drivetrain)));
     }
 
     private void addToChooser(String pathName) {
