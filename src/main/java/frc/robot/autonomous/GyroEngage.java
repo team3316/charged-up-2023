@@ -10,6 +10,11 @@ public class GyroEngage extends CommandBase {
 
     private Drivetrain _drivetrain;
 
+    public GyroEngage(Drivetrain drivetrain) {
+        _drivetrain = drivetrain;
+        addRequirements(_drivetrain);
+    }
+
     @Override
     public void initialize() {
         _drivetrain.drive(AutonomousConstants.engageSpeedMetersPerSecond, 0, 0, false);
