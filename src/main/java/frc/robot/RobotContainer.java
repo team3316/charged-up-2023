@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomous.AutoFactory;
+import frc.robot.autonomous.GyroEngage;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
@@ -184,6 +185,8 @@ public class RobotContainer {
         addToChooser("bot-2-gp");
         addToChooser("bot-3-gp-engage");
         addToChooser("bot-3-gp");
+        this.chooser.addOption("engage-gyro",
+                _autoFactory.createAuto("engage-gyro").andThen(new GyroEngage(m_drivetrain)));
     }
 
     /**
