@@ -86,16 +86,7 @@ public class RobotContainer {
                         DrivetrainConstants.maxRotationSpeedRadPerSec,
                 _fieldRelative), m_drivetrain));
 
-        SmartDashboard.putBoolean("target GP", this._scoreMidCube);
-        if (this._scoreMidCube) {
-            m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
-            m_drivetrain.setVisionAprilPID();
-            m_manipulator.setIRSensorState(IRSensorState.CUBE);
-        } else {
-            m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
-            m_drivetrain.setVisionRetroPID();
-            m_manipulator.setIRSensorState(IRSensorState.CONE);
-        }
+        setCubeInternalState(); // arbitrary decision, could be cone.
     }
 
     /**
@@ -130,22 +121,10 @@ public class RobotContainer {
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelState.CLOSED));
 
         // Set cube as wanted GP
-        _operatorController.square().onTrue(new InstantCommand(() -> {
-            this._scoreMidCube = true;
-            m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
-            SmartDashboard.putBoolean("target GP", this._scoreMidCube);
-            m_drivetrain.setVisionAprilPID();
-            m_manipulator.setIRSensorState(IRSensorState.CUBE);
-        }));
+        _operatorController.square().onTrue(new InstantCommand(() -> setCubeInternalState()));
 
         // Set cone as wanted GP
-        _operatorController.circle().onTrue(new InstantCommand(() -> {
-            this._scoreMidCube = false;
-            m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
-            SmartDashboard.putBoolean("target GP", this._scoreMidCube);
-            m_drivetrain.setVisionRetroPID();
-            m_manipulator.setIRSensorState(IRSensorState.CONE);
-        }));
+        _operatorController.circle().onTrue(new InstantCommand(() -> setConeInternalState()));
 
         // Score sequences
         _operatorController.R2()
@@ -173,6 +152,22 @@ public class RobotContainer {
                                         SwerveModuleConstants.freeSpeedMetersPerSecond,
                                 DrivetrainConstants.collectAngle,
                                 _fieldRelative), m_drivetrain)));
+    }
+
+    private void setCubeInternalState() {
+        this._scoreMidCube = true;
+        m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
+        SmartDashboard.putBoolean("target GP", this._scoreMidCube);
+        m_drivetrain.setVisionAprilPID();
+        m_manipulator.setIRSensorState(IRSensorState.CUBE);
+    }
+
+    private void setConeInternalState() {
+        this._scoreMidCube = false;
+        m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
+        SmartDashboard.putBoolean("target GP", this._scoreMidCube);
+        m_drivetrain.setVisionRetroPID();
+        m_manipulator.setIRSensorState(IRSensorState.CONE);
     }
 
     private void addToChooser(String pathName) {
