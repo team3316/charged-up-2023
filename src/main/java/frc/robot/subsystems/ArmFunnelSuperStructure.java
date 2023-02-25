@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.utils.DynamicCommand;
@@ -47,16 +48,6 @@ public class ArmFunnelSuperStructure {
             wantedFunnelState = FunnelState.CLOSED;
 
         if (wantedArmState == m_arm.getTargetState()) {
-            // TODO: fix this case
-            // if we press "stow" and while the arm is moving press "collect"
-            // we want the arm to keep moving
-            if (wantedArmState == ArmState.COLLECT && m_arm.getInitialState() != ArmState.COLLECT) {
-                return Commands.sequence(
-                        m_funnel.setFunnelStateCommand(FunnelState.OPEN),
-                        m_arm.getSetStateCommand(ArmState.COLLECT),
-                        m_funnel.setFunnelStateCommand(wantedFunnelState));
-            }
-
             return m_funnel.setFunnelStateCommand(wantedFunnelState);
         }
         if (m_arm.getTargetState() == ArmState.COLLECT)
@@ -77,7 +68,8 @@ public class ArmFunnelSuperStructure {
     }
 
     public CommandBase getSetStateCommand(ArmState wantedArmState, FunnelState wantedFunnelState) {
-        return new DynamicCommand(() -> generateSetStateCommand(wantedArmState, wantedFunnelState), m_arm, m_funnel);
+        return new DynamicCommand(() -> generateSetStateCommand(wantedArmState, wantedFunnelState), m_arm, m_funnel)
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
     public void stop() {
