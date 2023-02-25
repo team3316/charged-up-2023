@@ -20,6 +20,7 @@ import frc.robot.autonomous.AutoFactory;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
+import frc.robot.constants.LightsConstants.RobotColorState;
 import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
@@ -28,6 +29,7 @@ import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
+import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.IRSensorState;
@@ -43,6 +45,7 @@ public class RobotContainer {
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final Manipulator m_manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
+    private final Lights m_lights = new Lights();
 
     private final ArmFunnelSuperStructure m_ArmFunnelSuperStructure = new ArmFunnelSuperStructure(new Arm(),
             new Funnel());
@@ -123,7 +126,8 @@ public class RobotContainer {
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         new WaitCommand(0.5),
-                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                        m_lights.getColorCommand(RobotColorState.COLLECTED)));
 
         // Drive arm state sequence
         _operatorController.povUp().onTrue(
@@ -136,7 +140,8 @@ public class RobotContainer {
             SmartDashboard.putBoolean("target GP", this._scoreMidCube);
             m_drivetrain.setVisionAprilPID();
             m_manipulator.setIRSensorState(IRSensorState.CUBE);
-        }));
+
+        }).alongWith(m_lights.getColorCommand(RobotColorState.CUBE)));
 
         // Set cone as wanted GP
         _operatorController.circle().onTrue(new InstantCommand(() -> {
@@ -145,7 +150,7 @@ public class RobotContainer {
             SmartDashboard.putBoolean("target GP", this._scoreMidCube);
             m_drivetrain.setVisionRetroPID();
             m_manipulator.setIRSensorState(IRSensorState.CONE);
-        }));
+        }).alongWith(m_lights.getColorCommand(RobotColorState.CUBE)));
 
         // Score sequences
         _operatorController.R2()
@@ -197,6 +202,7 @@ public class RobotContainer {
         m_autoRollerGripper.stop();
         m_ArmFunnelSuperStructure.stop();
         m_drivetrain.calibrateSteering();
+        m_lights.getColorCommand(RobotColorState.DISABLED).schedule();
     }
 
     public void calibrateSteering() {
