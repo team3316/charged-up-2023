@@ -253,8 +253,8 @@ public class Drivetrain extends SubsystemBase {
         thetaController.setSetpoint(rotation.getRadians());
     }
 
-    public void driveAndKeepHeading(double xSpeed, double ySpeed, boolean fieldRelative) {
+    public void driveAndKeepHeading(double xSpeed, double ySpeed) {
         // the setpoint is set with `this::setKeepHeading`
-        this.drive(xSpeed, ySpeed, thetaController.calculate(this.getPose().getRotation().getRadians()), fieldRelative);
+        this.drive(xSpeed, ySpeed, thetaController.calculate(this.getPose().getRotation().getRadians()), true);
     }
 }

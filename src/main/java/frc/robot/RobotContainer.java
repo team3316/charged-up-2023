@@ -149,8 +149,8 @@ public class RobotContainer {
                                 _driverController.getLeftY() *
                                         SwerveModuleConstants.freeSpeedMetersPerSecond,
                                 _driverController.getLeftX() *
-                                        SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                _fieldRelative), m_drivetrain)));
+                                        SwerveModuleConstants.freeSpeedMetersPerSecond),
+                                m_drivetrain)));
     }
 
     private void setCubeInternalState() {
