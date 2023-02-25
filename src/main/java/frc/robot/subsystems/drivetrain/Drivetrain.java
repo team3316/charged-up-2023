@@ -247,7 +247,14 @@ public class Drivetrain extends SubsystemBase {
                 LimelightConstants.thetaGains.kP, LimelightConstants.thetaGains.kI, LimelightConstants.thetaGains.kD);
     }
 
-    public void spinAndDrive(double xSpeed, double ySpeed, Rotation2d targetRotation, boolean fieldRelative) {
+    public void setKeepHeading(Rotation2d rotation) {
+        thetaController.reset();
+        thetaController.setTolerance(LimelightConstants.thetaTol);
+        thetaController.setSetpoint(rotation.getRadians());
+    }
+
+    public void driveAndKeepHeading(double xSpeed, double ySpeed, boolean fieldRelative) {
+        // the setpoint is set with `this::setKeepHeading`
         this.drive(xSpeed, ySpeed, thetaController.calculate(this.getPose().getRotation().getRadians()), fieldRelative);
     }
 }

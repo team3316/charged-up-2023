@@ -143,14 +143,13 @@ public class RobotContainer {
         _operatorController.povDown().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
 
-        _driverController.PS().whileTrue(
-                new InstantCommand(() -> m_drivetrain.restartControllers()).andThen(
-                        new RunCommand(() -> m_drivetrain.spinAndDrive(
+        _driverController.circle().whileTrue(
+                new InstantCommand(() -> m_drivetrain.setKeepHeading(DrivetrainConstants.collectAngle)).andThen(
+                        new RunCommand(() -> m_drivetrain.driveAndKeepHeading(
                                 _driverController.getLeftY() *
                                         SwerveModuleConstants.freeSpeedMetersPerSecond,
                                 _driverController.getLeftX() *
                                         SwerveModuleConstants.freeSpeedMetersPerSecond,
-                                DrivetrainConstants.collectAngle,
                                 _fieldRelative), m_drivetrain)));
     }
 
