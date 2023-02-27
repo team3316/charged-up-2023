@@ -188,11 +188,23 @@ public class RobotContainer {
         addToChooser("bot-3-gp-engage");
         addToChooser("bot-3-gp");
         this.chooser.addOption("engage-gyro",
-                _autoFactory.createAuto("engage-gyro")
-                        .andThen(new GyroEngage(m_drivetrain, 0.5, -5, true))
-                        .andThen(new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2))
-                        .andThen(new GyroEngage(m_drivetrain, -0.12, 5, false))
-                        .andThen(new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2)));
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT))
+                        .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
+                        .andThen(new WaitCommand(1))
+                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
+                        .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE,
+                                FunnelState.CLOSED))
+                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)
+                                .andThen(
+                                        _autoFactory.createAuto("engage-gyro")
+                                                .andThen(new GyroEngage(m_drivetrain, 0.5, -5, true))
+                                                .andThen(new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false))
+                                                        .withTimeout(0.2))
+                                                .andThen(new GyroEngage(m_drivetrain, -0.12, 5, false))
+                                                .andThen(
+                                                        new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false))
+                                                                .withTimeout(0.2)))));
     }
 
     /**
