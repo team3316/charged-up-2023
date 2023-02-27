@@ -9,15 +9,17 @@ import frc.robot.utils.Within;
 public class GyroEngage extends CommandBase {
 
     private Drivetrain _drivetrain;
+    private double _driveSpeed;
 
-    public GyroEngage(Drivetrain drivetrain) {
+    public GyroEngage(Drivetrain drivetrain, double driveSpeed) {
         _drivetrain = drivetrain;
         addRequirements(_drivetrain);
+        _driveSpeed = driveSpeed;
     }
 
     @Override
     public void initialize() {
-        _drivetrain.drive(AutonomousConstants.engageSpeedMetersPerSecond, 0, 0, false);
+        _drivetrain.drive(_driveSpeed, 0, 0, false);
     }
 
     @Override

@@ -186,7 +186,9 @@ public class RobotContainer {
         addToChooser("bot-3-gp-engage");
         addToChooser("bot-3-gp");
         this.chooser.addOption("engage-gyro",
-                _autoFactory.createAuto("engage-gyro").andThen(new GyroEngage(m_drivetrain)));
+                _autoFactory.createAuto("engage-gyro").andThen(new GyroEngage(m_drivetrain, 0.4))
+                        .andThen(new WaitCommand(0.5))
+                        .andThen(new GyroEngage(m_drivetrain, -0.2)));
     }
 
     /**

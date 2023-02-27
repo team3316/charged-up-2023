@@ -102,6 +102,7 @@ public class Drivetrain extends SubsystemBase {
         this._odometry.update(getRotation2d(), getSwerveModulePositions());
 
         // updateSDB();
+        SmartDashboard.putNumber("pitch", this.getPitch());
     }
 
     public void updateTelemetry() {
