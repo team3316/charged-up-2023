@@ -1,5 +1,6 @@
 package frc.robot.humanIO;
 
+import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
@@ -34,6 +35,24 @@ public class CommandPS5Controller extends CommandGenericHID {
     @Override
     public PS5Controller getHID() {
         return m_hid;
+    }
+
+    @Override
+    public Trigger povUp() {
+        // 180 - up
+        // 135 - up right
+        // 225 - up left
+        return new BooleanEvent(CommandScheduler.getInstance().getDefaultButtonLoop(),
+                () -> m_hid.getPOV() == 0 || m_hid.getPOV() == 45 || m_hid.getPOV() == 315).castTo(Trigger::new);
+    }
+
+    @Override
+    public Trigger povDown() {
+        // 180 - down
+        // 135 - down right
+        // 225 - down left
+        return new BooleanEvent(CommandScheduler.getInstance().getDefaultButtonLoop(),
+                () -> m_hid.getPOV() == 180 || m_hid.getPOV() == 135 || m_hid.getPOV() == 225).castTo(Trigger::new);
     }
 
     /**

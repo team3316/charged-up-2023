@@ -19,8 +19,7 @@ public class Manipulator extends SubsystemBase {
     private static final double ADC_RESOLUTION = 4096; // 12 bits
     private ManipulatorState _currentState;
     private AnalogInput _gamePieceDetector;
-    private Hysteresis _hysteresis = new Hysteresis(ManipulatorConstants.GPDetectorThreshold,
-            ManipulatorConstants.GPDetectorHysteresis);
+    private Hysteresis _hysteresis = new Hysteresis(0, 0);
 
     private DoubleSolenoid _solenoid;
 
@@ -65,11 +64,29 @@ public class Manipulator extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Has GP", this.isHoldingGamePiece());
+        SmartDashboard.putNumber("IR sensor value", this._gamePieceDetector.getValue() / ADC_RESOLUTION);
     }
 
     public CommandBase setManipulatorStateCommand(ManipulatorState state) {
         return new InstantCommand(() -> {
             setManipulatorState(state);
         }, this);
+    }
+
+    public static enum IRSensorState {
+        CUBE(ManipulatorConstants.CUBEDetectorThreshold, ManipulatorConstants.CUBEDetectorHysteresis),
+        CONE(ManipulatorConstants.CONEDetectorThreshold, ManipulatorConstants.CONEDetectorHysteresis);
+
+        public final double _bottomThreshold;
+        public final double _hysteresis;
+
+        private IRSensorState(double bottomThreshold, double hysteresis) {
+            _bottomThreshold = bottomThreshold;
+            _hysteresis = hysteresis;
+        }
+    }
+
+    public void setIRSensorState(IRSensorState wantedState) {
+        _hysteresis = new Hysteresis(wantedState._bottomThreshold, wantedState._hysteresis);
     }
 }

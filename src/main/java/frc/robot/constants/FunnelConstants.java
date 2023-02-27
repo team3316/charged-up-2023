@@ -7,12 +7,12 @@ public class FunnelConstants {
     public static final DoubleSolenoid.Value openState = DoubleSolenoid.Value.kForward;
     public static final DoubleSolenoid.Value closedState = DoubleSolenoid.Value.kReverse;
 
-    public static final double collectPercent = -0.15;
-    public static final double installPercent = 0;
+    public static final double collectPercent = -0.5;
+    public static final double openPercent = 0;
     public static final double closedPercent = 0;
 
     public static final int talonSRXFollowerPort = 21;
     public static final int talonSRXLeaderPort = 20;
-    public static final int solenoidForwardPort = 0;
-    public static final int solenoidReversePort = 1;
+    public static final int solenoidForwardPort = 2;
+    public static final int solenoidReversePort = 3;
 }
