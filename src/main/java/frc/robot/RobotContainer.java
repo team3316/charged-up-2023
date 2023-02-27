@@ -110,10 +110,11 @@ public class RobotContainer {
         // Collect sequence
         _operatorController.L1().onTrue(
                 Commands.sequence(
-                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         new WaitCommand(0.5),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
         // Drive arm state sequence
@@ -146,7 +147,7 @@ public class RobotContainer {
         // Go to collect state sequence
         _operatorController.povDown().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)
-                        .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
         _driverController.circle().whileTrue(
                 new InstantCommand(() -> m_drivetrain.setKeepHeading(DrivetrainConstants.collectAngle)).andThen(
