@@ -127,7 +127,7 @@ public class RobotContainer {
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         new WaitCommand(0.5),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                        m_lights.getColorCommand(RobotColorState.COLLECTED)));
+                        m_lights.getSetColorCommand(RobotColorState.COLLECTED)));
 
         // Drive arm state sequence
         _operatorController.povUp().onTrue(
@@ -141,7 +141,7 @@ public class RobotContainer {
             m_drivetrain.setVisionAprilPID();
             m_manipulator.setIRSensorState(IRSensorState.CUBE);
 
-        }).alongWith(m_lights.getColorCommand(RobotColorState.CUBE)));
+        }).alongWith(m_lights.getSetColorCommand(RobotColorState.CUBE)));
 
         // Set cone as wanted GP
         _operatorController.circle().onTrue(new InstantCommand(() -> {
@@ -150,7 +150,7 @@ public class RobotContainer {
             SmartDashboard.putBoolean("target GP", this._scoreMidCube);
             m_drivetrain.setVisionRetroPID();
             m_manipulator.setIRSensorState(IRSensorState.CONE);
-        }).alongWith(m_lights.getColorCommand(RobotColorState.CUBE)));
+        }).alongWith(m_lights.getSetColorCommand(RobotColorState.CONE)));
 
         // Score sequences
         _operatorController.R2()
@@ -178,6 +178,9 @@ public class RobotContainer {
                                         SwerveModuleConstants.freeSpeedMetersPerSecond,
                                 DrivetrainConstants.collectAngle,
                                 _fieldRelative), m_drivetrain)));
+
+        _operatorController.PS().onTrue(m_lights.getSetColorCommand(RobotColorState.CONE));
+        _operatorController.mute().onTrue(m_lights.getSetColorCommand(RobotColorState.CUBE));
     }
 
     private void addToChooser(String pathName) {
@@ -202,7 +205,7 @@ public class RobotContainer {
         m_autoRollerGripper.stop();
         m_ArmFunnelSuperStructure.stop();
         m_drivetrain.calibrateSteering();
-        m_lights.getColorCommand(RobotColorState.DISABLED).schedule();
+        m_lights.setColor(RobotColorState.OFF.color);
     }
 
     public void calibrateSteering() {

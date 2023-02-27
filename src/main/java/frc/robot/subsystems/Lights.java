@@ -5,10 +5,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.BlinkCommand;
-import frc.robot.commands.RainbowCommand;
 import frc.robot.constants.LightsConstants;
 import frc.robot.constants.LightsConstants.RobotColorState;
 
@@ -34,24 +31,7 @@ public class Lights extends SubsystemBase {
         this._led.setData(this._mainBuffer);
     }
 
-    public void setPixelColor(Color color, int i) {
-        this._mainBuffer.setLED(i, color);
-    }
-
-    public void update() {
-        this._led.setData(this._mainBuffer);
-    }
-
-    public CommandBase getColorCommand(RobotColorState state) {
-        CommandBase command = new InstantCommand();
-        switch (state.pattern) {
-            case SOLID:
-                command = new InstantCommand(() -> setColor(state.color), this);
-            case BLINK:
-                command = new BlinkCommand(this, state.color);
-            case RAINBOW:
-                command = new RainbowCommand(this);
-        }
-        return new ProxyCommand(command.ignoringDisable(true));
+    public CommandBase getSetColorCommand(RobotColorState colorState) {
+        return new InstantCommand(() -> this.setColor(colorState.color), this);
     }
 }
