@@ -80,6 +80,7 @@ public class Robot extends TimedRobot {
         }
 
         m_robotContainer.calibrateSteering();
+        m_robotContainer.subsystemsInit();
     }
 
     @Override
