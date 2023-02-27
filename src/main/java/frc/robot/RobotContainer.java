@@ -198,6 +198,10 @@ public class RobotContainer {
         m_drivetrain.calibrateSteering();
     }
 
+    public void subsystemsInit() {
+        m_ArmFunnelSuperStructure.init();
+    }
+
     public void calibrateSteering() {
         m_drivetrain.calibrateSteering();
     }

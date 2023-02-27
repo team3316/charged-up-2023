@@ -153,4 +153,8 @@ public class Arm extends SubsystemBase {
     public void stop() {
         _leader.set(ControlMode.PercentOutput, 0);
     }
+
+    public void changeTargetState(ArmState state) {
+        _targetState = state;
+    }
 }

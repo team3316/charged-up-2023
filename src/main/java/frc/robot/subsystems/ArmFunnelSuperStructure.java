@@ -84,4 +84,8 @@ public class ArmFunnelSuperStructure {
         m_arm.stop();
         m_funnel.stop();
     }
+
+    public void init() {
+        m_arm.changeTargetState(m_arm.getInitialState());
+    }
 }
