@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.opencv.features2d.FlannBasedMatcher;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -186,9 +188,11 @@ public class RobotContainer {
         addToChooser("bot-3-gp-engage");
         addToChooser("bot-3-gp");
         this.chooser.addOption("engage-gyro",
-                _autoFactory.createAuto("engage-gyro").andThen(new GyroEngage(m_drivetrain, 0.4))
-                        .andThen(new WaitCommand(0.5))
-                        .andThen(new GyroEngage(m_drivetrain, -0.2)));
+                _autoFactory.createAuto("engage-gyro")
+                        .andThen(new GyroEngage(m_drivetrain, 0.5, -5, true))
+                        .andThen(new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2))
+                        .andThen(new GyroEngage(m_drivetrain, -0.12, 5, false))
+                        .andThen(new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2)));
     }
 
     /**

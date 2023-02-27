@@ -2,19 +2,21 @@ package frc.robot.autonomous;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.constants.AutonomousConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.utils.Within;
 
 public class GyroEngage extends CommandBase {
 
     private Drivetrain _drivetrain;
     private double _driveSpeed;
+    private double _driveSetPoint;
+    private boolean _isSetPointOver;
 
-    public GyroEngage(Drivetrain drivetrain, double driveSpeed) {
+    public GyroEngage(Drivetrain drivetrain, double driveSpeed, double driveSetPoint, boolean isSetPointOver) {
         _drivetrain = drivetrain;
         addRequirements(_drivetrain);
         _driveSpeed = driveSpeed;
+        _driveSetPoint = driveSetPoint;
+        _isSetPointOver = isSetPointOver;
     }
 
     @Override
@@ -29,12 +31,13 @@ public class GyroEngage extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Within.range(_drivetrain.getPitch(), 0, 10);
+        if (_isSetPointOver)
+            return _drivetrain.getPitch() > _driveSetPoint;
+        return _drivetrain.getPitch() < _driveSetPoint;
     }
 
     @Override
     public void end(boolean interrupted) {
         _drivetrain.drive(0, 0, 0, false);
-        _drivetrain.setModulesAngle(90);
     }
 }
