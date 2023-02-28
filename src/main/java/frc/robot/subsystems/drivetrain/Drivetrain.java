@@ -102,6 +102,7 @@ public class Drivetrain extends SubsystemBase {
         this._odometry.update(getRotation2d(), getSwerveModulePositions());
 
         // updateSDB();
+        SmartDashboard.putNumber("pitch", this.getPitch());
     }
 
     public void updateTelemetry() {
@@ -256,5 +257,9 @@ public class Drivetrain extends SubsystemBase {
     public void driveAndKeepHeading(double xSpeed, double ySpeed) {
         // the setpoint is set with `this::setKeepHeading`
         this.drive(xSpeed, ySpeed, thetaController.calculate(this.getPose().getRotation().getRadians()), true);
+    }
+
+    public double getPitch() {
+        return _pigeon.getPitch();
     }
 }
