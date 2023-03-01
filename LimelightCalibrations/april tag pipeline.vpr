@@ -19,9 +19,9 @@ crop_x_max:1.000000
 crop_x_min:-1.000000
 crop_y_max:1.000000
 crop_y_min:-1.000000
-cross_a_a:0.065866
+cross_a_a:0.054595
 cross_a_x:0
-cross_a_y:0.279364
+cross_a_y:0.184743
 cross_b_a:1
 cross_b_x:0
 cross_b_y:0
@@ -32,7 +32,7 @@ dilation_steps:0
 direction_filter:0
 dual_close_sort_origin:0
 erosion_steps:0
-exposure:300
+exposure:100
 fiducial_decoder_strictness:strict
 fiducial_denoise:0.000000
 fiducial_idfilters:

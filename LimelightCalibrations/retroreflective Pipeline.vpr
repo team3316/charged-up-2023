@@ -20,9 +20,9 @@ crop_x_max:1
 crop_x_min:-1
 crop_y_max:1
 crop_y_min:-1
-cross_a_a:0.000732
+cross_a_a:0.001877
 cross_a_x:0
-cross_a_y:0.267751
+cross_a_y:0.328614
 cross_b_a:1
 cross_b_x:0
 cross_b_y:0
@@ -33,7 +33,7 @@ dilation_steps:1
 direction_filter:0
 dual_close_sort_origin:0
 erosion_steps:1
-exposure:2
+exposure:5
 fiducial_decoder_strictness:strict
 fiducial_denoise:0.000000
 fiducial_idfilters:
@@ -44,8 +44,8 @@ fiducial_skip3d:0
 fiducial_type:aprilClassic16h5
 fiducial_vis_mode:3dbotposetargspace
 force_convex:1
-hue_max:103
-hue_min:30
+hue_max:110
+hue_min:42
 image_flip:0
 image_source:0
 img_to_show:0
