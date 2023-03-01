@@ -25,6 +25,8 @@ import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
+import frc.robot.subsystems.AutoRollerGripper.RollersState;
 import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.AutoRollerGripper;
 import frc.robot.subsystems.Funnel;
@@ -87,7 +89,7 @@ public class RobotContainer {
                         DrivetrainConstants.maxRotationSpeedRadPerSec,
                 _fieldRelative), m_drivetrain));
 
-        setCubeInternalState(); // arbitrary decision, could be cone.
+        setConeInternalState(); // arbitrary decision, could be cone.
     }
 
     /**
@@ -158,6 +160,12 @@ public class RobotContainer {
                                 _driverController.getLeftX() *
                                         SwerveModuleConstants.freeSpeedMetersPerSecond),
                                 m_drivetrain)));
+
+        _operatorController.share().onTrue(m_autoRollerGripper.getIntakeCommand());
+        _operatorController.options().onTrue(m_autoRollerGripper.getEjectCommand());
+        _driverController.povDown().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _driverController.povUp().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
+
     }
 
     private void setCubeInternalState() {
@@ -182,21 +190,36 @@ public class RobotContainer {
 
     private void initChooser() {
         SmartDashboard.putData("autonomous", this.chooser);
-        addToChooser("engage");
-        addToChooser("1-gp-engage");
-        addToChooser("1-gp-leaveCommunity");
-        addToChooser("bot-2-gp-engage");
-        addToChooser("bot-2-gp");
-        addToChooser("bot-3-gp-engage");
-        addToChooser("bot-3-gp");
-        this.chooser.addOption("engage-gyro",
+        // addToChooser("engage");
+        // addToChooser("1-gp-engage");
+        // addToChooser("1-gp-leaveCommunity");
+        // addToChooser("bot-2-gp-engage");
+        // addToChooser("bot-2-gp");
+        // addToChooser("bot-3-gp-engage");
+        // addToChooser("bot-3-gp");
+
+        this.chooser.addOption("nothing", new InstantCommand());
+
+        // opnly cone
+        this.chooser.addOption("cone",
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT))
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                FunnelState.COLLECT))
                         .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
-                        .andThen(new WaitCommand(1))
+                        .andThen(new WaitCommand(0.5))
                         .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
-                        .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE,
-                                FunnelState.CLOSED))
+                        .andThen(m_ArmFunnelSuperStructure.overrideCommand())
+                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
+
+        // cone engage cone
+        this.chooser.addOption("cone-engage-gyro",
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                FunnelState.COLLECT))
+                        .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
+                        .andThen(new WaitCommand(0.5))
+                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
+                        .andThen(m_ArmFunnelSuperStructure.overrideCommand())
                         .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)
                                 .andThen(
                                         _autoFactory.createAuto("engage-gyro")
@@ -207,6 +230,28 @@ public class RobotContainer {
                                                 .andThen(
                                                         new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false))
                                                                 .withTimeout(0.2)))));
+        // only engage
+        this.chooser.addOption("engage-gyro", _autoFactory.createAuto("engage-gyro")
+                .andThen(new GyroEngage(m_drivetrain, 0.5, -5, true))
+                .andThen(new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false))
+                        .withTimeout(0.2))
+                .andThen(new GyroEngage(m_drivetrain, -0.12, 5, false))
+                .andThen(
+                        new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false))
+                                .withTimeout(0.2)));
+
+        // taxi
+        this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
+
+        this.chooser.addOption("cone-taxi", m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                        FunnelState.COLLECT))
+                .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
+                .andThen(new WaitCommand(0.5))
+                .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
+                .andThen(m_ArmFunnelSuperStructure.overrideCommand())
+                .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN))
+                .andThen(_autoFactory.createAuto("engage-gyro")));
     }
 
     /**
