@@ -15,6 +15,6 @@ public class ManipulatorConstants {
     // ir constants
     public static final double CONEDetectorThreshold = 0.26;
     public static final double CONEDetectorHysteresis = 0.1;
-    public static final double CUBEDetectorThreshold = 0.38;
+    public static final double CUBEDetectorThreshold = 0.32;
     public static final double CUBEDetectorHysteresis = 0.1;
 }
