@@ -25,7 +25,7 @@ public class AutoRollerGripper extends SubsystemBase {
 
     private DoubleSolenoid _doubleSolenoid;
 
-    private FolderState currentFolderState;
+    private FolderState currentFolderState = FolderState.IN;
 
     public enum FolderState {
         IN(RollerGripperConstants.stateWhenFoldedIn),
