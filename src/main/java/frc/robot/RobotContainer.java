@@ -89,7 +89,7 @@ public class RobotContainer {
                         DrivetrainConstants.maxRotationSpeedRadPerSec,
                 _fieldRelative), m_drivetrain));
 
-        setConeInternalState(); // arbitrary decision, could be cone.
+        setCubeInternalState();
     }
 
     /**
@@ -201,16 +201,16 @@ public class RobotContainer {
         this.chooser.addOption("nothing", new InstantCommand());
 
         // opnly cone
-        this.chooser.addOption("cone",
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
+        this.chooser.addOption("cube", new InstantCommand(() -> this.setCubeInternalState()).andThen(
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)).andThen(
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
                                 FunnelState.COLLECT))
-                        .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
-                        .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
-                        .andThen(new WaitCommand(0.5))
-                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
-                        .andThen(m_ArmFunnelSuperStructure.overrideCommand())
-                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
+                .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
+                .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
+                .andThen(new WaitCommand(0.5))
+                .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
+                .andThen(m_ArmFunnelSuperStructure.overrideCommand())
+                .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
 
         // cone engage cone
         this.chooser.addOption("cone-engage-gyro",
