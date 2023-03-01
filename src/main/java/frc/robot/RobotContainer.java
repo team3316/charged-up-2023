@@ -150,7 +150,7 @@ public class RobotContainer {
         // Go to collect state sequence
         _operatorController.povDown().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)
-                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
 
         _driverController.circle().whileTrue(
                 new InstantCommand(() -> m_drivetrain.setKeepHeading(DrivetrainConstants.collectAngle)).andThen(
@@ -205,6 +205,7 @@ public class RobotContainer {
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
                                 FunnelState.COLLECT))
+                        .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
                         .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
                         .andThen(new WaitCommand(0.5))
                         .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
@@ -216,7 +217,7 @@ public class RobotContainer {
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
                                 FunnelState.COLLECT))
-                        .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
+                        .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(1))
                         .andThen(new WaitCommand(0.5))
                         .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
                         .andThen(m_ArmFunnelSuperStructure.overrideCommand())
@@ -246,7 +247,7 @@ public class RobotContainer {
         this.chooser.addOption("cone-taxi", m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
                         FunnelState.COLLECT))
-                .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
+                .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(1))
                 .andThen(new WaitCommand(0.5))
                 .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
                 .andThen(m_ArmFunnelSuperStructure.overrideCommand())
