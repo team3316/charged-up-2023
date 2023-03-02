@@ -200,7 +200,7 @@ public class RobotContainer {
 
         this.chooser.addOption("nothing", new InstantCommand());
 
-        // opnly cone
+        // opnly cube
         this.chooser.addOption("cube", new InstantCommand(() -> this.setCubeInternalState()).andThen(
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)).andThen(
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
@@ -212,12 +212,14 @@ public class RobotContainer {
                 .andThen(m_ArmFunnelSuperStructure.overrideCommand())
                 .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
 
-        // cone engage cone
-        this.chooser.addOption("cone-engage-gyro",
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                                FunnelState.COLLECT))
-                        .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(1))
+        // cube engage
+        this.chooser.addOption("cube-engage-gyro",
+                new InstantCommand(() -> this.setCubeInternalState()).andThen(
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)).andThen(
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                        FunnelState.COLLECT))
+                        .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
+                        .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
                         .andThen(new WaitCommand(0.5))
                         .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
                         .andThen(m_ArmFunnelSuperStructure.overrideCommand())
@@ -244,10 +246,13 @@ public class RobotContainer {
         // taxi
         this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
 
-        this.chooser.addOption("cone-taxi", m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN).andThen(
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                        FunnelState.COLLECT))
-                .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(1))
+        // cube taxi
+        this.chooser.addOption("cube-taxi", new InstantCommand(() -> this.setCubeInternalState()).andThen(
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)).andThen(
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                FunnelState.COLLECT))
+                .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
+                .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
                 .andThen(new WaitCommand(0.5))
                 .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
                 .andThen(m_ArmFunnelSuperStructure.overrideCommand())
