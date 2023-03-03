@@ -11,5 +11,7 @@ public class AutonomousConstants {
     public static final double kPTranslationController = 1;
     public static final double kPThetaController = 3;
 
+    public static final double engageStartSpeedMetersPerSecond = 1.0;
+
     public static final double engageSpeedMetersPerSecond = 0.4;
 }
