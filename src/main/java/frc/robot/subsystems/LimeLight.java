@@ -9,8 +9,6 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 
-import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -18,6 +16,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.AutonomousConstants;
@@ -30,6 +29,24 @@ public class LimeLight extends SubsystemBase {
     private NetworkTableEntry hasTarget;
     private NetworkTableEntry pipeLine;
     private NetworkTableEntry LEDs;
+
+    public class BotPose {
+        private Pose2d pose;
+        private double timestamp;
+
+        public Pose2d getPose() {
+            return pose;
+        }
+
+        public double getTimestamp() {
+            return timestamp;
+        }
+
+        public BotPose(Pose2d pose, double timestamp) {
+            this.pose = pose;
+            this.timestamp = timestamp;
+        }
+    }
 
     /** Creates a new LimeLight. */
     public LimeLight() { // CR: add a way to send the config to the limelight trough code
@@ -72,34 +89,26 @@ public class LimeLight extends SubsystemBase {
     /*
      * Can return null
      */
-    public Pose2d getPos() {
-        String entryName;
-        switch (DriverStation.getAlliance()) {
-            case Red:
-                entryName = "botpose_wpired";
+    public BotPose getBotPose() {
+        if (!hasTarget())
+            return null;
 
-                break;
-            case Blue:
-                entryName = "botpose_wpiblue";
-            default:
-                return null;
-        }
+        String entryName = DriverStation.getAlliance() == Alliance.Red ? "botpose_wpired" : "botpose_wpiblue";
 
         double[] poseComponents = limeLightTable.getEntry(entryName).getDoubleArray(new double[6]);
         if (poseComponents.length == 0)
             return null;
 
-        return new Pose2d(
+        return new BotPose(new Pose2d(
                 poseComponents[0],
                 poseComponents[1],
-                new Rotation2d(
-                        poseComponents[3],
-                        poseComponents[4]));
+                new Rotation2d(Math.toRadians(poseComponents[5]))),
+                Timer.getFPGATimestamp() - (poseComponents[6] / 1000.0));
 
     }
 
     public PathPlannerTrajectory getCollectionTrajectory() {
-        Pose2d botPose = getPos();
+        Pose2d botPose = getBotPose().getPose();
         if (botPose == null) {
             return new PathPlannerTrajectory();
         }
