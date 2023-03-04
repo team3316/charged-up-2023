@@ -245,16 +245,16 @@ public class RobotContainer {
     }
 
     private CommandBase getAutoCubeSequence() {
-        return new InstantCommand(() -> this.setCubeInternalState()).andThen(
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)).andThen(
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                                FunnelState.COLLECT))
-                .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
-                .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
-                .andThen(new WaitCommand(0.5))
-                .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
-                .andThen(m_ArmFunnelSuperStructure.overrideCommand())
-                .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+        return Commands.sequence(new InstantCommand(() -> this.setCubeInternalState()),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                        FunnelState.COLLECT),
+                new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                new WaitCommand(0.5),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                m_ArmFunnelSuperStructure.overrideCommand(),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
     }
 
     /**
