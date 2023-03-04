@@ -1,9 +1,6 @@
 package frc.robot.constants;
 
-import com.pathplanner.lib.PathPoint;
-
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.motors.PIDFGains;
 
 /**
@@ -34,14 +31,4 @@ public class LimelightConstants {
     public static final int LEDsForceOff = 1;
     public static final int LEDsForceBlink = 2;
     public static final int LEDsForceON = 3;
-
-    // TODO: these values are only approximation from PP
-    public static final Translation2d collectionTranslation = new Translation2d(14.0, 7.5);
-    public static final Rotation2d collectionHolonomicRotation = Rotation2d.fromDegrees(90);
-    public static final Rotation2d collectionHeading = Rotation2d.fromDegrees(90);
-    public static final PathPoint collectionPathPoint = new PathPoint(
-            collectionTranslation,
-            collectionHeading,
-            collectionHolonomicRotation);
-
 }

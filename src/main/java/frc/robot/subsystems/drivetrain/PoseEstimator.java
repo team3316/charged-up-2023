@@ -2,11 +2,17 @@ package frc.robot.subsystems.drivetrain;
 
 import java.util.Map;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
@@ -15,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.subsystems.LimeLight;
 
@@ -24,7 +31,16 @@ public class PoseEstimator extends SubsystemBase {
     private final Drivetrain drivetrain;
 
     private double lastVisionTimestamp = -1;
-    private final Pose2d robotAtSSS = new Pose2d(14.2, 7.6, Rotation2d.fromDegrees(90));
+
+    // TODO: these values are only approximation from PP
+    private static final Translation2d collectionTranslation = new Translation2d(14.0, 7.5);
+    private static final Rotation2d collectionHolonomicRotation = Rotation2d.fromDegrees(90);
+    private static final Rotation2d collectionHeading = Rotation2d.fromDegrees(90);
+    private static final PathPoint collectionPathPoint = new PathPoint(
+            collectionTranslation,
+            collectionHeading,
+            collectionHolonomicRotation);
+
     private final double xTolerance = 0.2; // in meters
     private final double yTolerance = 0.1; // in meters
     private final double tTolerance = 10; // in degrees
@@ -74,22 +90,22 @@ public class PoseEstimator extends SubsystemBase {
         tab.addBoolean("X at SSS", this::xAtSSS).withPosition(0, 2).withSize(1, 1);
         tab.addNumber("X error", this::xError).withWidget(BuiltInWidgets.kNumberBar)
                 .withProperties(Map.of(
-                        "min", robotAtSSS.getX() - (xTolerance * 5),
-                        "max", robotAtSSS.getX() + (xTolerance * 5)))
+                        "min", collectionTranslation.getX() - (xTolerance * 5),
+                        "max", collectionTranslation.getX() + (xTolerance * 5)))
                 .withPosition(1, 2)
                 .withSize(1, 1);
         tab.addBoolean("Y at SSS", this::yAtSSS).withPosition(0, 3).withSize(1, 1);
         tab.addNumber("Y error", this::yError).withWidget(BuiltInWidgets.kNumberBar)
                 .withProperties(Map.of(
-                        "min", robotAtSSS.getY() - (xTolerance * 5),
-                        "max", robotAtSSS.getY() + (xTolerance * 5)))
+                        "min", collectionTranslation.getY() - (xTolerance * 5),
+                        "max", collectionTranslation.getY() + (xTolerance * 5)))
                 .withPosition(1, 3)
                 .withSize(1, 1);
         tab.addBoolean("T at SSS", this::tAtSSS).withPosition(0, 4).withSize(1, 1);
         tab.addNumber("T error", this::tError).withWidget(BuiltInWidgets.kNumberBar)
                 .withProperties(Map.of(
-                        "min", robotAtSSS.getRotation().getDegrees() - (tTolerance * 5),
-                        "max", robotAtSSS.getRotation().getDegrees() + (tTolerance * 5)))
+                        "min", collectionHolonomicRotation.getDegrees() - (tTolerance * 5),
+                        "max", collectionHolonomicRotation.getDegrees() + (tTolerance * 5)))
                 .withPosition(1, 4)
                 .withSize(1, 1);
         tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
@@ -116,15 +132,15 @@ public class PoseEstimator extends SubsystemBase {
     }
 
     private double xError() {
-        return getCurrentPose().minus(robotAtSSS).getX();
+        return getCurrentPose().getTranslation().minus(collectionTranslation).getX();
     }
 
     private double yError() {
-        return getCurrentPose().minus(robotAtSSS).getY();
+        return getCurrentPose().getTranslation().minus(collectionTranslation).getY();
     }
 
     private double tError() {
-        return getCurrentPose().minus(robotAtSSS).getRotation().getDegrees();
+        return getCurrentPose().getRotation().minus(collectionHolonomicRotation).getDegrees();
     }
 
     private boolean xAtSSS() {
@@ -172,6 +188,19 @@ public class PoseEstimator extends SubsystemBase {
      */
     public void resetFieldPosition() {
         setCurrentPose(new Pose2d());
+    }
+
+    public PathPlannerTrajectory getCollectionTrajectory() {
+        var pose = getCurrentPose();
+        var speeds = drivetrain.getChassisSpeeds();
+
+        var velocity = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        var heading = Rotation2d.fromRadians(Math.atan2(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+        return PathPlanner.generatePath(
+                new PathConstraints(AutonomousConstants.kMaxSpeedMetersPerSecond,
+                        AutonomousConstants.kMaxAccelerationMetersPerSecondSquared),
+                new PathPoint(pose.getTranslation(), heading.plus(pose.getRotation()), pose.getRotation(), velocity),
+                collectionPathPoint);
     }
 
 }

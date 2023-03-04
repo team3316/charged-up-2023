@@ -4,11 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,7 +14,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.LimelightConstants;
 
 public class LimeLight extends SubsystemBase {
@@ -105,22 +99,5 @@ public class LimeLight extends SubsystemBase {
                 new Rotation2d(Math.toRadians(poseComponents[5]))),
                 Timer.getFPGATimestamp() - (poseComponents[6] / 1000.0));
 
-    }
-
-    public PathPlannerTrajectory getCollectionTrajectory() {
-        Pose2d botPose = getBotPose().getPose();
-        if (botPose == null) {
-            return new PathPlannerTrajectory();
-        }
-
-        // heading straight to the collection using vector subtraction
-        Rotation2d startingHeading = LimelightConstants.collectionTranslation
-                .minus(botPose.getTranslation()).getAngle();
-
-        return PathPlanner.generatePath(
-                new PathConstraints(AutonomousConstants.kMaxSpeedMetersPerSecond,
-                        AutonomousConstants.kMaxAccelerationMetersPerSecondSquared),
-                new PathPoint(botPose.getTranslation(), startingHeading, botPose.getRotation()),
-                LimelightConstants.collectionPathPoint);
     }
 }
