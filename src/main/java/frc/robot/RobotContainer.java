@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autonomous.AutoFactory;
+import frc.robot.autonomous.GyroEngage;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.constants.JoysticksConstants;
@@ -26,6 +27,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.AutoRollerGripper;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.LimeLight;
@@ -86,7 +88,7 @@ public class RobotContainer {
                         DrivetrainConstants.maxRotationSpeedRadPerSec,
                 _fieldRelative), m_drivetrain));
 
-        setCubeInternalState(); // arbitrary decision, could be cone.
+        setCubeInternalState();
     }
 
     /**
@@ -110,10 +112,11 @@ public class RobotContainer {
         // Collect sequence
         _operatorController.L1().onTrue(
                 Commands.sequence(
-                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         new WaitCommand(0.5),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
         // Drive arm state sequence
@@ -146,7 +149,7 @@ public class RobotContainer {
         // Go to collect state sequence
         _operatorController.povDown().onTrue(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)
-                        .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+                        .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
 
         _driverController.circle().whileTrue(
                 new InstantCommand(() -> m_drivetrain.setKeepHeading(DrivetrainConstants.collectAngle)).andThen(
@@ -156,6 +159,12 @@ public class RobotContainer {
                                 _driverController.getLeftX() *
                                         SwerveModuleConstants.freeSpeedMetersPerSecond),
                                 m_drivetrain)));
+
+        _operatorController.share().onTrue(m_autoRollerGripper.getIntakeCommand());
+        _operatorController.options().onTrue(m_autoRollerGripper.getEjectCommand());
+        _driverController.povDown().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        _driverController.povUp().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
+
     }
 
     private void setCubeInternalState() {
@@ -180,13 +189,29 @@ public class RobotContainer {
 
     private void initChooser() {
         SmartDashboard.putData("autonomous", this.chooser);
-        addToChooser("engage");
-        addToChooser("1-gp-engage");
-        addToChooser("1-gp-leaveCommunity");
-        addToChooser("bot-2-gp-engage");
-        addToChooser("bot-2-gp");
-        addToChooser("bot-3-gp-engage");
-        addToChooser("bot-3-gp");
+        // addToChooser("engage");
+        // addToChooser("1-gp-engage");
+        // addToChooser("1-gp-leaveCommunity");
+        // addToChooser("bot-2-gp-engage");
+        // addToChooser("bot-2-gp");
+        // addToChooser("bot-3-gp-engage");
+        // addToChooser("bot-3-gp");
+
+        this.chooser.addOption("nothing", new InstantCommand());
+
+        // only cube
+        this.chooser.addOption("cube", getAutoCubeSequence());
+
+        // cube engage
+        this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
+        // only engage
+        this.chooser.addOption("engage-gyro", getEngageSequence());
+
+        // taxi
+        this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
+
+        // cube taxi
+        this.chooser.addOption("cube-taxi", getAutoCubeSequence().andThen(_autoFactory.createAuto("engage-gyro")));
     }
 
     /**
@@ -198,12 +223,38 @@ public class RobotContainer {
         m_drivetrain.calibrateSteering();
     }
 
+    public void subsystemsInit() {
+        m_ArmFunnelSuperStructure.init();
+    }
+
     public void calibrateSteering() {
         m_drivetrain.calibrateSteering();
     }
 
     public void updateTelemetry() {
         m_drivetrain.updateTelemetry();
+    }
+
+    private CommandBase getEngageSequence() {
+        return Commands.sequence(
+                _autoFactory.createAuto("engage-gyro"),
+                new GyroEngage(m_drivetrain, 0.5, -5, true),
+                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2),
+                new GyroEngage(m_drivetrain, -0.12, 5, false),
+                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
+    }
+
+    private CommandBase getAutoCubeSequence() {
+        return Commands.sequence(new InstantCommand(() -> this.setCubeInternalState()),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                        FunnelState.COLLECT),
+                new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                new WaitCommand(0.5),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                m_ArmFunnelSuperStructure.overrideCommand(),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
     }
 
     /**

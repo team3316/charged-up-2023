@@ -84,4 +84,13 @@ public class ArmFunnelSuperStructure {
         m_arm.stop();
         m_funnel.stop();
     }
+
+    public void init() {
+        m_arm.changeTargetState(m_arm.getInitialState());
+    }
+
+    public CommandBase overrideCommand() {
+        return Commands.sequence(m_funnel.setFunnelStateCommand(FunnelState.OPEN),
+                m_arm.getSetStateCommand(ArmState.MID_CONE), m_funnel.setFunnelStateCommand(FunnelState.CLOSED));
+    }
 }

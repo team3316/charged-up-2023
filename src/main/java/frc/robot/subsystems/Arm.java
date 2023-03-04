@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -144,7 +145,7 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (isRevLimitSwitchClosed()) {
+        if (isRevLimitSwitchClosed() && DriverStation.isDisabled()) {
             _leader.setSelectedSensorPosition(angleToTicks(ArmConstants.collectAngle));
         }
         updateSDB();
@@ -152,5 +153,9 @@ public class Arm extends SubsystemBase {
 
     public void stop() {
         _leader.set(ControlMode.PercentOutput, 0);
+    }
+
+    public void changeTargetState(ArmState state) {
+        _targetState = state;
     }
 }
