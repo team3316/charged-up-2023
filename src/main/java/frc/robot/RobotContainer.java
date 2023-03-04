@@ -62,23 +62,6 @@ public class RobotContainer {
 
     private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
     private SendableChooser<CommandBase> chooser;
-    private final CommandBase engageCommand = Commands.sequence(
-            _autoFactory.createAuto("engage-gyro"),
-            new GyroEngage(m_drivetrain, 0.5, -5, true),
-            new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2),
-            new GyroEngage(m_drivetrain, -0.12, 5, false),
-            new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
-
-    private final CommandBase autoCubeCommand = new InstantCommand(() -> this.setCubeInternalState()).andThen(
-            m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)).andThen(
-                    m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                            FunnelState.COLLECT))
-            .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
-            .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
-            .andThen(new WaitCommand(0.5))
-            .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
-            .andThen(m_ArmFunnelSuperStructure.overrideCommand())
-            .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
 
     private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
 
@@ -215,20 +198,20 @@ public class RobotContainer {
         // addToChooser("bot-3-gp");
 
         this.chooser.addOption("nothing", new InstantCommand());
-        
+
         // only cube
-        this.chooser.addOption("cube", autoCubeCommand);
+        this.chooser.addOption("cube", getAutoCubeSequence());
 
         // cube engage
-        this.chooser.addOption("cube-engage-gyro", autoCubeCommand.andThen(engageCommand));
+        this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
-        this.chooser.addOption("engage-gyro", engageCommand);
+        this.chooser.addOption("engage-gyro", getEngageSequence());
 
         // taxi
         this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
 
         // cube taxi
-        this.chooser.addOption("cube-taxi", autoCubeCommand.andThen(_autoFactory.createAuto("engage-gyro")));
+        this.chooser.addOption("cube-taxi", getAutoCubeSequence().andThen(_autoFactory.createAuto("engage-gyro")));
     }
 
     /**
@@ -250,6 +233,28 @@ public class RobotContainer {
 
     public void updateTelemetry() {
         m_drivetrain.updateTelemetry();
+    }
+
+    private CommandBase getEngageSequence() {
+        return Commands.sequence(
+                _autoFactory.createAuto("engage-gyro"),
+                new GyroEngage(m_drivetrain, 0.5, -5, true),
+                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2),
+                new GyroEngage(m_drivetrain, -0.12, 5, false),
+                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
+    }
+
+    private CommandBase getAutoCubeSequence() {
+        return new InstantCommand(() -> this.setCubeInternalState()).andThen(
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)).andThen(
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                FunnelState.COLLECT))
+                .andThen(new WaitUntilCommand(m_manipulator::isHoldingGamePiece))
+                .andThen(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
+                .andThen(new WaitCommand(0.5))
+                .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
+                .andThen(m_ArmFunnelSuperStructure.overrideCommand())
+                .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
     }
 
     /**
