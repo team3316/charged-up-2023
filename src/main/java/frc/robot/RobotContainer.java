@@ -25,9 +25,9 @@ import frc.robot.constants.LimelightConstants;
 import frc.robot.humanIO.CommandPS5Controller;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
+import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.AutoRollerGripper;
-import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.LimeLight;
@@ -42,6 +42,7 @@ import frc.robot.utils.GlobalDebuggable;
  * commands, and trigger mappings).
  */
 public class RobotContainer {
+
     private final Drivetrain m_drivetrain = new Drivetrain();
     private final Manipulator m_manipulator = new Manipulator();
     private final AutoRollerGripper m_autoRollerGripper = new AutoRollerGripper();
@@ -89,6 +90,47 @@ public class RobotContainer {
                 _fieldRelative), m_drivetrain));
 
         setCubeInternalState();
+
+        // SDB Buttons:
+        // Manipulator
+        SmartDashboard.putData("Open Manipulator", m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+        SmartDashboard.putData("Close Manipulator", m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD));
+        // Arm, Funnel
+        SmartDashboard.putData("Collect, Open",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.OPEN));
+        SmartDashboard.putData("Collect, Closed",
+                m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
+        SmartDashboard.putData("Collect, Collect",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT));
+        SmartDashboard.putData("Drive, Open",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelState.OPEN));
+        SmartDashboard.putData("Drive, Closed",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelState.CLOSED));
+        SmartDashboard.putData("Drive, Collect",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.DRIVE, FunnelState.COLLECT));
+        SmartDashboard.putData("MidCone, Open",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.OPEN));
+        SmartDashboard.putData("MidCone, Closed",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.CLOSED));
+        SmartDashboard.putData("MidCone, Collect",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.COLLECT));
+        SmartDashboard.putData("MidCube, Open",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.OPEN));
+        SmartDashboard.putData("MidCube, Closed",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.CLOSED));
+        SmartDashboard.putData("MidCube, Collect",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.COLLECT));
+        SmartDashboard.putData("Low, Open",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelState.OPEN));
+        SmartDashboard.putData("Low, Closed",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelState.CLOSED));
+        SmartDashboard.putData("Low, Collect",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelState.COLLECT));
+        // Auto Roller Gripper
+        SmartDashboard.putData("Roller Gripper In", m_autoRollerGripper.getFoldCommand(FolderState.IN));
+        SmartDashboard.putData("Roller Gripper Out", m_autoRollerGripper.getFoldCommand(FolderState.OUT));
+        SmartDashboard.putData("Roller Gripper Intake", m_autoRollerGripper.getIntakeCommand());
+        SmartDashboard.putData("Roller Gripper Eject", m_autoRollerGripper.getEjectCommand());
     }
 
     /**
