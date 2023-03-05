@@ -275,7 +275,13 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.4,
+      "position": 0.0,
+      "names": [
+        "eject"
+      ]
+    },
+    {
+      "position": 2.0,
       "names": [
         "intake"
       ]
@@ -287,15 +293,15 @@
       ]
     },
     {
-      "position": 4.4,
+      "position": 5.9999999999999964,
       "names": [
-        "event"
+        "intake"
       ]
     },
     {
-      "position": 7.999999999999985,
+      "position": 7.999999999999986,
       "names": [
-        "event"
+        "eject"
       ]
     }
   ]

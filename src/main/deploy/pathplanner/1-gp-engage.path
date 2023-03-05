@@ -50,5 +50,12 @@
   "maxVelocity": 0.14,
   "maxAcceleration": null,
   "isReversed": null,
-  "markers": []
+  "markers": [
+    {
+      "position": 0.0,
+      "names": [
+        "eject"
+      ]
+    }
+  ]
 }

@@ -16,7 +16,9 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "eject"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -225,27 +227,33 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.4,
-      "names": [
-        "intake"
-      ]
-    },
-    {
-      "position": 4.0,
+      "position": 8.0,
       "names": [
         "eject"
       ]
     },
     {
-      "position": 8.0,
+      "position": 2.0,
       "names": [
-        "event"
+        "intake"
       ]
     },
     {
-      "position": 4.4,
+      "position": 4.0000000000000036,
+      "names": [
+        "eject"
+      ]
+    },
+    {
+      "position": 6.0,
       "names": [
         "intake"
+      ]
+    },
+    {
+      "position": 8.0,
+      "names": [
+        "eject"
       ]
     }
   ]
