@@ -60,7 +60,7 @@ public class RobotContainer {
 
     private boolean _fieldRelative = true;
 
-    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain, m_autoRollerGripper);
     private SendableChooser<CommandBase> chooser;
 
     private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
