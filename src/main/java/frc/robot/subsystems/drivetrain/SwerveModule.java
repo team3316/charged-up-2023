@@ -63,7 +63,8 @@ public class SwerveModule {
         else if (angleDiff >= 180)
             targetAngle -= 360;
 
-        this._steerMotor.setPosition(targetAngle);
+        if (Math.abs(targetAngle - currentAngle) > 2) // avoid sending unnececeray CAN packets
+            this._steerMotor.setPosition(targetAngle);
     }
 
     public void stop() {
