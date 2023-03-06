@@ -16,10 +16,13 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "names": [
+          "fold-out",
+          "eject"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 1.0
       }
     },
     {
@@ -35,7 +38,7 @@
         "x": 5.078068870423455,
         "y": 0.7729961174208069
       },
-      "holonomicAngle": 30.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -53,12 +56,12 @@
         "y": 0.8445698319968078
       },
       "prevControl": {
-        "x": 4.405088840579491,
-        "y": 0.8445698319968078
+        "x": 6.043518753704174,
+        "y": 0.8350266700533413
       },
       "nextControl": {
-        "x": 4.405088840579491,
-        "y": 0.8445698319968078
+        "x": 6.043518753704174,
+        "y": 0.8350266700533413
       },
       "holonomicAngle": 90.0,
       "isReversal": true,
@@ -75,15 +78,15 @@
     {
       "anchorPoint": {
         "x": 3.675224064733844,
-        "y": 0.7873108603360066
+        "y": 0.8
       },
       "prevControl": {
         "x": 4.33370223883305,
-        "y": 0.7873108603360066
+        "y": 0.8
       },
       "nextControl": {
         "x": 3.1944399975218163,
-        "y": 0.7873108603360066
+        "y": 0.8
       },
       "holonomicAngle": 0.0,
       "isReversal": false,
@@ -103,8 +106,8 @@
         "y": 1.0879204615552087
       },
       "prevControl": {
-        "x": 2.315511807072185,
-        "y": 1.0879204615552087
+        "x": 2.2580645161290334,
+        "y": 0.8767780035560083
       },
       "nextControl": null,
       "holonomicAngle": -90.0,
@@ -113,33 +116,31 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "names": [
+          "eject",
+          "fold-in"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 1.0
       }
     }
   ],
-  "maxVelocity": 0.7,
+  "maxVelocity": 2.0,
   "maxAcceleration": 2.0,
   "isReversed": null,
   "markers": [
     {
-      "position": 0.0,
+      "position": 0.1,
       "names": [
-        "eject"
+        "fold-in"
       ]
     },
     {
-      "position": 2.0000000000000053,
+      "position": 1.6,
       "names": [
+        "fold-out",
         "intake"
-      ]
-    },
-    {
-      "position": 4.0,
-      "names": [
-        "eject"
       ]
     }
   ]
