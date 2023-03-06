@@ -53,11 +53,12 @@ public class SwerveModule {
     }
 
     public void calibrateSteering() {
-        this._steerMotor.setPosition(getFullRotationsSteer() + _absEncoder.getAbsolutePosition());
-    }
+        double currentAngle = this._steerMotor.getPosition();
+        double angleDiff = (getAbsAngle() - currentAngle) % 360;
 
-    public double getFullRotationsSteer() {
-        return Math.floor(this._steerMotor.getPosition() / 360);
+        double targetAngle = currentAngle + angleDiff;
+
+        this._steerMotor.setPosition(targetAngle);
     }
 
     public void stop() {
