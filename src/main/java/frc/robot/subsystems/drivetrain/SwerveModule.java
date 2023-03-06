@@ -57,6 +57,11 @@ public class SwerveModule {
         double angleDiff = (getAbsAngle() - currentAngle) % 360;
 
         double targetAngle = currentAngle + angleDiff;
+        if (angleDiff <= -180)
+            targetAngle += 360;
+
+        else if (angleDiff >= 180)
+            targetAngle -= 360;
 
         this._steerMotor.setPosition(targetAngle);
     }
