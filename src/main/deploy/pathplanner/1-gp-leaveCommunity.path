@@ -16,20 +16,23 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "names": [
+          "fold-out",
+          "eject"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 1.0
       }
     },
     {
       "anchorPoint": {
-        "x": 4.004463151783447,
-        "y": 4.95
+        "x": 5.556419862839726,
+        "y": 4.9544915756498185
       },
       "prevControl": {
-        "x": 3.4558143303267412,
-        "y": 4.95
+        "x": 5.0077710413830205,
+        "y": 4.9544915756498185
       },
       "nextControl": null,
       "holonomicAngle": -90.0,
@@ -50,19 +53,7 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 1.0,
-      "names": [
-        "leavingCommunity"
-      ]
-    },
-    {
-      "position": 1.0,
-      "names": [
-        "leave community"
-      ]
-    },
-    {
-      "position": 0.0,
+      "position": 0.1,
       "names": [
         "eject"
       ]
