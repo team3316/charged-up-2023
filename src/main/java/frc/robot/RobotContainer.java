@@ -196,6 +196,7 @@ public class RobotContainer {
         addToChooser("bot-2-gp");
         // addToChooser("bot-3-gp-engage");
         // addToChooser("bot-3-gp");
+        addToChooser("rotate");
 
         this.chooser.addOption("nothing", new InstantCommand());
 
