@@ -24,7 +24,7 @@ public class Robot extends TimedRobot {
             .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
 
     private static double LOGGING_PERIOD_SECONDS = 0.2;
-    private static double CALIBRATE_STEERING_PERIOD_SECONDS = 0.1;
+    private static double CALIBRATE_STEERING_PERIOD_SECONDS = 0.5;
 
     @Override
     public void robotInit() {
