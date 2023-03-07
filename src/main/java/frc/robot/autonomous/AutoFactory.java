@@ -43,8 +43,8 @@ public class AutoFactory {
         _eventMap.put("engage_stop", new InstantCommand(() -> drivetrain.setModulesAngle(90)));
         _eventMap.put("eject", rollerGripper.getEjectCommand());
         _eventMap.put("intake", rollerGripper.getIntakeCommand());
-        _eventMap.put("fold-in", rollerGripper.getFoldCommand(FolderState.OUT));
-        _eventMap.put("fold-out", rollerGripper.getFoldCommand(FolderState.IN));
+        _eventMap.put("fold-in", rollerGripper.getFoldCommand(FolderState.IN));
+        _eventMap.put("fold-out", rollerGripper.getFoldCommand(FolderState.OUT));
 
     }
 
