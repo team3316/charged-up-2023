@@ -10,7 +10,7 @@
         "x": 2.5431286499751313,
         "y": 4.95
       },
-      "holonomicAngle": -90.0,
+      "holonomicAngle": 90.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -35,7 +35,7 @@
         "y": 4.9544915756498185
       },
       "nextControl": null,
-      "holonomicAngle": -90.0,
+      "holonomicAngle": 90.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -55,7 +55,7 @@
     {
       "position": 0.1,
       "names": [
-        "eject"
+        "fold-in"
       ]
     }
   ]
