@@ -11,8 +11,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.LimelightConstants;
 
@@ -92,12 +92,12 @@ public class LimeLight extends SubsystemBase {
         double[] poseComponents = limeLightTable.getEntry(entryName).getDoubleArray(new double[6]);
         if (poseComponents.length == 0)
             return null;
-
+        double latency = limeLightTable.getEntry("tl").getDouble(0) + limeLightTable.getEntry("cl").getDouble(0);
         return new BotPose(new Pose2d(
                 poseComponents[0],
                 poseComponents[1],
                 new Rotation2d(Math.toRadians(poseComponents[5]))),
-                Timer.getFPGATimestamp() - (poseComponents[6] / 1000.0));
+                Timer.getFPGATimestamp() - (latency / 1000.0));
 
     }
 }
