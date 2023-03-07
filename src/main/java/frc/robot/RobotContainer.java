@@ -193,7 +193,7 @@ public class RobotContainer {
         // addToChooser("1-gp-engage");
         addToChooser("1-gp-leaveCommunity");
         // addToChooser("bot-2-gp-engage");
-        // addToChooser("bot-2-gp");
+        addToChooser("bot-2-gp");
         // addToChooser("bot-3-gp-engage");
         // addToChooser("bot-3-gp");
 
