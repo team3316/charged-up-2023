@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import javax.sound.midi.Sequence;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -99,18 +101,22 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public CommandBase getIntakeCommand() {
-        return Commands.sequence(
+        CommandBase intakeSequence = Commands.sequence(
                 new InstantCommand(() -> this.setRollersState(RollersState.INTAKE)),
                 new WaitUntilCommand(this::hasCone),
                 new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds),
                 new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+        intakeSequence.addRequirements(this);
+        return intakeSequence;
     }
 
     public CommandBase getEjectCommand() {
-        return Commands.sequence(
+        CommandBase ejectSequence = Commands.sequence(
                 new InstantCommand(() -> this.setRollersState(RollersState.EJECT)),
                 new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
                 new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+        ejectSequence.addRequirements(this);
+        return ejectSequence;
     }
 
     public CommandBase getFoldCommand(FolderState fState) {
