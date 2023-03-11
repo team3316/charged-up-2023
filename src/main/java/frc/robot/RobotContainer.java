@@ -104,9 +104,11 @@ public class RobotContainer {
 
         /* align with vision target */
         _driverController.cross()
-                .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain).andThen(
-                        new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
-                                m_limeLight.getFieldTY()), m_drivetrain)));
+                .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain)
+                        .alongWith(new InstantCommand(() -> m_limeLight.forceLEDsOff(false), m_limeLight)).andThen(
+                                new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
+                                        m_limeLight.getFieldTY()), m_drivetrain))
+                        .finallyDo((interrupted) -> m_limeLight.forceLEDsOff(true)));
 
         /* Operator triggers */
         // Collect sequence
@@ -172,6 +174,7 @@ public class RobotContainer {
     private void setCubeInternalState() {
         this._scoreMidCube = true;
         m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
+        m_limeLight.forceLEDsOff(true);
         SmartDashboard.putBoolean("target GP", this._scoreMidCube);
         m_drivetrain.setVisionAprilPID();
         m_manipulator.setIRSensorState(IRSensorState.CUBE);
@@ -180,6 +183,7 @@ public class RobotContainer {
     private void setConeInternalState() {
         this._scoreMidCube = false;
         m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
+        m_limeLight.forceLEDsOff(true);
         SmartDashboard.putBoolean("target GP", this._scoreMidCube);
         m_drivetrain.setVisionRetroPID();
         m_manipulator.setIRSensorState(IRSensorState.CONE);
