@@ -42,7 +42,7 @@ public class AutoFactory {
         // add event markers here (and add the subsystem to the constructor)
         _eventMap.put("engage_stop", new InstantCommand(() -> drivetrain.setModulesAngle(90)));
         _eventMap.put("eject", rollerGripper.getEjectCommand());
-        _eventMap.put("intake", rollerGripper.getIntakeCommand());
+        _eventMap.put("intake", rollerGripper.getIntakeFoldCommand());
         _eventMap.put("fold-in", rollerGripper.getFoldCommand(FolderState.IN));
         _eventMap.put("fold-out", rollerGripper.getFoldCommand(FolderState.OUT));
 

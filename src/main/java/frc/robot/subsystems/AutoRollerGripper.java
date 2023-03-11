@@ -110,6 +110,17 @@ public class AutoRollerGripper extends SubsystemBase {
         return intakeSequence;
     }
 
+    public CommandBase getIntakeFoldCommand() {
+        CommandBase intakeSequence = Commands.sequence(
+                new InstantCommand(() -> this.setRollersState(RollersState.INTAKE)),
+                new WaitUntilCommand(this::hasCone),
+                new InstantCommand(() -> this.setFolderState(FolderState.IN)),
+                new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds),
+                new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+        intakeSequence.addRequirements(this);
+        return intakeSequence;
+    }
+
     public CommandBase getEjectCommand() {
         CommandBase ejectSequence = Commands.sequence(
                 new InstantCommand(() -> this.setRollersState(RollersState.EJECT)),
