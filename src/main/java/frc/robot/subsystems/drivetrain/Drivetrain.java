@@ -104,7 +104,7 @@ public class Drivetrain extends SubsystemBase {
 
         // updateSDB();
         SmartDashboard.putNumber("pitch", this.getPitch());
-        printEverything();
+        // printEverything();
     }
 
     public void updateTelemetry() {
@@ -174,7 +174,7 @@ public class Drivetrain extends SubsystemBase {
                 _modules[2].getState(), _modules[3].getState());
         printString += speeds.vxMetersPerSecond + "," + speeds.vyMetersPerSecond + ",";
         for (int i = 0; i < this._modules.length; i++) {
-            printString += "speed," + _modules[i].getState().speedMetersPerSecond;
+            printString += ",speed," + _modules[i].getState().speedMetersPerSecond;
             printString += ",angle," + _modules[i].getState().angle.getDegrees();
             printString += ",desSpeed," + _modules[i].getTargetState().speedMetersPerSecond;
             printString += ",desAngle," + _modules[i].getTargetState().angle.getDegrees();
