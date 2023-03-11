@@ -16,10 +16,13 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "names": [
+          "fold-out",
+          "eject"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 0.5
       }
     },
     {
@@ -74,15 +77,15 @@
     },
     {
       "anchorPoint": {
-        "x": 6.820760308187284,
+        "x": 7.0,
         "y": 0.75
       },
       "prevControl": {
-        "x": 6.4380662094657515,
+        "x": 6.617305901278468,
         "y": 0.7330666327999327
       },
       "nextControl": {
-        "x": 6.4380662094657515,
+        "x": 6.617305901278468,
         "y": 0.7330666327999327
       },
       "holonomicAngle": -90.0,
@@ -124,37 +127,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8762170857675051,
-        "y": 0.7027347388028106
-      },
-      "prevControl": {
-        "x": 2.1268309203285076,
-        "y": 0.48598763864194433
-      },
-      "nextControl": {
-        "x": 1.737798272244439,
-        "y": 0.8224483072551917
-      },
-      "holonomicAngle": 90.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
         "x": 1.869443738887478,
         "y": 1.16
       },
       "prevControl": {
-        "x": 1.8152569638472609,
-        "y": 0.9364795529591059
+        "x": 2.8651257302514606,
+        "y": 0.6485479637625957
       },
       "nextControl": null,
       "holonomicAngle": 90.0,
@@ -163,15 +141,43 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "names": [
+          "fold-out",
+          "eject"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "before",
+        "waitTime": 0.5
       }
     }
   ],
   "maxVelocity": 2.0,
   "maxAcceleration": 3.0,
   "isReversed": null,
-  "markers": []
+  "markers": [
+    {
+      "position": 0.32727272727271917,
+      "names": [
+        "fold-in"
+      ]
+    },
+    {
+      "position": 1.5636363636363682,
+      "names": [
+        "fold-out"
+      ]
+    },
+    {
+      "position": 3.4909090909088962,
+      "names": [
+        "fold-in"
+      ]
+    },
+    {
+      "position": 2.2181818181818063,
+      "names": [
+        "intake"
+      ]
+    }
+  ]
 }
