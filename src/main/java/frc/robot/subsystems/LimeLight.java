@@ -53,7 +53,7 @@ public class LimeLight extends SubsystemBase {
         pipeLine.setNumber(id);
     }
 
-    public void setLED(boolean isOn) {
-        LEDs.setNumber(isOn ? 3 : 1);
+    public void forceLEDsOff(boolean off) {
+        LEDs.setNumber(off ? 1 : 0);
     }
 }
