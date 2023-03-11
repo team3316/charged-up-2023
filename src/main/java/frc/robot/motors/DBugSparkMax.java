@@ -65,6 +65,7 @@ public class DBugSparkMax extends CANSparkMax {
             double position) {
         DBugSparkMax sparkMax = new DBugSparkMax(id);
         sparkMax.restoreFactoryDefaults();
+        sparkMax.setCANTimeout(50);
         sparkMax.setupPIDF(gains);
         sparkMax.setConversionFactors(positionFactor, velocityFactor);
         sparkMax.setSmartCurrentLimit(40);
