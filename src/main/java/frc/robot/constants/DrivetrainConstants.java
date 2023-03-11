@@ -20,7 +20,7 @@ public class DrivetrainConstants {
         private static final double neoMaxSpeed = 5600;
         private static final double driveRatio = 1.0 / 8.14;
         private static final double steeringRatio = 1.0 / 12.8;
-        private static final double wheelDiameterMeters = 4 * 2.54 / 100; // 4 inches in meters
+        private static final double wheelDiameterMeters = 3.85 * 2.54 / 100; // 4 inches in meters
 
         public static final double drivePositionConversionFactor = driveRatio * wheelDiameterMeters * Math.PI; // m
                                                                                                                // /
