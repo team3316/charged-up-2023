@@ -8,8 +8,8 @@ public class AutonomousConstants {
     public static final String defaultPath = "bot-3-gp-engage";
 
     // TODO: update P gains
-    public static final double kPTranslationController = 9;
-    public static final double kPThetaController = 10;
+    public static final double kPTranslationController = 5;
+    public static final double kPThetaController = 5;
 
     public static final double engageSpeedMetersPerSecond = 0.4;
 }
