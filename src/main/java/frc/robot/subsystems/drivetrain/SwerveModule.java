@@ -53,7 +53,18 @@ public class SwerveModule {
     }
 
     public void calibrateSteering() {
-        this._steerMotor.setPosition(_absEncoder.getAbsolutePosition());
+        double currentAngle = this._steerMotor.getPosition();
+        double angleDiff = (getAbsAngle() - currentAngle) % 360;
+
+        double targetAngle = currentAngle + angleDiff;
+        if (angleDiff <= -180)
+            targetAngle += 360;
+
+        else if (angleDiff >= 180)
+            targetAngle -= 360;
+
+        if (Math.abs(targetAngle - currentAngle) > 2) // avoid sending unnecessary CAN packets
+            this._steerMotor.setPosition(targetAngle);
     }
 
     public void stop() {
