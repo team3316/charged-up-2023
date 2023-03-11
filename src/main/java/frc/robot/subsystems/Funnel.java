@@ -29,6 +29,7 @@ public class Funnel extends SubsystemBase {
     public enum FunnelState {
         COLLECT(FunnelConstants.openState, FunnelConstants.collectPercent),
         OPEN(FunnelConstants.openState, FunnelConstants.openPercent),
+        READJUST(FunnelConstants.closedState, FunnelConstants.collectPercent),
         CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent);
 
         public final DoubleSolenoid.Value solenoidState;
@@ -86,6 +87,6 @@ public class Funnel extends SubsystemBase {
     }
 
     public CommandBase setFunnelStateCommand(FunnelState state) {
-        return new InstantCommand(() -> setFunnelState(state), this);
+        return new InstantCommand(() -> setFunnelState(state), this).withTimeout(0.1);
     }
 }
