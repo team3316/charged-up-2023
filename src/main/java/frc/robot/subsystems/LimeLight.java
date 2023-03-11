@@ -54,6 +54,6 @@ public class LimeLight extends SubsystemBase {
     }
 
     public void forceLEDsOff(boolean off) {
-        LEDs.setNumber(off ? 1 : 0);
+        LEDs.setNumber(off ? LimelightConstants.LEDsForceOff : LimelightConstants.LEDsByPipeline);
     }
 }

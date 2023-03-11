@@ -27,4 +27,8 @@ public class LimelightConstants {
     public static final double pipeLineRetroReflective = 0;
     public static final double pipeLineAprilTags = 1;
 
+    public static final int LEDsByPipeline = 0;
+    public static final int LEDsForceOff = 1;
+    public static final int LEDsForceBlink = 2;
+    public static final int LEDsForceON = 3;
 }
