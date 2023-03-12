@@ -17,6 +17,7 @@ public class LimeLight extends SubsystemBase {
     private NetworkTableEntry ty;
     private NetworkTableEntry hasTarget;
     private NetworkTableEntry pipeLine;
+    private NetworkTableEntry LEDs;
 
     /** Creates a new LimeLight. */
     public LimeLight() { // CR: add a way to send the config to the limelight trough code
@@ -25,6 +26,7 @@ public class LimeLight extends SubsystemBase {
         ty = limeLightTable.getEntry("ty");
         hasTarget = limeLightTable.getEntry("tv");
         pipeLine = limeLightTable.getEntry("pipeline");
+        LEDs = limeLightTable.getEntry("ledMode");
     }
 
     public boolean hasTarget() {
@@ -49,5 +51,9 @@ public class LimeLight extends SubsystemBase {
 
     public void setPipeLine(double id) {
         pipeLine.setNumber(id);
+    }
+
+    public void forceLEDsOff(boolean off) {
+        LEDs.setNumber(off ? LimelightConstants.LEDsForceOff : LimelightConstants.LEDsByPipeline);
     }
 }
