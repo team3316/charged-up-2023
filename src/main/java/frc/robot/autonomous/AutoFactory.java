@@ -42,10 +42,11 @@ public class AutoFactory {
 
     }
 
-    public CommandBase createAuto(String pathName) {
+    public CommandBase createAuto(String pathName, PathConstraints... extraConstraints) {
         List<PathPlannerTrajectory> paths = PathPlanner.loadPathGroup(pathName,
                 new PathConstraints(AutonomousConstants.kMaxSpeedMetersPerSecond,
-                        AutonomousConstants.kMaxAccelerationMetersPerSecondSquared));
+                        AutonomousConstants.kMaxAccelerationMetersPerSecondSquared),
+                extraConstraints);
         return _autoBuilder.fullAuto(paths);
     }
 

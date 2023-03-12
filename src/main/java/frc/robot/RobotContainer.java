@@ -212,6 +212,7 @@ public class RobotContainer {
         this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
         this.chooser.addOption("engage-gyro", getEngageSequence());
+        this.chooser.addOption("fast-engage", getFastGyroEngageSequence());
 
         // taxi
         this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
@@ -250,12 +251,25 @@ public class RobotContainer {
                 new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
     }
 
+    private CommandBase getFastGyroEngageSequence() {
+        return Commands.sequence(_autoFactory.createAuto("engage-gyro"),
+                new WaitCommand(1),
+                new ConditionalCommand(
+                        new GyroEngage(m_drivetrain, -0.1, 5, false),
+                        new ConditionalCommand(
+                                new GyroEngage(m_drivetrain, 0.1, -5, true),
+                                new InstantCommand(),
+                                () -> m_drivetrain.getPitch() < -2),
+                        () -> m_drivetrain.getPitch() > 2),
+                        new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
+    }
+
     private CommandBase getAutoCubeSequence() {
         return Commands.sequence(new InstantCommand(() -> this.setCubeInternalState()),
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
                         FunnelState.COLLECT),
-                new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(2),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
                 new WaitCommand(0.5),
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
