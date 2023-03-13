@@ -107,9 +107,9 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("pitch", this.getPitch());
         // printEverything();
 
-        if (DriverStation.isDisabled()) {
-            this.testAndFixModules();
-        }
+        // if (DriverStation.isDisabled()) {
+        //     this.testAndFixModules();
+        // }
     }
 
     public void updateTelemetry() {
