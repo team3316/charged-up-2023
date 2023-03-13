@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import javax.sound.midi.Sequence;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
