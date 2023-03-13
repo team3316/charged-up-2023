@@ -108,9 +108,7 @@ public class Drivetrain extends SubsystemBase {
         // printEverything();
 
         if (DriverStation.isDisabled()) {
-            for (int i = 0; i < _modules.length; i++) {
-                _modules[i].testAndFixModule();
-            }
+            this.testAndFixModules();
         }
     }
 
@@ -189,6 +187,12 @@ public class Drivetrain extends SubsystemBase {
 
         System.out.println(printString);
 
+    }
+
+    private void testAndFixModules() {
+        for (int i = 0; i < _modules.length; i++) {
+            _modules[i].testAndFixModule();
+        }
     }
 
     public void restartControllers() {
