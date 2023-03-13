@@ -247,9 +247,9 @@ public class RobotContainer {
         return Commands.sequence(
                 _autoFactory.createAuto("engage-gyro"),
                 new GyroEngage(m_drivetrain, 0.5, -5, true),
-                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2),
+                m_drivetrain.getRotateModulesCommand(),
                 new GyroEngage(m_drivetrain, -0.12, 5, false),
-                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
+                m_drivetrain.getRotateModulesCommand());
     }
 
     private CommandBase getFastGyroEngageSequence() {
@@ -262,7 +262,7 @@ public class RobotContainer {
                                 new InstantCommand(),
                                 () -> m_drivetrain.getPitch() < -2),
                         () -> m_drivetrain.getPitch() > 2),
-                        new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
+                m_drivetrain.getRotateModulesCommand());
     }
 
     private CommandBase getAutoCubeSequence() {

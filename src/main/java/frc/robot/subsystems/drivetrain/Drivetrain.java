@@ -16,7 +16,9 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.LimelightConstants;
@@ -281,5 +283,10 @@ public class Drivetrain extends SubsystemBase {
 
     public double getPitch() {
         return _pigeon.getPitch();
+    }
+
+    public CommandBase getRotateModulesCommand() {
+        return new RunCommand(() -> drive(0, -0.1, 0, false)).withTimeout(0.2)
+                .finallyDo((interrupted) -> drive(0, 0, 0, false));
     }
 }
