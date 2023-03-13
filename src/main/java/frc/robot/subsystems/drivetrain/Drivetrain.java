@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -105,6 +106,12 @@ public class Drivetrain extends SubsystemBase {
         // updateSDB();
         SmartDashboard.putNumber("pitch", this.getPitch());
         // printEverything();
+
+        if (DriverStation.isDisabled()) {
+            for (int i = 0; i < _modules.length; i++) {
+                _modules[i].testAndFixModule();
+            }
+        }
     }
 
     public void updateTelemetry() {

@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.DrivetrainConstants.SwerveModuleConstants;
 import frc.robot.motors.DBugSparkMax;
 
@@ -150,5 +151,10 @@ public class SwerveModule {
 
     public SwerveModulePosition getSwerveModulePosition() {
         return new SwerveModulePosition(_driveMotor.getPosition(), Rotation2d.fromDegrees(getAbsAngle()));
+    }
+
+    public void testAndFixModule() {
+        _driveMotor.testAndFixDriveController();
+        _steerMotor.testAndFixSteerController();
     }
 }
