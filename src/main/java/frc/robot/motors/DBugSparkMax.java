@@ -5,6 +5,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
+import frc.robot.constants.DrivetrainConstants;
+
 public class DBugSparkMax extends CANSparkMax {
     private SparkMaxPIDController _pidController;
     private RelativeEncoder _encoder;
@@ -79,6 +81,46 @@ public class DBugSparkMax extends CANSparkMax {
 
     public static DBugSparkMax create(int id) {
         return create(id, new PIDFGains(0), 1, 1, 0);
+    }
+
+    public void testAndFixDriveController() {
+        if (_pidController.getP() != DrivetrainConstants.SwerveModuleConstants.driveKp) {
+            _pidController.setP(DrivetrainConstants.SwerveModuleConstants.driveKp);
+        }
+
+        if (_pidController.getFF() != DrivetrainConstants.SwerveModuleConstants.driveKf) {
+            _pidController.setFF(DrivetrainConstants.SwerveModuleConstants.driveKf);
+        }
+
+        if (_encoder
+                .getVelocityConversionFactor() != DrivetrainConstants.SwerveModuleConstants.driveVelocityConversionFactor) {
+            _encoder.setVelocityConversionFactor(
+                    DrivetrainConstants.SwerveModuleConstants.driveVelocityConversionFactor);
+        }
+
+        if (_encoder
+                .getPositionConversionFactor() != DrivetrainConstants.SwerveModuleConstants.drivePositionConversionFactor) {
+            _encoder.setPositionConversionFactor(
+                    DrivetrainConstants.SwerveModuleConstants.drivePositionConversionFactor);
+        }
+    }
+
+    public void testAndFixSteerController() {
+        if (_pidController.getP() != DrivetrainConstants.SwerveModuleConstants.steeringKp) {
+            _pidController.setP(DrivetrainConstants.SwerveModuleConstants.steeringKp);
+        }
+
+        if (_encoder
+                .getVelocityConversionFactor() != DrivetrainConstants.SwerveModuleConstants.steeringVelocityConversionFactor) {
+            _encoder.setVelocityConversionFactor(
+                    DrivetrainConstants.SwerveModuleConstants.steeringVelocityConversionFactor);
+        }
+
+        if (_encoder
+                .getPositionConversionFactor() != DrivetrainConstants.SwerveModuleConstants.steeringPositionConversionFactor) {
+            _encoder.setPositionConversionFactor(
+                    DrivetrainConstants.SwerveModuleConstants.steeringPositionConversionFactor);
+        }
     }
 
     public void setMeasurementPeriod(int period_ms) {
