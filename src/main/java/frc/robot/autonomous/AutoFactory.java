@@ -36,7 +36,8 @@ public class AutoFactory {
                 new PIDConstants(AutonomousConstants.kPThetaController, 0.0, 0.0),
                 drivetrain::setDesiredStates,
                 _eventMap,
-                true, // Should the path be automatically mirrored depending on alliance color.
+                false, // true, // Should the path be automatically mirrored depending on alliance
+                       // color.
                 drivetrain);
 
         // add event markers here (and add the subsystem to the constructor)
