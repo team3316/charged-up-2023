@@ -10,6 +10,7 @@ import frc.robot.constants.DrivetrainConstants;
 public class DBugSparkMax extends CANSparkMax {
     private SparkMaxPIDController _pidController;
     private RelativeEncoder _encoder;
+    private boolean _isCalibrated = false;
 
     public DBugSparkMax(int deviceNumber) {
         super(deviceNumber, MotorType.kBrushless);
@@ -84,42 +85,59 @@ public class DBugSparkMax extends CANSparkMax {
     }
 
     public void testAndFixDriveController() {
+        if (_isCalibrated) {
+            return;
+        }
+        _isCalibrated = true;
+
         if (_pidController.getP() != DrivetrainConstants.SwerveModuleConstants.driveKp) {
             _pidController.setP(DrivetrainConstants.SwerveModuleConstants.driveKp);
+            _isCalibrated = false;
         }
 
         if (_pidController.getFF() != DrivetrainConstants.SwerveModuleConstants.driveKf) {
             _pidController.setFF(DrivetrainConstants.SwerveModuleConstants.driveKf);
+            _isCalibrated = false;
         }
 
         if (_encoder
                 .getVelocityConversionFactor() != DrivetrainConstants.SwerveModuleConstants.driveVelocityConversionFactor) {
             _encoder.setVelocityConversionFactor(
                     DrivetrainConstants.SwerveModuleConstants.driveVelocityConversionFactor);
+            _isCalibrated = false;
         }
 
         if (_encoder
                 .getPositionConversionFactor() != DrivetrainConstants.SwerveModuleConstants.drivePositionConversionFactor) {
             _encoder.setPositionConversionFactor(
                     DrivetrainConstants.SwerveModuleConstants.drivePositionConversionFactor);
+            _isCalibrated = false;
         }
     }
 
     public void testAndFixSteerController() {
+        if (_isCalibrated) {
+            return;
+        }
+        _isCalibrated = true;
+
         if (_pidController.getP() != DrivetrainConstants.SwerveModuleConstants.steeringKp) {
             _pidController.setP(DrivetrainConstants.SwerveModuleConstants.steeringKp);
+            _isCalibrated = false;
         }
 
         if (_encoder
                 .getVelocityConversionFactor() != DrivetrainConstants.SwerveModuleConstants.steeringVelocityConversionFactor) {
             _encoder.setVelocityConversionFactor(
                     DrivetrainConstants.SwerveModuleConstants.steeringVelocityConversionFactor);
+            _isCalibrated = false;
         }
 
         if (_encoder
                 .getPositionConversionFactor() != DrivetrainConstants.SwerveModuleConstants.steeringPositionConversionFactor) {
             _encoder.setPositionConversionFactor(
                     DrivetrainConstants.SwerveModuleConstants.steeringPositionConversionFactor);
+            _isCalibrated = false;
         }
     }
 
