@@ -252,7 +252,9 @@ public class RobotContainer {
                 new GyroEngage(m_drivetrain, 0.5, -5, true),
                 m_drivetrain.getRotateModulesCommand(),
                 new GyroEngage(m_drivetrain, -0.12, 5, false),
-                m_drivetrain.getRotateModulesCommand());
+                m_drivetrain.getRotateModulesCommand(),
+                new WaitCommand(0.8),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
     private CommandBase getFastGyroEngageSequence() {
