@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -89,6 +90,8 @@ public class RobotContainer {
                 _fieldRelative), m_drivetrain));
 
         setCubeInternalState();
+
+        CameraServer.startAutomaticCapture();
     }
 
     /**
@@ -262,7 +265,7 @@ public class RobotContainer {
                                 new InstantCommand(),
                                 () -> m_drivetrain.getPitch() < -2),
                         () -> m_drivetrain.getPitch() > 2),
-                        new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
+                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
     }
 
     private CommandBase getAutoCubeSequence() {
