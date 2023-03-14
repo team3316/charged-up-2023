@@ -114,7 +114,8 @@ public class AutoRollerGripper extends SubsystemBase {
                 new InstantCommand(() -> this.setFolderState(FolderState.OUT)),
                 new InstantCommand(() -> this.setRollersState(RollersState.EJECT)),
                 new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
-                new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+                new InstantCommand(() -> this.setRollersState(RollersState.OFF)),
+                new InstantCommand(() -> this.setFolderState(FolderState.IN)));
         ejectSequence.addRequirements(this);
         return ejectSequence;
     }
