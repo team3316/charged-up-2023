@@ -166,8 +166,6 @@ public class RobotContainer {
 
         _operatorController.share().onTrue(m_autoRollerGripper.getIntakeCommand());
         _operatorController.options().onTrue(m_autoRollerGripper.getEjectCommand());
-        _driverController.povDown().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
-        _driverController.povUp().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
 
         _operatorController.touchpad()
                 .onTrue(Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
