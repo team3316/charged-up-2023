@@ -169,6 +169,13 @@ public class RobotContainer {
         _driverController.povDown().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
         _driverController.povUp().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
 
+        _operatorController.touchpad()
+                .onTrue(Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
+                        new WaitCommand(0.5),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+
     }
 
     private void setCubeInternalState() {
