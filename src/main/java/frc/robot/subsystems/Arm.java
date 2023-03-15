@@ -145,8 +145,8 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (isRevLimitSwitchClosed() && DriverStation.isDisabled()) {
-            _leader.setSelectedSensorPosition(angleToTicks(ArmConstants.collectAngle));
+        if (isFwdLimitSwitchClosed()) {
+            _leader.setSelectedSensorPosition(angleToTicks(ArmConstants.midCubeAngle));
         }
         updateSDB();
     }
