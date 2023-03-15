@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.constants.ArmConstants;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.utils.DynamicCommand;
@@ -62,9 +64,10 @@ public class ArmFunnelSuperStructure {
         if (m_arm.getTargetState() == ArmState.COLLECT)
             return Commands.sequence(
                     m_funnel.setFunnelStateCommand(FunnelState.OPEN),
-                    m_arm.getSetStateCommand(ArmState.DRIVE),
-                    m_funnel.setFunnelStateCommand(FunnelState.CLOSED),
-                    m_arm.getSetStateCommand(wantedArmState));
+                    Commands.deadline(
+                            m_arm.getSetStateCommand(wantedArmState),
+                            new WaitUntilCommand(() -> m_arm.getAngle() > ArmConstants.outOfFunnelAngle)
+                                    .andThen(m_funnel.setFunnelStateCommand(FunnelState.CLOSED))));
 
         if (wantedArmState == ArmState.COLLECT)
             return Commands.sequence(
