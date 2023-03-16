@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.constants.ArmConstants;
 import frc.robot.subsystems.Arm.ArmState;
+import frc.robot.subsystems.Arm.ArmTrapProfile;
 import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.utils.DynamicCommand;
 
@@ -55,7 +56,7 @@ public class ArmFunnelSuperStructure {
             if (wantedArmState == ArmState.COLLECT && m_arm.getInitialState() != ArmState.COLLECT) {
                 return Commands.sequence(
                         m_funnel.setFunnelStateCommand(FunnelState.OPEN),
-                        m_arm.getSetStateCommand(ArmState.COLLECT),
+                        m_arm.getSetStateCommand(ArmState.COLLECT, ArmTrapProfile.FAST),
                         m_funnel.setFunnelStateCommand(wantedFunnelState));
             }
 
@@ -65,17 +66,20 @@ public class ArmFunnelSuperStructure {
             return Commands.sequence(
                     m_funnel.setFunnelStateCommand(FunnelState.OPEN),
                     Commands.deadline(
-                            m_arm.getSetStateCommand(wantedArmState),
+                            m_arm.getSetStateCommand(wantedArmState, ArmTrapProfile.FAST),
                             new WaitUntilCommand(() -> m_arm.getAngle() > ArmConstants.outOfFunnelAngle)
                                     .andThen(m_funnel.setFunnelStateCommand(FunnelState.CLOSED))));
 
         if (wantedArmState == ArmState.COLLECT)
-            return Commands.parallel(
-                    m_funnel.setFunnelStateCommand(FunnelState.OPEN),
-                    m_arm.getSetStateCommand(wantedArmState))
-                    .andThen(m_funnel.setFunnelStateCommand(wantedFunnelState));
+            return Commands.sequence(
+                    Commands.deadline(
+                            m_arm.getSetStateCommand(wantedArmState, ArmTrapProfile.SLOW),
+                            new WaitUntilCommand(() -> m_arm.getAngle() < ArmConstants.driveAngle)
+                                    .andThen(m_funnel.setFunnelStateCommand(FunnelState.OPEN))),
+                    m_funnel.setFunnelStateCommand(wantedFunnelState));
 
-        return m_funnel.setFunnelStateCommand(wantedFunnelState).andThen(m_arm.getSetStateCommand(wantedArmState));
+        return m_funnel.setFunnelStateCommand(wantedFunnelState)
+                .andThen(m_arm.getSetStateCommand(wantedArmState, ArmTrapProfile.FAST));
     }
 
     public CommandBase getSetStateCommand(ArmState wantedArmState, FunnelState wantedFunnelState) {
@@ -93,6 +97,7 @@ public class ArmFunnelSuperStructure {
 
     public CommandBase overrideCommand() {
         return Commands.sequence(m_funnel.setFunnelStateCommand(FunnelState.OPEN),
-                m_arm.getSetStateCommand(ArmState.MID_CONE), m_funnel.setFunnelStateCommand(FunnelState.CLOSED));
+                m_arm.getSetStateCommand(ArmState.MID_CONE, ArmTrapProfile.FAST),
+                m_funnel.setFunnelStateCommand(FunnelState.CLOSED));
     }
 }

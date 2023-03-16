@@ -8,13 +8,18 @@ public class ArmConstants {
     public static final int followerCANID = 15;
 
     // Motion profile
-    public static final double movementTime = 1.75; // in secs
-    public static final double movementRange = 309; // in deg
-    public static final double maxVelocityDegreesPerSec = 350; // in deg/s
-    public static final double maxAccelerationDegreesPerSecSqrd = 650; // in
-                                                                       // deg/s^2
-    public static final Constraints trapezoidConstraints = new Constraints(maxVelocityDegreesPerSec,
-            maxAccelerationDegreesPerSecSqrd);
+    public static final double maxFastVelocityDegreesPerSec = 350; // in deg/s
+    public static final double maxFastAccelerationDegreesPerSecSqrd = 650; // in
+    // deg/s^2
+
+    public static final double maxSlowVelocityDegreesPerSec = 350; // in deg/s
+    public static final double maxSlowAccelerationDegreesPerSecSqrd = 650; // in
+    // deg/s^2
+    public static final Constraints fastTrapezoidConstraints = new Constraints(maxFastVelocityDegreesPerSec,
+            maxFastAccelerationDegreesPerSecSqrd);
+
+    public static final Constraints slowTrapezoidConstraints = new Constraints(maxSlowVelocityDegreesPerSec,
+            maxSlowAccelerationDegreesPerSecSqrd);
 
     // Arm gains
     public static final double kP = 0.02;
