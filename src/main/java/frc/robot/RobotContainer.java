@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -211,7 +213,8 @@ public class RobotContainer {
         // addToChooser("1-gp-engage");
         addToChooser("1-gp-leaveCommunity");
         // addToChooser("bot-2-gp-engage");
-        addToChooser("bot-2-gp");
+        this.chooser.addOption("2-gp", new ConditionalCommand(_autoFactory.createAuto("bot-2-gp-blue"),
+                _autoFactory.createAuto("bot-2-gp-red"), () -> DriverStation.getAlliance() == Alliance.Blue));
         // addToChooser("bot-3-gp-engage");
         // addToChooser("bot-3-gp");
         addToChooser("rotate");
