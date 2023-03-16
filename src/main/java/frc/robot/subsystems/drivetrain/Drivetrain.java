@@ -166,6 +166,7 @@ public class Drivetrain extends SubsystemBase {
         return swerveModulePositions;
     }
 
+    @SuppressWarnings({ "unused" })
     private void printEverything() {
         String printString = new String();
         printString += Timer.getFPGATimestamp() + ",";
