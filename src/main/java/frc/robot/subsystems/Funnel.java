@@ -87,6 +87,7 @@ public class Funnel extends SubsystemBase {
     }
 
     public CommandBase setFunnelStateCommand(FunnelState state) {
-        return new InstantCommand(() -> setFunnelState(state), this).withTimeout(0.1);
+        return new InstantCommand(() -> setFunnelState(state), this)
+                .withTimeout(FunnelConstants.afterActionTimeoutSecs);
     }
 }

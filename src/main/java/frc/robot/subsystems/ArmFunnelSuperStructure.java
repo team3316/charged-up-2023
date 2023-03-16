@@ -70,11 +70,10 @@ public class ArmFunnelSuperStructure {
                                     .andThen(m_funnel.setFunnelStateCommand(FunnelState.CLOSED))));
 
         if (wantedArmState == ArmState.COLLECT)
-            return Commands.sequence(
-                    m_arm.getSetStateCommand(ArmState.DRIVE),
+            return Commands.parallel(
                     m_funnel.setFunnelStateCommand(FunnelState.OPEN),
-                    m_arm.getSetStateCommand(ArmState.COLLECT),
-                    m_funnel.setFunnelStateCommand(wantedFunnelState));
+                    m_arm.getSetStateCommand(wantedArmState))
+                    .andThen(m_funnel.setFunnelStateCommand(wantedFunnelState));
 
         return m_funnel.setFunnelStateCommand(wantedFunnelState).andThen(m_arm.getSetStateCommand(wantedArmState));
     }
