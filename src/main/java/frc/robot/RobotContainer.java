@@ -118,8 +118,8 @@ public class RobotContainer {
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                         new WaitCommand(0.5),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
-                        new WaitCommand(0.33),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.KEEPIN),
+                        new WaitCommand(3),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
