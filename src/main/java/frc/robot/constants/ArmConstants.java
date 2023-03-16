@@ -10,14 +10,14 @@ public class ArmConstants {
     // Motion profile
     public static final double movementTime = 1.75; // in secs
     public static final double movementRange = 309; // in deg
-    public static final double maxVelocityDegreesPerSec = movementRange * 2 / movementTime; // in deg/s
-    public static final double maxAccelerationDegreesPerSecSqrd = maxVelocityDegreesPerSec / (movementTime / 2); // in
-                                                                                                                 // deg/s^2
+    public static final double maxVelocityDegreesPerSec = 350; // in deg/s
+    public static final double maxAccelerationDegreesPerSecSqrd = 650; // in
+                                                                       // deg/s^2
     public static final Constraints trapezoidConstraints = new Constraints(maxVelocityDegreesPerSec,
             maxAccelerationDegreesPerSecSqrd);
 
     // Arm gains
-    public static final double kP = 0.01;
+    public static final double kP = 0.02;
     public static final double kMaxOutput = 0.8;
 
     // Arm feedforward
