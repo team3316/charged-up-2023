@@ -119,9 +119,14 @@ public class RobotContainer {
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                         new WaitUntilCommand(m_manipulator::isFunnelingGamePiece),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.KEEPIN),
-                        new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                        new ConditionalCommand(new WaitCommand(3), new WaitCommand(0.5), () -> _scoreMidCube == true),
+                        new ConditionalCommand(
+                                Commands.sequence(
+                                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                                FunnelState.KEEPIN),
+                                        new WaitUntilCommand(m_manipulator::isHoldingGamePiece), new WaitCommand(3)),
+                                Commands.sequence(new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                                        new WaitCommand(0.5)),
+                                () -> _scoreMidCube == true),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
@@ -172,7 +177,6 @@ public class RobotContainer {
         _operatorController.options().onTrue(m_autoRollerGripper.getEjectCommand());
         _driverController.povDown().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(true)));
         _driverController.povUp().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(false)));
-
 
         _operatorController.touchpad()
                 .onTrue(Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
