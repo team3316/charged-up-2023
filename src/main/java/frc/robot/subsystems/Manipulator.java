@@ -20,6 +20,8 @@ public class Manipulator extends SubsystemBase {
     private ManipulatorState _currentState;
     private AnalogInput _gamePieceDetector;
     private Hysteresis _hysteresis = new Hysteresis(0, 0);
+    private Hysteresis _funneling = new Hysteresis(IRSensorState.Funneling._bottomThreshold,
+            IRSensorState.Funneling._hysteresis);
 
     private DoubleSolenoid _solenoid;
 
@@ -61,9 +63,14 @@ public class Manipulator extends SubsystemBase {
         return _hysteresis.update(this._gamePieceDetector.getValue() / ADC_RESOLUTION);
     }
 
+    public boolean isFunnelingGamePiece() {
+        return _funneling.update(this._gamePieceDetector.getValue() / ADC_RESOLUTION);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Has GP", this.isHoldingGamePiece());
+        SmartDashboard.putBoolean("Funneling GP", this.isFunnelingGamePiece());
         SmartDashboard.putNumber("IR sensor value", this._gamePieceDetector.getValue() / ADC_RESOLUTION);
     }
 
@@ -74,6 +81,7 @@ public class Manipulator extends SubsystemBase {
     }
 
     public static enum IRSensorState {
+        Funneling(ManipulatorConstants.FunnelingDetectorThreshold, ManipulatorConstants.FunnelingDetectorHysteresis),
         CUBE(ManipulatorConstants.CUBEDetectorThreshold, ManipulatorConstants.CUBEDetectorHysteresis),
         CONE(ManipulatorConstants.CONEDetectorThreshold, ManipulatorConstants.CONEDetectorHysteresis);
 
