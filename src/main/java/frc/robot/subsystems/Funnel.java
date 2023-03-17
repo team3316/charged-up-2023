@@ -28,6 +28,7 @@ public class Funnel extends SubsystemBase {
 
     public enum FunnelState {
         COLLECT(FunnelConstants.openState, FunnelConstants.collectPercent),
+        KEEPIN(FunnelConstants.closedState, FunnelConstants.keepinPercent),
         OPEN(FunnelConstants.openState, FunnelConstants.openPercent),
         READJUST(FunnelConstants.closedState, FunnelConstants.collectPercent),
         CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent),
