@@ -264,9 +264,11 @@ public class RobotContainer {
     private CommandBase getMobilityEngageSequence() {
         return Commands.sequence(_autoFactory.createAuto("engage-gyro-mobility"),
                 new GyroEngage(m_drivetrain, -0.5, 5, false),
-                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2),
+                m_drivetrain.getRotateModulesCommand(),
                 new GyroEngage(m_drivetrain, 0.12, -5, true),
-                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
+                m_drivetrain.getRotateModulesCommand(),
+                new WaitCommand(0.8),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
     private CommandBase getAutoCubeSequence() {
