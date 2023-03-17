@@ -173,7 +173,6 @@ public class RobotContainer {
         _driverController.povDown().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(true)));
         _driverController.povUp().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(false)));
 
-
         _operatorController.touchpad()
                 .onTrue(Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
@@ -268,9 +267,9 @@ public class RobotContainer {
 
     private CommandBase getMobilityEngageSequence() {
         return Commands.sequence(_autoFactory.createAuto("engage-gyro-mobility"),
-                new GyroEngage(m_drivetrain, -0.5, 5, false),
+                new GyroEngage(m_drivetrain, -0.1, 5, false),
                 m_drivetrain.getRotateModulesCommand(),
-                new GyroEngage(m_drivetrain, 0.12, -5, true),
+                new GyroEngage(m_drivetrain, 0.1, -5, true),
                 m_drivetrain.getRotateModulesCommand(),
                 new WaitCommand(0.8),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
