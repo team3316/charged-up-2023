@@ -43,7 +43,7 @@ public class ArmFunnelSuperStructure {
          * 
          */
 
-        if (wantedArmState != ArmState.COLLECT)
+        if (wantedArmState != ArmState.COLLECT || wantedArmState != ArmState.REJECT)
             wantedFunnelState = FunnelState.CLOSED;
 
         if (wantedArmState == m_arm.getTargetState()) {

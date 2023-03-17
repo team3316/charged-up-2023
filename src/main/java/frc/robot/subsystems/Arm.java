@@ -33,7 +33,8 @@ public class Arm extends SubsystemBase {
         DRIVE(ArmConstants.driveAngle),
         MID_CONE(ArmConstants.midConeAngle),
         MID_CUBE(ArmConstants.midCubeAngle),
-        LOW(ArmConstants.lowAngle);
+        LOW(ArmConstants.lowAngle),
+        REJECT(ArmConstants.rejectAngle);
 
         public final double stateAngle;
 
