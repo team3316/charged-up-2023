@@ -10,9 +10,6 @@ public class AutonomousConstants {
     // TODO: update P gains
     public static final double kPTranslationController = 5;
     public static final double kPThetaController = 5;
-    // old tested values
-    // public static final double kPTranslationController = 9;
-    // public static final double kPThetaController = 10;
 
     public static final double engageStartSpeedMetersPerSecond = 1.0;
 

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -19,7 +20,10 @@ public class Manipulator extends SubsystemBase {
     private static final double ADC_RESOLUTION = 4096; // 12 bits
     private ManipulatorState _currentState;
     private AnalogInput _gamePieceDetector;
+    private LinearFilter _gamePieceDetectorFilter = LinearFilter.movingAverage(5);
     private Hysteresis _hysteresis = new Hysteresis(0, 0);
+    private Hysteresis _funneling = new Hysteresis(IRSensorState.Funneling._bottomThreshold,
+            IRSensorState.Funneling._hysteresis);
 
     private DoubleSolenoid _solenoid;
 
@@ -57,23 +61,33 @@ public class Manipulator extends SubsystemBase {
         this._currentState = requiredState;
     }
 
+    private double getGamePieceDetectorValue() {
+        return this._gamePieceDetectorFilter.calculate(this._gamePieceDetector.getValue() / ADC_RESOLUTION);
+    }
+
     public boolean isHoldingGamePiece() {
-        return _hysteresis.update(this._gamePieceDetector.getValue() / ADC_RESOLUTION);
+        return _hysteresis.update(getGamePieceDetectorValue());
+    }
+
+    public boolean isFunnelingGamePiece() {
+        return _funneling.update(getGamePieceDetectorValue());
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Has GP", this.isHoldingGamePiece());
-        SmartDashboard.putNumber("IR sensor value", this._gamePieceDetector.getValue() / ADC_RESOLUTION);
+        SmartDashboard.putBoolean("Funneling GP", this.isFunnelingGamePiece());
+        SmartDashboard.putNumber("IR sensor value", getGamePieceDetectorValue());
     }
 
     public CommandBase setManipulatorStateCommand(ManipulatorState state) {
         return new InstantCommand(() -> {
             setManipulatorState(state);
-        }, this);
+        });
     }
 
     public static enum IRSensorState {
+        Funneling(ManipulatorConstants.FunnelingDetectorThreshold, ManipulatorConstants.FunnelingDetectorHysteresis),
         CUBE(ManipulatorConstants.CUBEDetectorThreshold, ManipulatorConstants.CUBEDetectorHysteresis),
         CONE(ManipulatorConstants.CONEDetectorThreshold, ManipulatorConstants.CONEDetectorHysteresis);
 

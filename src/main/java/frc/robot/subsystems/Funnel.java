@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.FunnelConstants;
 
 public class Funnel extends SubsystemBase {
@@ -28,9 +29,11 @@ public class Funnel extends SubsystemBase {
 
     public enum FunnelState {
         COLLECT(FunnelConstants.openState, FunnelConstants.collectPercent),
+        KEEPIN(FunnelConstants.closedState, FunnelConstants.keepinPercent),
         OPEN(FunnelConstants.openState, FunnelConstants.openPercent),
         READJUST(FunnelConstants.closedState, FunnelConstants.collectPercent),
-        CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent);
+        CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent),
+        EJECT(FunnelConstants.closedState, FunnelConstants.ejectPercent);
 
         public final DoubleSolenoid.Value solenoidState;
         public final double rollerPercent;
@@ -87,6 +90,7 @@ public class Funnel extends SubsystemBase {
     }
 
     public CommandBase setFunnelStateCommand(FunnelState state) {
-        return new InstantCommand(() -> setFunnelState(state), this).withTimeout(0.1);
+        return new InstantCommand(() -> setFunnelState(state), this)
+                .andThen(new WaitCommand(FunnelConstants.afterActionTimeoutSecs));
     }
 }

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -26,6 +28,8 @@ public class AutoRollerGripper extends SubsystemBase {
     private DoubleSolenoid _doubleSolenoid;
 
     private FolderState currentFolderState = FolderState.IN;
+
+    private Debouncer _debouncer = new Debouncer(RollerGripperConstants.switchDebounceTimeSecs);
 
     public enum FolderState {
         IN(RollerGripperConstants.stateWhenFoldedIn),
@@ -95,21 +99,12 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public boolean hasCone() {
-        return !_rollerLimitSwitch.get(); // limitSwitch is NC
+        return _debouncer.calculate(!_rollerLimitSwitch.get()); // limitSwitch is NC
     }
 
     public CommandBase getIntakeCommand() {
         CommandBase intakeSequence = Commands.sequence(
-                new InstantCommand(() -> this.setRollersState(RollersState.INTAKE)),
-                new WaitUntilCommand(this::hasCone),
-                new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds),
-                new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
-        intakeSequence.addRequirements(this);
-        return intakeSequence;
-    }
-
-    public CommandBase getIntakeFoldCommand() {
-        CommandBase intakeSequence = Commands.sequence(
+                new InstantCommand(() -> this.setFolderState(FolderState.OUT)),
                 new InstantCommand(() -> this.setRollersState(RollersState.INTAKE)),
                 new WaitUntilCommand(this::hasCone),
                 new InstantCommand(() -> this.setFolderState(FolderState.IN)),
@@ -121,16 +116,12 @@ public class AutoRollerGripper extends SubsystemBase {
 
     public CommandBase getEjectCommand() {
         CommandBase ejectSequence = Commands.sequence(
+                new InstantCommand(() -> this.setFolderState(FolderState.OUT)),
                 new InstantCommand(() -> this.setRollersState(RollersState.EJECT)),
                 new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
-                new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+                new InstantCommand(() -> this.setRollersState(RollersState.OFF)),
+                new InstantCommand(() -> this.setFolderState(FolderState.IN)));
         ejectSequence.addRequirements(this);
         return ejectSequence;
-    }
-
-    public CommandBase getFoldCommand(FolderState fState) {
-        return new InstantCommand(() -> {
-            this.setFolderState(fState);
-        });
     }
 }
