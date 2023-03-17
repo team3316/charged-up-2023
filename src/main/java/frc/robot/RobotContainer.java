@@ -35,6 +35,7 @@ import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.IRSensorState;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
+import frc.robot.subsystems.SSDetector;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.GlobalDebuggable;
 
@@ -49,7 +50,7 @@ public class RobotContainer {
 
     private final ArmFunnelSuperStructure m_ArmFunnelSuperStructure = new ArmFunnelSuperStructure(new Arm(),
             new Funnel());
-
+    private final SSDetector m_SSDetector = new SSDetector();
     private final LimeLight m_limeLight = new LimeLight();
 
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
@@ -172,7 +173,6 @@ public class RobotContainer {
         _operatorController.options().onTrue(m_autoRollerGripper.getEjectCommand());
         _driverController.povDown().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(true)));
         _driverController.povUp().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(false)));
-
 
         _operatorController.touchpad()
                 .onTrue(Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
