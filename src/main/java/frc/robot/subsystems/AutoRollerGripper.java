@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -26,6 +28,8 @@ public class AutoRollerGripper extends SubsystemBase {
     private DoubleSolenoid _doubleSolenoid;
 
     private FolderState currentFolderState = FolderState.IN;
+
+    private Debouncer _debouncer = new Debouncer(RollerGripperConstants.switchDebounceTimeSecs);
 
     public enum FolderState {
         IN(RollerGripperConstants.stateWhenFoldedIn),
@@ -95,7 +99,7 @@ public class AutoRollerGripper extends SubsystemBase {
     }
 
     public boolean hasCone() {
-        return !_rollerLimitSwitch.get(); // limitSwitch is NC
+        return _debouncer.calculate(!_rollerLimitSwitch.get()); // limitSwitch is NC
     }
 
     public CommandBase getIntakeCommand() {

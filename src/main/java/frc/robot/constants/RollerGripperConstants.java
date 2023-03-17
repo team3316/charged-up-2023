@@ -15,6 +15,8 @@ public class RollerGripperConstants {
     public final static double ejectSleepDurationSeconds = 0.5; // seconds
     public final static double intakeSleepDurationSeconds = 0.15; // seconds
 
+    public final static double switchDebounceTimeSecs = 0.1;
+
     public final static int currentLimitAmp = 20; // in Amps
 
     public final static int solenoidForwardChannel = 0;
