@@ -42,6 +42,17 @@ public class Arm extends SubsystemBase {
         }
     }
 
+    public static enum ArmTrapProfile {
+        SLOW(ArmConstants.slowTrapezoidConstraints),
+        FAST(ArmConstants.fastTrapezoidConstraints);
+
+        public final TrapezoidProfile.Constraints constraints;
+
+        private ArmTrapProfile(TrapezoidProfile.Constraints constraints) {
+            this.constraints = constraints;
+        }
+    }
+
     public Arm() {
         _leader = new TalonFX(ArmConstants.leaderCANID);
         _follower = new TalonFX(ArmConstants.followerCANID);
@@ -110,8 +121,8 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("State arm position", state.position);
     }
 
-    private CommandBase generateSetStateCommand(ArmState requiredState) {
-        TrapezoidProfile profile = new TrapezoidProfile(ArmConstants.trapezoidConstraints,
+    private CommandBase generateSetStateCommand(ArmState requiredState, ArmTrapProfile requiredProfile) {
+        TrapezoidProfile profile = new TrapezoidProfile(requiredProfile.constraints,
                 new TrapezoidProfile.State(requiredState.stateAngle, 0),
                 new TrapezoidProfile.State(getAngle(), getVelocity()));
 
@@ -119,8 +130,8 @@ public class Arm extends SubsystemBase {
                 .alongWith(new InstantCommand(() -> _targetState = requiredState));
     }
 
-    public CommandBase getSetStateCommand(ArmState requiredState) {
-        return new DynamicCommand(() -> generateSetStateCommand(requiredState), this);
+    public CommandBase getSetStateCommand(ArmState requiredState, ArmTrapProfile requiredProfile) {
+        return new DynamicCommand(() -> generateSetStateCommand(requiredState, requiredProfile), this);
     }
 
     public double getVelocity() {

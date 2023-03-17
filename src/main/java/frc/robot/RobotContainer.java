@@ -149,12 +149,11 @@ public class RobotContainer {
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
         _operatorController.R1().onTrue(
-                new ConditionalCommand(
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.CLOSED)
-                                .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.CLOSED)
-                                .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)),
-                        () -> _scoreMidCube));
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD).andThen(
+                        new ConditionalCommand(
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.CLOSED),
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.CLOSED),
+                                () -> _scoreMidCube)));
 
         // Install GP
         _operatorController.L2().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));

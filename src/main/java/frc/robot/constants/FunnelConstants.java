@@ -13,6 +13,8 @@ public class FunnelConstants {
     public static final double closedPercent = 0;
     public static final double ejectPercent = 0.5;
 
+    public static final double afterActionTimeoutSecs = 0.35;
+
     public static final int talonSRXFollowerPort = 21;
     public static final int talonSRXLeaderPort = 20;
     public static final int solenoidForwardPort = 2;

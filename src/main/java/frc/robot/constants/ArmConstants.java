@@ -8,16 +8,21 @@ public class ArmConstants {
     public static final int followerCANID = 15;
 
     // Motion profile
-    public static final double movementTime = 1.75; // in secs
-    public static final double movementRange = 309; // in deg
-    public static final double maxVelocityDegreesPerSec = movementRange * 2 / movementTime; // in deg/s
-    public static final double maxAccelerationDegreesPerSecSqrd = maxVelocityDegreesPerSec / (movementTime / 2); // in
-                                                                                                                 // deg/s^2
-    public static final Constraints trapezoidConstraints = new Constraints(maxVelocityDegreesPerSec,
-            maxAccelerationDegreesPerSecSqrd);
+    public static final double maxFastVelocityDegreesPerSec = 350; // in deg/s
+    public static final double maxFastAccelerationDegreesPerSecSqrd = 650; // in
+    // deg/s^2
+
+    public static final double maxSlowVelocityDegreesPerSec = 250; // in deg/s
+    public static final double maxSlowAccelerationDegreesPerSecSqrd = 400; // in
+    // deg/s^2
+    public static final Constraints fastTrapezoidConstraints = new Constraints(maxFastVelocityDegreesPerSec,
+            maxFastAccelerationDegreesPerSecSqrd);
+
+    public static final Constraints slowTrapezoidConstraints = new Constraints(maxSlowVelocityDegreesPerSec,
+            maxSlowAccelerationDegreesPerSecSqrd);
 
     // Arm gains
-    public static final double kP = 0.01;
+    public static final double kP = 0.02;
     public static final double kMaxOutput = 0.8;
 
     // Arm feedforward
@@ -33,6 +38,7 @@ public class ArmConstants {
     public static final double midCubeAngle = 150; // in deg
     public static final double midConeAngle = 150; // in deg
     public static final double lowAngle = 100; // in deg
+    public static final double outOfFunnelAngle = -20; // in deg
 
     public static final double gearRatio = 1.0 / 120.0;
 
