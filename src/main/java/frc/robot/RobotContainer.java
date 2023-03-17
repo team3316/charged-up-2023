@@ -185,6 +185,9 @@ public class RobotContainer {
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
+        _operatorController.cross()
+                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.REJECT, FunnelState.OPEN));
+
     }
 
     private void setCubeInternalState() {
