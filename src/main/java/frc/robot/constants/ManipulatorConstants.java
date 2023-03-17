@@ -12,8 +12,12 @@ public class ManipulatorConstants {
     public static final DoubleSolenoid.Value solenoidOpenState = DoubleSolenoid.Value.kForward;
     public static final DoubleSolenoid.Value solenoidClosedState = DoubleSolenoid.Value.kReverse;
 
+    /*
+     * No game piece, funnel open = 0.05
+     * No game piece, funnel closed = 0.10
+     */
     // ir constants
-    public static final double FunnelingDetectorThreshold = 0.2;
+    public static final double FunnelingDetectorThreshold = 0.12;
     public static final double FunnelingDetectorHysteresis = 0.1;
     public static final double CONEDetectorThreshold = 0.26;
     public static final double CONEDetectorHysteresis = 0.1;
