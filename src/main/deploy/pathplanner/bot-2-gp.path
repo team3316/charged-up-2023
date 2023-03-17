@@ -17,7 +17,6 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "fold-out",
           "eject"
         ],
         "executionBehavior": "sequential",
@@ -170,7 +169,6 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "fold-out",
           "eject"
         ],
         "executionBehavior": "sequential",
@@ -183,24 +181,6 @@
   "maxAcceleration": 3.0,
   "isReversed": null,
   "markers": [
-    {
-      "position": 0.32727272727271917,
-      "names": [
-        "fold-in"
-      ]
-    },
-    {
-      "position": 1.5636363636363682,
-      "names": [
-        "fold-out"
-      ]
-    },
-    {
-      "position": 3.16363636363638,
-      "names": [
-        "fold-in"
-      ]
-    },
     {
       "position": 2.2181818181818063,
       "names": [
