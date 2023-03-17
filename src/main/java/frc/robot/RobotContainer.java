@@ -116,10 +116,10 @@ public class RobotContainer {
                 Commands.sequence(
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                        new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                        new WaitCommand(0.5),
+                        new WaitUntilCommand(m_manipulator::isFunnelingGamePiece),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.KEEPIN),
-                        new WaitCommand(3),
+                        new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                        new ConditionalCommand(new WaitCommand(3), new WaitCommand(0.5), () -> _scoreMidCube == true),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
