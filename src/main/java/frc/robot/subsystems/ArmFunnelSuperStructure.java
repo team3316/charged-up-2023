@@ -64,7 +64,7 @@ public class ArmFunnelSuperStructure {
         }
         if (m_arm.getTargetState() == ArmState.COLLECT)
             return Commands.sequence(
-                    m_funnel.setFunnelStateCommand(FunnelState.OPEN),
+                    // m_funnel.setFunnelStateCommand(FunnelState.OPEN),
                     Commands.deadline(
                             m_arm.getSetStateCommand(wantedArmState, ArmTrapProfile.FAST),
                             new WaitUntilCommand(() -> m_arm.getAngle() > ArmConstants.outOfFunnelAngle)
