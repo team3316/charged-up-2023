@@ -124,7 +124,10 @@ public class RobotContainer {
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
                         new WaitCommand(0.33),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
+                        .deadlineWith(
+                                new RunCommand(() -> m_PDH.setSwitchableChannel(m_SSDetector.isAtSingleSubstation()))
+                                        .finallyDo((interrupted) -> m_PDH.setSwitchableChannel(false))));
 
         // Drive arm state sequence
         _operatorController.povUp().onTrue(
