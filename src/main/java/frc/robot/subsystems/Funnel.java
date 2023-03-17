@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.FunnelConstants;
 
 public class Funnel extends SubsystemBase {
@@ -88,6 +89,6 @@ public class Funnel extends SubsystemBase {
 
     public CommandBase setFunnelStateCommand(FunnelState state) {
         return new InstantCommand(() -> setFunnelState(state), this)
-                .withTimeout(FunnelConstants.afterActionTimeoutSecs);
+                .andThen(new WaitCommand(FunnelConstants.afterActionTimeoutSecs));
     }
 }
