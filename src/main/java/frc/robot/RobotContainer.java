@@ -137,9 +137,11 @@ public class RobotContainer {
         _operatorController.circle().onTrue(new InstantCommand(() -> setConeInternalState()));
 
         // Score sequences
-        _operatorController.R2()
-                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelState.CLOSED)
-                        .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+        _operatorController.R2().onTrue(Commands.sequence(
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.EJECT),
+                new WaitCommand(1),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
         _operatorController.R1().onTrue(
                 new ConditionalCommand(
@@ -170,6 +172,7 @@ public class RobotContainer {
         _operatorController.options().onTrue(m_autoRollerGripper.getEjectCommand());
         _driverController.povDown().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(true)));
         _driverController.povUp().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(false)));
+
 
         _operatorController.touchpad()
                 .onTrue(Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
