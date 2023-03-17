@@ -60,7 +60,7 @@ public class RobotContainer {
 
     private boolean _fieldRelative = true;
 
-    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain);
+    private final AutoFactory _autoFactory = new AutoFactory(m_drivetrain, m_autoRollerGripper);
     private SendableChooser<CommandBase> chooser;
 
     private GlobalDebuggable[] debuggedObjects = {}; // add all subsystems that uses GlobalDebug
@@ -197,11 +197,12 @@ public class RobotContainer {
         SmartDashboard.putData("autonomous", this.chooser);
         // addToChooser("engage");
         // addToChooser("1-gp-engage");
-        // addToChooser("1-gp-leaveCommunity");
+        addToChooser("1-gp-leaveCommunity");
         // addToChooser("bot-2-gp-engage");
-        // addToChooser("bot-2-gp");
+        addToChooser("bot-2-gp");
         // addToChooser("bot-3-gp-engage");
         // addToChooser("bot-3-gp");
+        addToChooser("rotate");
 
         this.chooser.addOption("nothing", new InstantCommand());
 

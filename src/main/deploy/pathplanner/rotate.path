@@ -2,40 +2,37 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.77,
-        "y": 4.95
+        "x": 0.0,
+        "y": 3.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5431286499751313,
-        "y": 4.95
+        "x": 1.0,
+        "y": 3.0
       },
-      "holonomicAngle": 90.0,
+      "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "fold-out",
-          "eject"
-        ],
-        "executionBehavior": "sequential",
-        "waitBehavior": "after",
-        "waitTime": 1.0
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 5.556419862839726,
-        "y": 4.9544915756498185
+        "x": 3.0,
+        "y": 3.0
       },
       "prevControl": {
-        "x": 5.0077710413830205,
-        "y": 4.9544915756498185
+        "x": 2.0,
+        "y": 3.0
       },
       "nextControl": null,
-      "holonomicAngle": 90.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -48,15 +45,5 @@
       }
     }
   ],
-  "maxVelocity": 0.15,
-  "maxAcceleration": null,
-  "isReversed": null,
-  "markers": [
-    {
-      "position": 0.1,
-      "names": [
-        "fold-in"
-      ]
-    }
-  ]
+  "markers": []
 }

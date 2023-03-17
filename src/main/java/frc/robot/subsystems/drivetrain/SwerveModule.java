@@ -20,6 +20,8 @@ public class SwerveModule {
 
     private CANCoder _absEncoder;
 
+    private SwerveModuleState _targetState;
+
     public SwerveModule(SwerveModuleConstants constants) {
         this._absEncoder = createCANCoder(constants.canCoderId, constants.cancoderZeroAngle);
 
@@ -39,6 +41,8 @@ public class SwerveModule {
 
         this._driveMotor.setAverageDepth(4);
         this._driveMotor.setMeasurementPeriod(8);
+
+        this._targetState = getState();
     }
 
     private static CANCoder createCANCoder(int id, double zeroAngle) {
@@ -78,6 +82,10 @@ public class SwerveModule {
                 new Rotation2d().rotateBy(Rotation2d.fromDegrees(this._steerMotor.getPosition())));
     }
 
+    public SwerveModuleState getTargetState() {
+        return _targetState;
+    }
+
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = optimize(desiredState, this._steerMotor.getPosition());
@@ -89,6 +97,9 @@ public class SwerveModule {
             this.stop();
         else
             this._driveMotor.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
+
+        _targetState = desiredState;
+
     }
 
     public void setAngle(SwerveModuleState desiredState) {

@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -103,6 +104,7 @@ public class Drivetrain extends SubsystemBase {
 
         // updateSDB();
         SmartDashboard.putNumber("pitch", this.getPitch());
+        // printEverything();
     }
 
     public void updateTelemetry() {
@@ -162,6 +164,25 @@ public class Drivetrain extends SubsystemBase {
         }
 
         return swerveModulePositions;
+    }
+
+    @SuppressWarnings({ "unused" })
+    private void printEverything() {
+        String printString = new String();
+        printString += Timer.getFPGATimestamp() + ",";
+        ChassisSpeeds speeds = DrivetrainConstants.kinematics.toChassisSpeeds(_modules[0].getState(),
+                _modules[1].getState(),
+                _modules[2].getState(), _modules[3].getState());
+        printString += speeds.vxMetersPerSecond + "," + speeds.vyMetersPerSecond + ",";
+        for (int i = 0; i < this._modules.length; i++) {
+            printString += ",speed," + _modules[i].getState().speedMetersPerSecond;
+            printString += ",angle," + _modules[i].getState().angle.getDegrees();
+            printString += ",desSpeed," + _modules[i].getTargetState().speedMetersPerSecond;
+            printString += ",desAngle," + _modules[i].getTargetState().angle.getDegrees();
+        }
+
+        System.out.println(printString);
+
     }
 
     public void restartControllers() {
