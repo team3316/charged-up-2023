@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,7 +29,6 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmState;
 import frc.robot.subsystems.ArmFunnelSuperStructure;
 import frc.robot.subsystems.AutoRollerGripper;
-import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Funnel.FunnelState;
 import frc.robot.subsystems.LimeLight;
@@ -52,6 +53,7 @@ public class RobotContainer {
     private final LimeLight m_limeLight = new LimeLight();
 
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+    private final PowerDistribution m_PDH = new PowerDistribution(16, ModuleType.kRev);
 
     private final CommandPS5Controller _driverController = new CommandPS5Controller(
             JoysticksConstants.driverPort);
@@ -135,9 +137,11 @@ public class RobotContainer {
         _operatorController.circle().onTrue(new InstantCommand(() -> setConeInternalState()));
 
         // Score sequences
-        _operatorController.R2()
-                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.LOW, FunnelState.CLOSED)
-                        .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+        _operatorController.R2().onTrue(Commands.sequence(
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.EJECT),
+                new WaitCommand(1),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
         _operatorController.R1().onTrue(
                 new ConditionalCommand(
@@ -166,8 +170,16 @@ public class RobotContainer {
 
         _operatorController.share().onTrue(m_autoRollerGripper.getIntakeCommand());
         _operatorController.options().onTrue(m_autoRollerGripper.getEjectCommand());
-        _driverController.povDown().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.OUT));
-        _driverController.povUp().onTrue(m_autoRollerGripper.getFoldCommand(FolderState.IN));
+        _driverController.povDown().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(true)));
+        _driverController.povUp().onTrue(new InstantCommand(() -> m_PDH.setSwitchableChannel(false)));
+
+
+        _operatorController.touchpad()
+                .onTrue(Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
+                        new WaitCommand(0.5),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
     }
 
@@ -247,9 +259,11 @@ public class RobotContainer {
         return Commands.sequence(
                 _autoFactory.createAuto("engage-gyro"),
                 new GyroEngage(m_drivetrain, 0.5, -5, true),
-                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2),
+                m_drivetrain.getRotateModulesCommand(),
                 new GyroEngage(m_drivetrain, -0.12, 5, false),
-                new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
+                m_drivetrain.getRotateModulesCommand(),
+                new WaitCommand(0.8),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
     private CommandBase getFastGyroEngageSequence() {
@@ -262,7 +276,7 @@ public class RobotContainer {
                                 new InstantCommand(),
                                 () -> m_drivetrain.getPitch() < -2),
                         () -> m_drivetrain.getPitch() > 2),
-                        new RunCommand(() -> m_drivetrain.drive(0, -0.1, 0, false)).withTimeout(0.2));
+                m_drivetrain.getRotateModulesCommand());
     }
 
     private CommandBase getAutoCubeSequence() {
