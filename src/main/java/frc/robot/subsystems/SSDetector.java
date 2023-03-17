@@ -14,11 +14,16 @@ public class SSDetector extends SubsystemBase {
     }
 
     public boolean isAtSingleSubstation() {
-        return this._detector.getValue() / ADC_RESOLUTION > SSDetectorConstants.threshold;
+        return getValue() > SSDetectorConstants.threshold;
+    }
+
+    public double getValue() {
+        return this._detector.getValue() / ADC_RESOLUTION;
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("At SS", this.isAtSingleSubstation());
+        SmartDashboard.putNumber("SS Value", this.getValue());
     }
 }
