@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.subsystems.AutoRollerGripper;
-import frc.robot.subsystems.AutoRollerGripper.FolderState;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 /**
@@ -42,9 +41,7 @@ public class AutoFactory {
         // add event markers here (and add the subsystem to the constructor)
         _eventMap.put("engage_stop", new InstantCommand(() -> drivetrain.setModulesAngle(90)));
         _eventMap.put("eject", rollerGripper.getEjectCommand());
-        _eventMap.put("intake", rollerGripper.getIntakeFoldCommand());
-        _eventMap.put("fold-in", rollerGripper.getFoldCommand(FolderState.IN));
-        _eventMap.put("fold-out", rollerGripper.getFoldCommand(FolderState.OUT));
+        _eventMap.put("intake", rollerGripper.getIntakeCommand());
 
     }
 

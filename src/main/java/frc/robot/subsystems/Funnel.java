@@ -31,7 +31,8 @@ public class Funnel extends SubsystemBase {
         KEEPIN(FunnelConstants.closedState, FunnelConstants.keepinPercent),
         OPEN(FunnelConstants.openState, FunnelConstants.openPercent),
         READJUST(FunnelConstants.closedState, FunnelConstants.collectPercent),
-        CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent);
+        CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent),
+        EJECT(FunnelConstants.closedState, FunnelConstants.ejectPercent);
 
         public final DoubleSolenoid.Value solenoidState;
         public final double rollerPercent;

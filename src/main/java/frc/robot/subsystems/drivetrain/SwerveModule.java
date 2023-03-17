@@ -42,7 +42,7 @@ public class SwerveModule {
         this._driveMotor.setAverageDepth(4);
         this._driveMotor.setMeasurementPeriod(8);
 
-        this._targetState = new SwerveModuleState(0.0, new Rotation2d());
+        this._targetState = getState();
     }
 
     private static CANCoder createCANCoder(int id, double zeroAngle) {
