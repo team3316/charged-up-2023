@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.LimelightConstants;
 
@@ -65,7 +66,7 @@ public class Drivetrain extends SubsystemBase {
                 LimelightConstants.thetaGains.kI,
                 LimelightConstants.thetaGains.kD);
 
-        restartControllers();
+        restartControllers(true);
     }
 
     public void setModulesAngle(double angle) {
@@ -104,7 +105,7 @@ public class Drivetrain extends SubsystemBase {
         // Update the odometry in the periodic block
         this._odometry.update(getRotation2d(), getSwerveModulePositions());
 
-        // updateSDB();
+        updateSDB();
         SmartDashboard.putNumber("pitch", this.getPitch());
         // printEverything();
     }
@@ -187,7 +188,7 @@ public class Drivetrain extends SubsystemBase {
 
     }
 
-    public void restartControllers() {
+    public void restartControllers(boolean _isTargetCube) {
         vision_xController.reset();
         vision_yController.reset();
         thetaController.reset();
@@ -195,8 +196,11 @@ public class Drivetrain extends SubsystemBase {
         vision_xController.setTolerance(LimelightConstants.xTol);
         vision_yController.setTolerance(LimelightConstants.yTol);
         thetaController.setTolerance(LimelightConstants.thetaTol);
-
-        vision_xController.setSetpoint(0);
+        if (_isTargetCube) {
+            vision_xController.setSetpoint(LimelightConstants.xGoalArbMetersApril);
+        } else {
+            vision_xController.setSetpoint(LimelightConstants.xGoalArbMetersRetro);
+        }
         vision_yController.setSetpoint(0);
         thetaController.setSetpoint(DrivetrainConstants.installAngle.getDegrees());
     }
@@ -216,13 +220,14 @@ public class Drivetrain extends SubsystemBase {
         thetaController.setD(td);
     }
 
-    public void driveByVisionControllers(double Xangle, double Yangle) {
+    public void driveByVisionControllers(double Xangle, double Yangle, boolean hasTarget) {
         double x = 0;
         double y = 0;
         double t = thetaController.calculate(this.getPose().getRotation().getDegrees());
 
         if (Math.abs(this.getPose().getRotation().getDegrees()
-                - DrivetrainConstants.installAngle.getDegrees()) < LimelightConstants.spinToleranceDegrees) {
+                - DrivetrainConstants.installAngle.getDegrees()) < LimelightConstants.spinToleranceDegrees
+                && hasTarget) {
             // Don't move until we're somewhat aligned
             x = vision_xController.calculate(Xangle);
             y = vision_yController.calculate(Yangle);

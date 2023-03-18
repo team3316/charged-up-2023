@@ -9,7 +9,7 @@ import frc.robot.motors.PIDFGains;
 public class LimelightConstants {
     public static final double AlignLimeLightToPigeonPhase = -1;
 
-    public static final PIDFGains xGainsRetro = new PIDFGains(0.1, 0.0, 0.01, 0.0);
+    public static final PIDFGains xGainsRetro = new PIDFGains(0.1, 0.0, 0, 0.0);
     public static final PIDFGains xGainsApril = new PIDFGains(0.1, 0.0, 0, 0.0);
     public static final double xTol = 1;
 
@@ -19,6 +19,9 @@ public class LimelightConstants {
 
     public static final PIDFGains thetaGains = new PIDFGains(0.1, 0.0, 0.0, 0.0);
     public static final double thetaTol = 1;
+
+    public static final double xGoalArbMetersRetro = 1.34;
+    public static final double xGoalArbMetersApril = 1.3;
 
     public static final double spinToleranceDegrees = 10;
 
