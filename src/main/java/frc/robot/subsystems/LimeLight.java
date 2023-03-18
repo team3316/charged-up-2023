@@ -49,6 +49,16 @@ public class LimeLight extends SubsystemBase {
         return new Translation2d(getXAngle(), getYAngle()).rotateBy(LimelightConstants.limelightAxisToField).getX();
     }
 
+    public double getFieldXArbMeters() {
+        return 1 / Math.tan(Math.toRadians(this.getYAngle())); // tan = height/length -> length = height/tan, height in
+                                                               // P;
+    }
+
+    public double getFieldYArbMeters() {
+        return Math.tan(Math.toRadians(this.getXAngle())) / this.getFieldXArbMeters();// tan = offset/length -> offet =
+                                                                                      // tan*length;
+    }
+
     public void setPipeLine(double id) {
         pipeLine.setNumber(id);
     }
