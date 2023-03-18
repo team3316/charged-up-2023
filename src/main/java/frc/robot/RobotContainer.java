@@ -126,7 +126,9 @@ public class RobotContainer {
                                                 FunnelState.KEEPIN),
                                         new WaitUntilCommand(m_manipulator::isHoldingGamePiece), new WaitCommand(3)),
                                 Commands.sequence(new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                                        new WaitCommand(0.5)),
+                                        new WaitCommand(1.5),
+                                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                                FunnelState.CLOSED)),
                                 () -> _scoreMidCube == true),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
@@ -232,7 +234,7 @@ public class RobotContainer {
         this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
         this.chooser.addOption("engage-gyro", getEngageSequence());
-        this.chooser.addOption("mobility-engage", getMobilityEngageSequence());
+        this.chooser.addOption("mobility-engage", getAutoCubeSequence().andThen(getMobilityEngageSequence()));
 
         // taxi
         this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
