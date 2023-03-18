@@ -107,10 +107,12 @@ public class RobotContainer {
 
         /* align with vision target */
         _driverController.cross()
-                .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain)
+                .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(_scoreMidCube), m_drivetrain)
                         .alongWith(new InstantCommand(() -> m_limeLight.forceLEDsOff(false), m_limeLight)).andThen(
-                                new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
-                                        m_limeLight.getFieldTY()), m_drivetrain))
+                                new RunCommand(
+                                        () -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldXArbMeters(),
+                                                m_limeLight.getFieldYArbMeters(), m_limeLight.hasTarget()),
+                                        m_drivetrain))
                         .finallyDo((interrupted) -> m_limeLight.forceLEDsOff(true)));
 
         /* Operator triggers */
