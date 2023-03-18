@@ -4,10 +4,15 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.LimelightConstants;
 
@@ -18,6 +23,24 @@ public class LimeLight extends SubsystemBase {
     private NetworkTableEntry hasTarget;
     private NetworkTableEntry pipeLine;
     private NetworkTableEntry LEDs;
+
+    public class BotPose {
+        private Pose2d pose;
+        private double timestamp;
+
+        public Pose2d getPose() {
+            return pose;
+        }
+
+        public double getTimestamp() {
+            return timestamp;
+        }
+
+        public BotPose(Pose2d pose, double timestamp) {
+            this.pose = pose;
+            this.timestamp = timestamp;
+        }
+    }
 
     /** Creates a new LimeLight. */
     public LimeLight() { // CR: add a way to send the config to the limelight trough code
@@ -55,5 +78,26 @@ public class LimeLight extends SubsystemBase {
 
     public void forceLEDsOff(boolean off) {
         LEDs.setNumber(off ? LimelightConstants.LEDsForceOff : LimelightConstants.LEDsByPipeline);
+    }
+    
+    /*
+     * Can return null
+     */
+    public BotPose getBotPose() {
+        if (!hasTarget())
+            return null;
+
+        String entryName = DriverStation.getAlliance() == Alliance.Red ? "botpose_wpired" : "botpose_wpiblue";
+
+        double[] poseComponents = limeLightTable.getEntry(entryName).getDoubleArray(new double[6]);
+        if (poseComponents.length == 0)
+            return null;
+        double latency = limeLightTable.getEntry("tl").getDouble(0) + limeLightTable.getEntry("cl").getDouble(0);
+        return new BotPose(new Pose2d(
+                poseComponents[0],
+                poseComponents[1],
+                new Rotation2d(Math.toRadians(poseComponents[5]))),
+                Timer.getFPGATimestamp() - (latency / 1000.0));
+
     }
 }

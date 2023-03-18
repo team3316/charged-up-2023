@@ -37,6 +37,7 @@ import frc.robot.subsystems.Manipulator.IRSensorState;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
 import frc.robot.subsystems.SSDetector;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.drivetrain.PoseEstimator;
 import frc.robot.utils.GlobalDebuggable;
 
 /**
@@ -52,6 +53,7 @@ public class RobotContainer {
             new Funnel());
     private final SSDetector m_SSDetector = new SSDetector();
     private final LimeLight m_limeLight = new LimeLight();
+    private final PoseEstimator m_poseEstimator = new PoseEstimator(m_drivetrain, m_limeLight);
 
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
     private final PowerDistribution m_PDH = new PowerDistribution(16, ModuleType.kRev);
@@ -98,6 +100,8 @@ public class RobotContainer {
      * Use this method to define your trigger->command mappings.
      */
     private void configureBindings() {
+        _driverController.cross().onTrue(_autoFactory.createfollow(m_poseEstimator.getCollectionTrajectory()));
+
         _driverController.options().onTrue(
                 new InstantCommand(() -> _fieldRelative = !_fieldRelative)); // toggle field
         // relative mode

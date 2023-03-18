@@ -158,7 +158,7 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-    private SwerveModulePosition[] getSwerveModulePositions() {
+    public SwerveModulePosition[] getSwerveModulePositions() {
         SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[this._modules.length];
 
         for (int i = 0; i < swerveModulePositions.length; i++) {
@@ -184,7 +184,15 @@ public class Drivetrain extends SubsystemBase {
         }
 
         System.out.println(printString);
+    }
 
+    public ChassisSpeeds getChassisSpeeds() {
+        SwerveModuleState[] states = new SwerveModuleState[this._modules.length];
+
+        for (int i = 0; i < states.length; i++) {
+            states[i] = this._modules[i].getState();
+        }
+        return DrivetrainConstants.kinematics.toChassisSpeeds(states);
     }
 
     public void restartControllers() {
