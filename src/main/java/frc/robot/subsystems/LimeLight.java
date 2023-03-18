@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.LimelightConstants;
 
@@ -55,7 +56,7 @@ public class LimeLight extends SubsystemBase {
     }
 
     public double getFieldYArbMeters() {
-        return Math.tan(Math.toRadians(this.getXAngle())) / this.getFieldXArbMeters();// tan = offset/length -> offet =
+        return Math.tan(Math.toRadians(this.getXAngle())) * this.getFieldXArbMeters();// tan = offset/length -> offet =
                                                                                       // tan*length;
     }
 
@@ -65,5 +66,11 @@ public class LimeLight extends SubsystemBase {
 
     public void forceLEDsOff(boolean off) {
         LEDs.setNumber(off ? LimelightConstants.LEDsForceOff : LimelightConstants.LEDsByPipeline);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("xLength", this.getFieldXArbMeters());
+        SmartDashboard.putNumber("yLength", this.getFieldYArbMeters());
     }
 }
