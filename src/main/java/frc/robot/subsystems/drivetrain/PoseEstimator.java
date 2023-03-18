@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.LimeLight.BotPose;
 
 public class PoseEstimator extends SubsystemBase {
 
@@ -40,6 +41,10 @@ public class PoseEstimator extends SubsystemBase {
             collectionTranslation,
             collectionHeading,
             collectionHolonomicRotation);
+
+    // maximum allowed deviation in meters between current pose and vision pose in
+    // order to accept the vision reading as valid.
+    private static final double visionMeasurementRejectionThreshold = 2.0;
 
     private final double xTolerance = 0.2; // in meters
     private final double yTolerance = 0.1; // in meters
@@ -111,14 +116,25 @@ public class PoseEstimator extends SubsystemBase {
         tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
     }
 
+    private void addValidVisionMeasurement(BotPose robotPose) {
+        if (robotPose == null) {
+            return;
+        }
+
+        if (getCurrentPose().minus(robotPose.getPose()).getTranslation()
+                .getNorm() > visionMeasurementRejectionThreshold) {
+            return;
+        }
+
+        lastVisionTimestamp = robotPose.getTimestamp();
+        poseEstimator.addVisionMeasurement(robotPose.getPose(), robotPose.getTimestamp());
+    }
+
     @Override
     public void periodic() {
         // Update pose estimator with the best visible target
-        var robotPose = limeLight.getBotPose();
-        if (robotPose != null) {
-            lastVisionTimestamp = robotPose.getTimestamp();
-            poseEstimator.addVisionMeasurement(robotPose.getPose(), robotPose.getTimestamp());
-        }
+        addValidVisionMeasurement(limeLight.getBotPose());
+
         // Update pose estimator with drivetrain sensors
         poseEstimator.update(
                 drivetrain.getRotation2d(),
