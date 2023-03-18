@@ -21,7 +21,7 @@
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
-        "waitTime": 0.5
+        "waitTime": 1.0
       }
     },
     {
@@ -119,8 +119,8 @@
           "eject"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "waitBehavior": "after",
+        "waitTime": 1.0
       }
     }
   ],
