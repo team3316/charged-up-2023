@@ -43,7 +43,7 @@ public class LimeLight extends SubsystemBase {
     }
 
     public double getFieldYMeters() {
-        return -1 * this.hDiff * Math.sin(Math.toRadians(this.getXAngle()))
+        return this.hDiff * Math.sin(Math.toRadians(this.getXAngle()))
                 / Math.tan(Math.toRadians(this.getYAngle()));
     }
 
