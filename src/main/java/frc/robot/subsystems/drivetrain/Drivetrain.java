@@ -234,8 +234,12 @@ public class Drivetrain extends SubsystemBase {
         if (Math.abs(this.getPose().getRotation().getDegrees()
                 - DrivetrainConstants.installAngle.getDegrees()) < LimelightConstants.spinToleranceDegrees) {
             // Don't move until we're somewhat aligned
+            if (Math.abs(Xangle) > LimelightConstants.xTol) { // move only if needs to
             x = vision_xController.calculate(Xangle);
+            }
+            if (Math.abs(Yangle) > LimelightConstants.yTol) {
             y = vision_yController.calculate(Yangle);
+            }
         }
 
         this.drive(x, y, t, true);
