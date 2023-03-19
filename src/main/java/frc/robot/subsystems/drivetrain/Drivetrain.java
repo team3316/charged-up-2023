@@ -131,6 +131,16 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("rotation", getRotation2d().getRadians());
     }
 
+    @SuppressWarnings({ "unused" })
+    private void updateVisionSDB() {
+        SmartDashboard.putNumber("thetaError", thetaController.getPositionError());
+        SmartDashboard.putNumber("XError", vision_xController.getPositionError());
+        SmartDashboard.putNumber("YError", vision_yController.getPositionError());
+
+        SmartDashboard.putNumber("rotation degs", getRotation2d().getDegrees()); // again because drivetrain and
+                                                                                 // vision uses different units
+    }
+
     public Pose2d getPose() {
         return this._odometry.getPoseMeters();
     }
