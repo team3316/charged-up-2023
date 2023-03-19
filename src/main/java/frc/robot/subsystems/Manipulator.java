@@ -83,7 +83,7 @@ public class Manipulator extends SubsystemBase {
     public CommandBase setManipulatorStateCommand(ManipulatorState state) {
         return new InstantCommand(() -> {
             setManipulatorState(state);
-        }, this);
+        });
     }
 
     public static enum IRSensorState {

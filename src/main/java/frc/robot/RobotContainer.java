@@ -35,6 +35,7 @@ import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Manipulator.IRSensorState;
 import frc.robot.subsystems.Manipulator.ManipulatorState;
+import frc.robot.subsystems.SSDetector;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.GlobalDebuggable;
 
@@ -49,7 +50,7 @@ public class RobotContainer {
 
     private final ArmFunnelSuperStructure m_ArmFunnelSuperStructure = new ArmFunnelSuperStructure(new Arm(),
             new Funnel());
-
+    private final SSDetector m_SSDetector = new SSDetector();
     private final LimeLight m_limeLight = new LimeLight();
 
     private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
@@ -128,7 +129,10 @@ public class RobotContainer {
                                         new WaitCommand(0.5)),
                                 () -> _scoreMidCube == true),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
+                        .deadlineWith(
+                                new RunCommand(() -> m_PDH.setSwitchableChannel(m_SSDetector.isAtSingleSubstation()))
+                                        .finallyDo((interrupted) -> m_PDH.setSwitchableChannel(false))));
 
         // Drive arm state sequence
         _operatorController.povUp().onTrue(
@@ -149,12 +153,11 @@ public class RobotContainer {
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
         _operatorController.R1().onTrue(
-                new ConditionalCommand(
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.CLOSED)
-                                .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.CLOSED)
-                                .beforeStarting(m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)),
-                        () -> _scoreMidCube));
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD).andThen(
+                        new ConditionalCommand(
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.CLOSED),
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.CLOSED),
+                                () -> _scoreMidCube)));
 
         // Install GP
         _operatorController.L2().onTrue(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
@@ -232,7 +235,7 @@ public class RobotContainer {
         this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
         this.chooser.addOption("engage-gyro", getEngageSequence());
-        this.chooser.addOption("fast-engage", getFastGyroEngageSequence());
+        this.chooser.addOption("mobility-engage", getMobilityEngageSequence());
 
         // taxi
         this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
@@ -273,17 +276,14 @@ public class RobotContainer {
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
-    private CommandBase getFastGyroEngageSequence() {
-        return Commands.sequence(_autoFactory.createAuto("engage-gyro"),
-                new WaitCommand(1),
-                new ConditionalCommand(
-                        new GyroEngage(m_drivetrain, -0.1, 5, false),
-                        new ConditionalCommand(
-                                new GyroEngage(m_drivetrain, 0.1, -5, true),
-                                new InstantCommand(),
-                                () -> m_drivetrain.getPitch() < -2),
-                        () -> m_drivetrain.getPitch() > 2),
-                m_drivetrain.getRotateModulesCommand());
+    private CommandBase getMobilityEngageSequence() {
+        return Commands.sequence(_autoFactory.createAuto("engage-gyro-mobility"),
+                new GyroEngage(m_drivetrain, -0.1, 5, false),
+                m_drivetrain.getRotateModulesCommand(),
+                new GyroEngage(m_drivetrain, 0.1, -5, true),
+                m_drivetrain.getRotateModulesCommand(),
+                new WaitCommand(0.8),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
     private CommandBase getAutoCubeSequence() {
