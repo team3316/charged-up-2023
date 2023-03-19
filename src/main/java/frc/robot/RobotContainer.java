@@ -172,7 +172,8 @@ public class RobotContainer {
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
         _operatorController.cross()
-                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.REJECT, FunnelState.OPEN));
+                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.REJECT, FunnelState.OPEN)
+                        .andThen(this.getCollectSequence()));
 
     }
 
