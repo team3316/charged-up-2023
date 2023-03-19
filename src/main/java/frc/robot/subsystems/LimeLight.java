@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -19,6 +18,7 @@ public class LimeLight extends SubsystemBase {
     private NetworkTableEntry hasTarget;
     private NetworkTableEntry pipeLine;
     private NetworkTableEntry LEDs;
+    private double hDiff = 0;
 
     /** Creates a new LimeLight. */
     public LimeLight() { // CR: add a way to send the config to the limelight trough code
@@ -42,26 +42,22 @@ public class LimeLight extends SubsystemBase {
         return ty.getDouble(0);
     }
 
-    public double getFieldTY() {
-        return new Translation2d(getXAngle(), getYAngle()).rotateBy(LimelightConstants.limelightAxisToField).getY();
+    public double getFieldYMeters() {
+        return -1 * this.hDiff * Math.sin(Math.toRadians(this.getXAngle()))
+                / Math.tan(Math.toRadians(this.getYAngle()));
     }
 
-    public double getFieldTX() {
-        return new Translation2d(getXAngle(), getYAngle()).rotateBy(LimelightConstants.limelightAxisToField).getX();
-    }
-
-    public double getFieldXArbMeters() {
-        return 1 / Math.tan(Math.toRadians(this.getYAngle())); // tan = height/length -> length = height/tan, height in
-                                                               // P;
-    }
-
-    public double getFieldYArbMeters() {
-        return Math.tan(Math.toRadians(this.getXAngle())) * this.getFieldXArbMeters();// tan = offset/length -> offet =
-                                                                                      // tan*length;
+    public double getFieldXMeters() {
+        return this.hDiff * Math.cos(Math.toRadians(this.getXAngle()))
+                / Math.tan(Math.toRadians(this.getYAngle()));
     }
 
     public void setPipeLine(double id) {
         pipeLine.setNumber(id);
+    }
+
+    public void setTargetHeightDiff(double hDiff) {
+        this.hDiff = hDiff;
     }
 
     public void forceLEDsOff(boolean off) {
@@ -70,7 +66,7 @@ public class LimeLight extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("xLength", this.getFieldXArbMeters());
-        SmartDashboard.putNumber("yLength", this.getFieldYArbMeters());
+        SmartDashboard.putNumber("xLength", this.getFieldXMeters());
+        SmartDashboard.putNumber("yLength", this.getFieldYMeters());
     }
 }
