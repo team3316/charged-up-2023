@@ -209,15 +209,11 @@ public class Drivetrain extends SubsystemBase {
         if (Math.abs(this.getPose().getRotation().getDegrees()
                 - DrivetrainConstants.installAngle.getDegrees()) < LimelightConstants.spinToleranceDegrees
                 && hasTarget) {
-            // Don't move until we're somewhat aligned
-            if (Math.abs(xDistance) > LimelightConstants.xTol)
-                x = vision_xController.calculate(xDistance);
-
-            if (Math.abs(yDistance) > LimelightConstants.yTol)
-                y = vision_yController.calculate(yDistance);
+            vision_xController.calculate(xDistance);
+            vision_yController.calculate(yDistance);
         }
 
-        this.drive(x, y, t, true);
+        this.drive(vision_xController.atSetpoint() ? 0 : x, vision_yController.atSetpoint() ? 0 : y, t, true);
     }
 
     public void setKeepHeading(Rotation2d rotation) {
