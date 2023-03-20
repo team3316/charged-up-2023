@@ -8,6 +8,7 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import frc.robot.utils.Within;
 
 public class DBugSparkMax extends CANSparkMax {
+    private static final double VERIFICATION_TOLERANCE = 0.0001;
     private SparkMaxPIDController _pidController;
     private RelativeEncoder _encoder;
 
@@ -100,17 +101,17 @@ public class DBugSparkMax extends CANSparkMax {
     }
 
     public boolean verify(PIDFGains gains, double positionFactor, double velocityFactor) {
-        if (!Within.range(gains.kP, this._pidController.getP(), 0.001))
+        if (!Within.range(gains.kP, this._pidController.getP(), VERIFICATION_TOLERANCE))
             return false;
-        if (!Within.range(gains.kI, this._pidController.getI(), 0.001))
+        if (!Within.range(gains.kI, this._pidController.getI(), VERIFICATION_TOLERANCE))
             return false;
-        if (!Within.range(gains.kD, this._pidController.getD(), 0.001))
+        if (!Within.range(gains.kD, this._pidController.getD(), VERIFICATION_TOLERANCE))
             return false;
-        if (!Within.range(gains.kF, this._pidController.getFF(), 0.001))
+        if (!Within.range(gains.kF, this._pidController.getFF(), VERIFICATION_TOLERANCE))
             return false;
-        if (!Within.range(positionFactor, this._encoder.getPositionConversionFactor(), 0.001))
+        if (!Within.range(positionFactor, this._encoder.getPositionConversionFactor(), VERIFICATION_TOLERANCE))
             return false;
-        if (!Within.range(velocityFactor, this._encoder.getVelocityConversionFactor(), 0.001))
+        if (!Within.range(velocityFactor, this._encoder.getVelocityConversionFactor(), VERIFICATION_TOLERANCE))
             return false;
         return true;
     }
