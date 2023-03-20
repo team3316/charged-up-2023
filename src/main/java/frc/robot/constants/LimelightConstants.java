@@ -25,7 +25,7 @@ public class LimelightConstants {
     }
 
     public static final AutoAlignConstants cone = new LimelightConstants.AutoAlignConstants(0.7, 0.42);
-    public static final AutoAlignConstants cube = new LimelightConstants.AutoAlignConstants(0.35, 0.21);
+    public static final AutoAlignConstants cube = new LimelightConstants.AutoAlignConstants(0.48, 0.21);
 
     public static final double spinToleranceDegrees = 10;
 
