@@ -38,6 +38,7 @@ public class ArmConstants {
     public static final double midCubeAngle = 150; // in deg
     public static final double midConeAngle = 150; // in deg
     public static final double lowAngle = 100; // in deg
+    public static final double rejectAngle = 0; // in deg
     public static final double outOfFunnelAngle = -20; // in deg
 
     public static final double gearRatio = 1.0 / 120.0;

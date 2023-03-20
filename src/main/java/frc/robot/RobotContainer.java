@@ -117,26 +117,7 @@ public class RobotContainer {
 
         /* Operator triggers */
         // Collect sequence
-        _operatorController.L1().onTrue(
-                Commands.sequence(
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
-                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                        new WaitUntilCommand(m_manipulator::isFunnelingGamePiece),
-                        new ConditionalCommand(
-                                Commands.sequence(
-                                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                                                FunnelState.KEEPIN),
-                                        new WaitUntilCommand(m_manipulator::isHoldingGamePiece), new WaitCommand(3)),
-                                Commands.sequence(new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                                        new WaitCommand(1.5),
-                                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                                                FunnelState.CLOSED)),
-                                () -> _scoreMidCube == true),
-                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
-                        .deadlineWith(
-                                new RunCommand(() -> m_PDH.setSwitchableChannel(m_SSDetector.isAtSingleSubstation()))
-                                        .finallyDo((interrupted) -> m_PDH.setSwitchableChannel(false))));
+        _operatorController.L1().onTrue(this.getCollectSequence());
 
         // Drive arm state sequence
         _operatorController.povUp().onTrue(
@@ -191,6 +172,10 @@ public class RobotContainer {
                         new WaitCommand(0.5),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+
+        _operatorController.cross()
+                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.REJECT, FunnelState.OPEN)
+                        .andThen(this.getCollectSequence()));
 
     }
 
@@ -297,6 +282,28 @@ public class RobotContainer {
          */
         return Commands.sequence(new InstantCommand(() -> this.setCubeInternalState()),
                 m_ArmFunnelSuperStructure.overrideCommand());
+    }
+
+    private CommandBase getCollectSequence() {
+        return Commands.sequence(
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                new WaitUntilCommand(m_manipulator::isFunnelingGamePiece),
+                new ConditionalCommand(
+                        Commands.sequence(
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                        FunnelState.KEEPIN),
+                                new WaitUntilCommand(m_manipulator::isHoldingGamePiece), new WaitCommand(3)),
+                        Commands.sequence(new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
+                                new WaitCommand(1.5),
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                        FunnelState.CLOSED)),
+                        () -> _scoreMidCube == true),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
+                .deadlineWith(
+                        new RunCommand(() -> m_PDH.setSwitchableChannel(m_SSDetector.isAtSingleSubstation()))
+                                .finallyDo((interrupted) -> m_PDH.setSwitchableChannel(false)));
     }
 
     /**
