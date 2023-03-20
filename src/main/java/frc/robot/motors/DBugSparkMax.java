@@ -5,6 +5,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
+import frc.robot.utils.Within;
+
 public class DBugSparkMax extends CANSparkMax {
     private SparkMaxPIDController _pidController;
     private RelativeEncoder _encoder;
@@ -74,6 +76,10 @@ public class DBugSparkMax extends CANSparkMax {
         sparkMax.setOpenLoopRampRate(0.01);
         sparkMax.setClosedLoopRampRate(0.01);
         sparkMax.setPosition(position);
+
+        if (!sparkMax.verify(gains, positionFactor, velocityFactor)) {
+            throw new IllegalStateException("SparkMax Failed to Initialize");
+        }
         return sparkMax;
     }
 
@@ -91,5 +97,21 @@ public class DBugSparkMax extends CANSparkMax {
 
     public int getMeasurementPeriod() {
         return this._encoder.getMeasurementPeriod();
+    }
+
+    public boolean verify(PIDFGains gains, double positionFactor, double velocityFactor) {
+        if (!Within.range(gains.kP, this._pidController.getP(), 0.001))
+            return false;
+        if (!Within.range(gains.kI, this._pidController.getI(), 0.001))
+            return false;
+        if (!Within.range(gains.kD, this._pidController.getD(), 0.001))
+            return false;
+        if (!Within.range(gains.kF, this._pidController.getFF(), 0.001))
+            return false;
+        if (!Within.range(positionFactor, this._encoder.getPositionConversionFactor(), 0.001))
+            return false;
+        if (!Within.range(velocityFactor, this._encoder.getVelocityConversionFactor(), 0.001))
+            return false;
+        return true;
     }
 }
