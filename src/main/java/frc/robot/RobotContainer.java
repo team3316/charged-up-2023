@@ -75,7 +75,6 @@ public class RobotContainer {
      */
     public RobotContainer() {
         m_compressor.enableDigital();
-        // m_drivetrain.visionInitSDB();
 
         this.chooser = new SendableChooser<CommandBase>();
         initChooser();
@@ -107,10 +106,13 @@ public class RobotContainer {
 
         /* align with vision target */
         _driverController.cross()
-                .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain)
+                .whileTrue(new InstantCommand(() -> m_drivetrain.resetControllers(), m_drivetrain)
                         .alongWith(new InstantCommand(() -> m_limeLight.forceLEDsOff(false), m_limeLight)).andThen(
-                                new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
-                                        m_limeLight.getFieldTY()), m_drivetrain))
+                                new RunCommand(
+                                        () -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldXMeters(),
+                                                m_limeLight.getFieldYMeters(),
+                                                m_limeLight.hasTarget()),
+                                        m_drivetrain))
                         .finallyDo((interrupted) -> m_limeLight.forceLEDsOff(true)));
 
         /* Operator triggers */
@@ -180,18 +182,20 @@ public class RobotContainer {
     private void setCubeInternalState() {
         this._scoreMidCube = true;
         m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
+        m_limeLight.setTargetHeightDiff(LimelightConstants.cube.hDiff);
         m_limeLight.forceLEDsOff(true);
         SmartDashboard.putBoolean("target GP", this._scoreMidCube);
-        m_drivetrain.setVisionAprilPID();
+        m_drivetrain.setXSetpoint(LimelightConstants.cube.xGoal);
         m_manipulator.setIRSensorState(IRSensorState.CUBE);
     }
 
     private void setConeInternalState() {
         this._scoreMidCube = false;
         m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
+        m_limeLight.setTargetHeightDiff(LimelightConstants.cone.hDiff);
         m_limeLight.forceLEDsOff(true);
         SmartDashboard.putBoolean("target GP", this._scoreMidCube);
-        m_drivetrain.setVisionRetroPID();
+        m_drivetrain.setXSetpoint(LimelightConstants.cone.xGoal);
         m_manipulator.setIRSensorState(IRSensorState.CONE);
     }
 
@@ -219,7 +223,7 @@ public class RobotContainer {
         this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
         this.chooser.addOption("engage-gyro", getEngageSequence());
-        this.chooser.addOption("mobility-engage", getMobilityEngageSequence());
+        this.chooser.addOption("cube-mobility-engage", getAutoCubeSequence().andThen(getMobilityEngageSequence()));
 
         // taxi
         this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
@@ -256,8 +260,8 @@ public class RobotContainer {
                 m_drivetrain.getRotateModulesCommand(),
                 new GyroEngage(m_drivetrain, -0.12, 5, false),
                 m_drivetrain.getRotateModulesCommand(),
-                new WaitCommand(0.8),
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
+                new WaitCommand(0.8))
+                .deadlineWith(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
     private CommandBase getMobilityEngageSequence() {
@@ -266,21 +270,18 @@ public class RobotContainer {
                 m_drivetrain.getRotateModulesCommand(),
                 new GyroEngage(m_drivetrain, 0.1, -5, true),
                 m_drivetrain.getRotateModulesCommand(),
-                new WaitCommand(0.8),
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
+                new WaitCommand(0.8))
+                .deadlineWith(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
     private CommandBase getAutoCubeSequence() {
+        /**
+         * Simply raises the arm to mid position.
+         * The cube is set atop the A-frame and is pushed by the arm directly into the
+         * mid cube node.
+         */
         return Commands.sequence(new InstantCommand(() -> this.setCubeInternalState()),
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                        FunnelState.COLLECT),
-                new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(2),
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
-                new WaitCommand(0.5),
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                m_ArmFunnelSuperStructure.overrideCommand(),
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+                m_ArmFunnelSuperStructure.overrideCommand());
     }
 
     private CommandBase getCollectSequence() {
@@ -294,7 +295,9 @@ public class RobotContainer {
                                         FunnelState.KEEPIN),
                                 new WaitUntilCommand(m_manipulator::isHoldingGamePiece), new WaitCommand(3)),
                         Commands.sequence(new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                                new WaitCommand(0.5)),
+                                new WaitCommand(1.5),
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                        FunnelState.CLOSED)),
                         () -> _scoreMidCube == true),
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
