@@ -284,6 +284,11 @@ public class RobotContainer {
     }
 
     private CommandBase getAutoCubeSequence() {
+        /**
+         * Simply raises the arm to mid position.
+         * The cube is set atop the A-frame and is pushed by the arm directly into the
+         * mid cube node.
+         */
         return Commands.sequence(new InstantCommand(() -> this.setCubeInternalState()),
                 m_ArmFunnelSuperStructure.overrideCommand());
     }
