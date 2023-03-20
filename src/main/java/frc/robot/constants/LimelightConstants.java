@@ -1,7 +1,6 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.motors.PIDFGains;
 
 /**
  * LimelightConstants
@@ -9,16 +8,24 @@ import frc.robot.motors.PIDFGains;
 public class LimelightConstants {
     public static final double AlignLimeLightToPigeonPhase = -1;
 
-    public static final PIDFGains xGainsRetro = new PIDFGains(0.1, 0.0, 0.01, 0.0);
-    public static final PIDFGains xGainsApril = new PIDFGains(0.1, 0.0, 0, 0.0);
-    public static final double xTol = 1;
+    public static final double xKp = 2.0; // in 1/sec: 1 meter error moves in 2.0 meter/seconds
+    public static final double xTol = 0.05; // in meters
+    public static final double yKp = 2.0; // in 1/sec: 1 meter error moves in 2.0 meter/seconds
+    public static final double yTol = 0.05; // in meters
+    public static final double thetaKp = 0.1; // in rad/degree*sec: 1 degree error moves in 0.1 rad/sec
+    public static final double thetaTol = 1; // in degrees
 
-    public static final PIDFGains yGainsRetro = new PIDFGains(0.05, 0.0, 0.0, 0.0);
-    public static final PIDFGains yGainsApril = new PIDFGains(0.05, 0.0, 0.0, 0.0);
-    public static final double yTol = 0.5;
+    public static class AutoAlignConstants {
+        public double xGoal, hDiff;
 
-    public static final PIDFGains thetaGains = new PIDFGains(0.1, 0.0, 0.0, 0.0);
-    public static final double thetaTol = 1;
+        public AutoAlignConstants(double xGoal, double hDiff) {
+            this.xGoal = xGoal;
+            this.hDiff = hDiff;
+        }
+    }
+
+    public static final AutoAlignConstants cone = new LimelightConstants.AutoAlignConstants(0.7, 0.42);
+    public static final AutoAlignConstants cube = new LimelightConstants.AutoAlignConstants(0.35, 0.21);
 
     public static final double spinToleranceDegrees = 10;
 

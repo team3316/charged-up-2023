@@ -75,7 +75,6 @@ public class RobotContainer {
      */
     public RobotContainer() {
         m_compressor.enableDigital();
-        // m_drivetrain.visionInitSDB();
 
         this.chooser = new SendableChooser<CommandBase>();
         initChooser();
@@ -107,10 +106,13 @@ public class RobotContainer {
 
         /* align with vision target */
         _driverController.cross()
-                .whileTrue(new InstantCommand(() -> m_drivetrain.restartControllers(), m_drivetrain)
+                .whileTrue(new InstantCommand(() -> m_drivetrain.resetControllers(), m_drivetrain)
                         .alongWith(new InstantCommand(() -> m_limeLight.forceLEDsOff(false), m_limeLight)).andThen(
-                                new RunCommand(() -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldTX(),
-                                        m_limeLight.getFieldTY()), m_drivetrain))
+                                new RunCommand(
+                                        () -> m_drivetrain.driveByVisionControllers(m_limeLight.getFieldXMeters(),
+                                                m_limeLight.getFieldYMeters(),
+                                                m_limeLight.hasTarget()),
+                                        m_drivetrain))
                         .finallyDo((interrupted) -> m_limeLight.forceLEDsOff(true)));
 
         /* Operator triggers */
@@ -193,18 +195,20 @@ public class RobotContainer {
     private void setCubeInternalState() {
         this._scoreMidCube = true;
         m_limeLight.setPipeLine(LimelightConstants.pipeLineAprilTags);
+        m_limeLight.setTargetHeightDiff(LimelightConstants.cube.hDiff);
         m_limeLight.forceLEDsOff(true);
         SmartDashboard.putBoolean("target GP", this._scoreMidCube);
-        m_drivetrain.setVisionAprilPID();
+        m_drivetrain.setXSetpoint(LimelightConstants.cube.xGoal);
         m_manipulator.setIRSensorState(IRSensorState.CUBE);
     }
 
     private void setConeInternalState() {
         this._scoreMidCube = false;
         m_limeLight.setPipeLine(LimelightConstants.pipeLineRetroReflective);
+        m_limeLight.setTargetHeightDiff(LimelightConstants.cone.hDiff);
         m_limeLight.forceLEDsOff(true);
         SmartDashboard.putBoolean("target GP", this._scoreMidCube);
-        m_drivetrain.setVisionRetroPID();
+        m_drivetrain.setXSetpoint(LimelightConstants.cone.xGoal);
         m_manipulator.setIRSensorState(IRSensorState.CONE);
     }
 
