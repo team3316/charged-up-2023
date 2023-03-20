@@ -20,7 +20,7 @@ public class Manipulator extends SubsystemBase {
     private static final double ADC_RESOLUTION = 4096; // 12 bits
     private ManipulatorState _currentState;
     private AnalogInput _gamePieceDetector;
-    private LinearFilter _gamePieceDetectorFilter = LinearFilter.movingAverage(5);
+    private LinearFilter _gamePieceDetectorFilter = LinearFilter.movingAverage(10);
     private Hysteresis _hysteresis = new Hysteresis(0, 0);
     private Hysteresis _funneling = new Hysteresis(IRSensorState.Funneling._bottomThreshold,
             IRSensorState.Funneling._hysteresis);
