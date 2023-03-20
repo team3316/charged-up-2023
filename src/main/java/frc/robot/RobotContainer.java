@@ -91,6 +91,8 @@ public class RobotContainer {
                 _fieldRelative), m_drivetrain));
 
         setCubeInternalState();
+
+        m_PDH.setSwitchableChannel(false);
     }
 
     /**
