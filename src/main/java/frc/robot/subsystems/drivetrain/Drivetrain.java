@@ -209,8 +209,8 @@ public class Drivetrain extends SubsystemBase {
         if (Math.abs(this.getPose().getRotation().getDegrees()
                 - DrivetrainConstants.installAngle.getDegrees()) < LimelightConstants.spinToleranceDegrees
                 && hasTarget) {
-            vision_xController.calculate(xDistance);
-            vision_yController.calculate(yDistance);
+            x = vision_xController.calculate(xDistance);
+            y = vision_yController.calculate(yDistance);
         }
 
         this.drive(vision_xController.atSetpoint() ? 0 : x, vision_yController.atSetpoint() ? 0 : y, t, true);
