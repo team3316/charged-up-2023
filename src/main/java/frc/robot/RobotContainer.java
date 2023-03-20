@@ -234,8 +234,7 @@ public class RobotContainer {
         this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
         this.chooser.addOption("engage-gyro", getEngageSequence());
-        this.chooser.addOption("mobility-engage", getAutoCubeSequence().andThen(getMobilityEngageSequence()
-                .deadlineWith(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT))));
+        this.chooser.addOption("cube-mobility-engage", getAutoCubeSequence().andThen(getMobilityEngageSequence()));
 
         // taxi
         this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
@@ -272,8 +271,8 @@ public class RobotContainer {
                 m_drivetrain.getRotateModulesCommand(),
                 new GyroEngage(m_drivetrain, -0.12, 5, false),
                 m_drivetrain.getRotateModulesCommand(),
-                new WaitCommand(0.8),
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
+                new WaitCommand(0.8))
+                .deadlineWith(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
     private CommandBase getMobilityEngageSequence() {
@@ -282,8 +281,8 @@ public class RobotContainer {
                 m_drivetrain.getRotateModulesCommand(),
                 new GyroEngage(m_drivetrain, 0.1, -5, true),
                 m_drivetrain.getRotateModulesCommand(),
-                new WaitCommand(0.8),
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
+                new WaitCommand(0.8))
+                .deadlineWith(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
     private CommandBase getAutoCubeSequence() {
