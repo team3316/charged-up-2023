@@ -295,7 +295,15 @@ public class RobotContainer {
          * mid cube node.
          */
         return Commands.sequence(new InstantCommand(() -> this.setCubeInternalState()),
-                m_ArmFunnelSuperStructure.overrideCommand());
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                        FunnelState.COLLECT),
+                new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(0.5),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
+                new WaitCommand(0.5),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                m_ArmFunnelSuperStructure.overrideCommand(),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
     }
 
     private CommandBase getCollectSequence() {
