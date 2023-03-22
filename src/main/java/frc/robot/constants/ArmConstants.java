@@ -9,7 +9,7 @@ public class ArmConstants {
 
     // Motion profile
     public static final double maxFastVelocityDegreesPerSec = 350; // in deg/s
-    public static final double maxFastAccelerationDegreesPerSecSqrd = 650; // in
+    public static final double maxFastAccelerationDegreesPerSecSqrd = 400; // in
     // deg/s^2
 
     public static final double maxSlowVelocityDegreesPerSec = 200; // in deg/s
