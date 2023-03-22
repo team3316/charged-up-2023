@@ -271,11 +271,20 @@ public class RobotContainer {
 
     private CommandBase getMobilityEngageSequence() {
         return Commands.sequence(_autoFactory.createAuto("engage-gyro-mobility"),
-                new GyroEngage(m_drivetrain, -0.1, 5, false),
-                m_drivetrain.getRotateModulesCommand(),
-                new GyroEngage(m_drivetrain, 0.1, -5, true),
-                m_drivetrain.getRotateModulesCommand(),
-                new WaitCommand(0.8))
+                new ConditionalCommand(Commands.sequence(
+                        new GyroEngage(m_drivetrain, 0.5, -5, true),
+                        m_drivetrain.getRotateModulesCommand(),
+                        new GyroEngage(m_drivetrain, -0.1, 5, false),
+                        m_drivetrain.getRotateModulesCommand(),
+                        new WaitCommand(0.8)),
+                        Commands.sequence(
+                                new GyroEngage(m_drivetrain, -0.5, 5, false),
+                                m_drivetrain.getRotateModulesCommand(),
+                                new GyroEngage(m_drivetrain, 0.1, -5, true),
+                                m_drivetrain.getRotateModulesCommand(),
+                                new WaitCommand(0.8)),
+                        () -> m_drivetrain.getPitch() < 0))
+
                 .deadlineWith(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
@@ -300,9 +309,9 @@ public class RobotContainer {
                                         FunnelState.KEEPIN),
                                 new WaitUntilCommand(m_manipulator::isHoldingGamePiece), new WaitCommand(3)),
                         Commands.sequence(new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                                new WaitCommand(1.5),
                                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                                        FunnelState.CLOSED)),
+                                        FunnelState.CLOSED),
+                                new WaitCommand(1.5)),
                         () -> _scoreMidCube == true),
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
