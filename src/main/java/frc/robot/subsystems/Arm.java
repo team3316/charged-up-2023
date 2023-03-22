@@ -13,7 +13,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.constants.ArmConstants;
@@ -132,7 +134,19 @@ public class Arm extends SubsystemBase {
     }
 
     public CommandBase getSetStateCommand(ArmState requiredState, ArmTrapProfile requiredProfile) {
-        return new DynamicCommand(() -> generateSetStateCommand(requiredState, requiredProfile), this);
+        return new DynamicCommand(() -> generateSetStateCommand(requiredState, requiredProfile), this)
+                .andThen(
+                        new ConditionalCommand(
+                                new RunCommand(() -> _leader.set(ControlMode.PercentOutput, -0.05), this)
+                                        .until(this::isRevLimitSwitchClosed)
+                                        .finallyDo((interrupt) -> {
+                                            if (!interrupt)
+                                                _leader
+                                                        .setSelectedSensorPosition(
+                                                                angleToTicks(ArmConstants.collectAngle));
+                                        }),
+                                new InstantCommand(), 
+                                () -> requiredState == ArmState.COLLECT));
     }
 
     public double getVelocity() {
