@@ -12,8 +12,8 @@ public class ArmConstants {
     public static final double maxFastAccelerationDegreesPerSecSqrd = 650; // in
     // deg/s^2
 
-    public static final double maxSlowVelocityDegreesPerSec = 250; // in deg/s
-    public static final double maxSlowAccelerationDegreesPerSecSqrd = 400; // in
+    public static final double maxSlowVelocityDegreesPerSec = 200; // in deg/s
+    public static final double maxSlowAccelerationDegreesPerSecSqrd = 300; // in
     // deg/s^2
     public static final Constraints fastTrapezoidConstraints = new Constraints(maxFastVelocityDegreesPerSec,
             maxFastAccelerationDegreesPerSecSqrd);
@@ -38,6 +38,7 @@ public class ArmConstants {
     public static final double midCubeAngle = 150; // in deg
     public static final double midConeAngle = 150; // in deg
     public static final double lowAngle = 100; // in deg
+    public static final double rejectAngle = 0; // in deg
     public static final double outOfFunnelAngle = -20; // in deg
 
     public static final double gearRatio = 1.0 / 120.0;

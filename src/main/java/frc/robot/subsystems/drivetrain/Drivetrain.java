@@ -20,8 +20,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.LimelightConstants;
+import frc.robot.motors.PIDFGains;
 
 /**
  * Drivetrain
@@ -57,15 +59,17 @@ public class Drivetrain extends SubsystemBase {
         m_logY = new DoubleLogEntry(log, "/drivetrain/position/y");
         m_logR = new DoubleLogEntry(log, "/drivetrain/position/rotation");
 
-        vision_xController = new PIDController(LimelightConstants.xGainsRetro.kP, LimelightConstants.xGainsRetro.kI,
-                LimelightConstants.xGainsRetro.kD);
-        vision_yController = new PIDController(LimelightConstants.yGainsRetro.kP, LimelightConstants.yGainsRetro.kI,
-                LimelightConstants.yGainsRetro.kD);
-        thetaController = new PIDController(LimelightConstants.thetaGains.kP,
-                LimelightConstants.thetaGains.kI,
-                LimelightConstants.thetaGains.kD);
+        vision_xController = new PIDController(LimelightConstants.xKp, 0, 0);
+        vision_yController = new PIDController(LimelightConstants.yKp, 0, 0);
+        thetaController = new PIDController(LimelightConstants.thetaKp, 0, 0);
+        vision_xController.setTolerance(LimelightConstants.xTol);
+        vision_yController.setTolerance(LimelightConstants.yTol);
+        thetaController.setTolerance(LimelightConstants.thetaTol);
+        vision_xController.setSetpoint(0); // arbitrary. Overriedden when setting internal state.
+        vision_yController.setSetpoint(0);
+        thetaController.setSetpoint(DrivetrainConstants.installAngle.getDegrees());
 
-        restartControllers();
+        resetControllers();
     }
 
     public void setModulesAngle(double angle) {
@@ -104,7 +108,7 @@ public class Drivetrain extends SubsystemBase {
         // Update the odometry in the periodic block
         this._odometry.update(getRotation2d(), getSwerveModulePositions());
 
-        // updateSDB();
+        updateSDB();
         SmartDashboard.putNumber("pitch", this.getPitch());
         // printEverything();
     }
@@ -187,88 +191,29 @@ public class Drivetrain extends SubsystemBase {
 
     }
 
-    public void restartControllers() {
+    public void resetControllers() {
         vision_xController.reset();
         vision_yController.reset();
         thetaController.reset();
-
-        vision_xController.setTolerance(LimelightConstants.xTol);
-        vision_yController.setTolerance(LimelightConstants.yTol);
-        thetaController.setTolerance(LimelightConstants.thetaTol);
-
-        vision_xController.setSetpoint(0);
-        vision_yController.setSetpoint(0);
-        thetaController.setSetpoint(DrivetrainConstants.installAngle.getDegrees());
     }
 
-    public void setVisionPIDsByInputs(double xp, double xi, double xd, double yp, double yi, double yd, double tp,
-            double ti, double td) {
-        vision_xController.setP(xp);
-        vision_xController.setI(xi);
-        vision_xController.setD(xd);
-
-        vision_yController.setP(yp);
-        vision_yController.setI(yi);
-        vision_yController.setD(yd);
-
-        thetaController.setP(tp);
-        thetaController.setI(ti);
-        thetaController.setD(td);
+    public void setXSetpoint(double xGoal) {
+        vision_xController.setSetpoint(xGoal);
     }
 
-    public void driveByVisionControllers(double Xangle, double Yangle) {
+    public void driveByVisionControllers(double xDistance, double yDistance, boolean hasTarget) {
         double x = 0;
         double y = 0;
         double t = thetaController.calculate(this.getPose().getRotation().getDegrees());
 
         if (Math.abs(this.getPose().getRotation().getDegrees()
-                - DrivetrainConstants.installAngle.getDegrees()) < LimelightConstants.spinToleranceDegrees) {
-            // Don't move until we're somewhat aligned
-            x = vision_xController.calculate(Xangle);
-            y = vision_yController.calculate(Yangle);
+                - DrivetrainConstants.installAngle.getDegrees()) < LimelightConstants.spinToleranceDegrees
+                && hasTarget) {
+            x = vision_xController.calculate(xDistance);
+            y = vision_yController.calculate(yDistance);
         }
 
-        this.drive(x, y, t, true);
-    }
-
-    public void setVisionPIDFromSDB() {
-        this.setVisionPIDsByInputs(
-                SmartDashboard.getNumber("xKP", 0), 0, SmartDashboard.getNumber("xKD", 0),
-                SmartDashboard.getNumber("yKP", 0), 0, SmartDashboard.getNumber("yKD", 0),
-                SmartDashboard.getNumber("tKP", 0), 0, SmartDashboard.getNumber("tKD", 0));
-
-        vision_xController.setTolerance(SmartDashboard.getNumber("xKTol", 0));
-        vision_yController.setTolerance(SmartDashboard.getNumber("yKTol", 0));
-        thetaController.setTolerance(SmartDashboard.getNumber("tKTol", 0));
-    }
-
-    public void visionInitSDB() {
-        SmartDashboard.putNumber("xKP", LimelightConstants.xGainsRetro.kP);
-        SmartDashboard.putNumber("xKD", LimelightConstants.xGainsRetro.kD);
-        SmartDashboard.putNumber("yKP", LimelightConstants.yGainsRetro.kP);
-        SmartDashboard.putNumber("yKD", LimelightConstants.yGainsRetro.kD);
-        SmartDashboard.putNumber("tKP", LimelightConstants.thetaGains.kP);
-        SmartDashboard.putNumber("tKD", LimelightConstants.thetaGains.kD);
-
-        SmartDashboard.putNumber("xKTol", LimelightConstants.xTol);
-        SmartDashboard.putNumber("yKTol", LimelightConstants.yTol);
-        SmartDashboard.putNumber("tKTol", LimelightConstants.thetaTol);
-
-        SmartDashboard.putData("update vision SDB", new InstantCommand(() -> this.setVisionPIDFromSDB()));
-    }
-
-    public void setVisionRetroPID() {
-        setVisionPIDsByInputs(
-                LimelightConstants.xGainsRetro.kP, LimelightConstants.xGainsRetro.kI, LimelightConstants.xGainsRetro.kD,
-                LimelightConstants.yGainsRetro.kP, LimelightConstants.yGainsRetro.kI, LimelightConstants.yGainsRetro.kD,
-                LimelightConstants.thetaGains.kP, LimelightConstants.thetaGains.kI, LimelightConstants.thetaGains.kD);
-    }
-
-    public void setVisionAprilPID() {
-        setVisionPIDsByInputs(
-                LimelightConstants.xGainsApril.kP, LimelightConstants.xGainsApril.kI, LimelightConstants.xGainsApril.kD,
-                LimelightConstants.yGainsApril.kP, LimelightConstants.yGainsApril.kI, LimelightConstants.yGainsApril.kD,
-                LimelightConstants.thetaGains.kP, LimelightConstants.thetaGains.kI, LimelightConstants.thetaGains.kD);
+        this.drive(vision_xController.atSetpoint() ? 0 : x, vision_yController.atSetpoint() ? 0 : y, t, true);
     }
 
     public void setKeepHeading(Rotation2d rotation) {
