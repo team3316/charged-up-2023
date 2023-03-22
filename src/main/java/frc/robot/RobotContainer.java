@@ -274,13 +274,13 @@ public class RobotContainer {
                 new ConditionalCommand(Commands.sequence(
                         new GyroEngage(m_drivetrain, 0.5, -5, true),
                         m_drivetrain.getRotateModulesCommand(),
-                        new GyroEngage(m_drivetrain, -0.1, 5, false),
+                        new GyroEngage(m_drivetrain, -0.12, 5, false),
                         m_drivetrain.getRotateModulesCommand(),
                         new WaitCommand(0.8)),
                         Commands.sequence(
                                 new GyroEngage(m_drivetrain, -0.5, 5, false),
                                 m_drivetrain.getRotateModulesCommand(),
-                                new GyroEngage(m_drivetrain, 0.1, -5, true),
+                                new GyroEngage(m_drivetrain, 0.12, -5, true),
                                 m_drivetrain.getRotateModulesCommand(),
                                 new WaitCommand(0.8)),
                         () -> m_drivetrain.getPitch() < 0))
@@ -294,16 +294,20 @@ public class RobotContainer {
          * The cube is set atop the A-frame and is pushed by the arm directly into the
          * mid cube node.
          */
-        return Commands.sequence(new InstantCommand(() -> this.setCubeInternalState()),
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                        FunnelState.COLLECT),
-                new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(0.5),
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
-                new WaitCommand(0.5),
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-                m_ArmFunnelSuperStructure.overrideCommand(),
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+        // return Commands.sequence(new InstantCommand(() ->
+        // this.setCubeInternalState()),
+        // m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+        // m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+        // FunnelState.COLLECT),
+        // new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(0.5),
+        // m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+        // FunnelState.READJUST),
+        // new WaitCommand(0.5),
+        // m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+        // m_ArmFunnelSuperStructure.overrideCommand(),
+        // m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+
+        return Commands.sequence(m_ArmFunnelSuperStructure.overrideCommand());
     }
 
     private CommandBase getCollectSequence() {
