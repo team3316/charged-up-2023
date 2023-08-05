@@ -138,7 +138,7 @@ public class RobotContainer {
         _operatorController.R2().onTrue(Commands.sequence(
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.EJECT),
-                new WaitCommand(1),
+                new WaitCommand(2),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
         _operatorController.R1().onTrue(
@@ -316,16 +316,14 @@ public class RobotContainer {
         return Commands.sequence(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                new WaitUntilCommand(m_manipulator::isFunnelingGamePiece),
                 new ConditionalCommand(
-                        Commands.sequence(
+                        Commands.sequence(new WaitUntilCommand(m_manipulator::isFunnelingGamePiece),
                                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
                                         FunnelState.KEEPIN),
                                 new WaitUntilCommand(m_manipulator::isHoldingGamePiece), new WaitCommand(3)),
                         Commands.sequence(new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
                                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                                        FunnelState.CLOSED),
-                                new WaitCommand(1.5)),
+                                        FunnelState.READJUST)),
                         () -> _scoreMidCube == true),
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
