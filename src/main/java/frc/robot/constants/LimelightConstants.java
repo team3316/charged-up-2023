@@ -9,9 +9,9 @@ public class LimelightConstants {
     public static final double AlignLimeLightToPigeonPhase = -1;
 
     public static final double xKp = 2.0; // in 1/sec: 1 meter error moves in 2.0 meter/seconds
-    public static final double xTol = 0.05; // in meters
+    public static final double xTol = 0.01; // in meters
     public static final double yKp = 2.0; // in 1/sec: 1 meter error moves in 2.0 meter/seconds
-    public static final double yTol = 0.05; // in meters
+    public static final double yTol = 0.01; // in meters
     public static final double thetaKp = 0.1; // in rad/degree*sec: 1 degree error moves in 0.1 rad/sec
     public static final double thetaTol = 1; // in degrees
 
