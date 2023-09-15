@@ -29,11 +29,11 @@ public class Funnel extends SubsystemBase {
 
     public enum FunnelState {
         COLLECT(FunnelConstants.openState, FunnelConstants.collectPercent),
-        KEEPIN(FunnelConstants.closedState, FunnelConstants.keepinPercent),
+        KEEPIN(FunnelConstants.openState, FunnelConstants.keepinPercent),
         OPEN(FunnelConstants.openState, FunnelConstants.openPercent),
-        READJUST(FunnelConstants.closedState, FunnelConstants.collectPercent),
-        CLOSED(FunnelConstants.closedState, FunnelConstants.closedPercent),
-        EJECT(FunnelConstants.closedState, FunnelConstants.ejectPercent);
+        READJUST(FunnelConstants.openState, FunnelConstants.collectPercent),
+        CLOSED(FunnelConstants.openState, FunnelConstants.closedPercent),
+        EJECT(FunnelConstants.openState, FunnelConstants.ejectPercent);
 
         public final DoubleSolenoid.Value solenoidState;
         public final double rollerPercent;
