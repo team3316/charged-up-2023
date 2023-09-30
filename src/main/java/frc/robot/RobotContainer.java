@@ -212,6 +212,7 @@ public class RobotContainer {
         // addToChooser("engage");
         // addToChooser("1-gp-engage");
         addToChooser("1-gp-leaveCommunity");
+        addToChooser("leaveCommunity");
         // addToChooser("bot-2-gp-engage");
         this.chooser.addOption("2-gp", new ConditionalCommand(_autoFactory.createAuto("bot-2-gp-blue"),
                 _autoFactory.createAuto("bot-2-gp-red"), () -> DriverStation.getAlliance() == Alliance.Blue));
