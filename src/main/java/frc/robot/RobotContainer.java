@@ -95,6 +95,8 @@ public class RobotContainer {
         setCubeInternalState();
 
         m_PDH.setSwitchableChannel(false);
+
+        SmartDashboard.putNumber("cataAngle", SmartDashboard.getNumber("cataAngle", 0));
     }
 
     /**
@@ -178,8 +180,12 @@ public class RobotContainer {
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
 
         _operatorController.cross()
-                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.REJECT, FunnelState.OPEN)
-                        .andThen(this.getCollectSequence()));
+                .onTrue(Commands.sequence(
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CUBE, FunnelState.OPEN),
+                        Commands.waitUntil(
+                                () -> m_ArmFunnelSuperStructure.getArmAngle() > SmartDashboard.getNumber("cataAngle",
+                                        0)),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
 
     }
 
