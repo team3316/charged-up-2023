@@ -224,7 +224,8 @@ public class RobotContainer {
                 .andThen(_autoFactory.createAuto("leaveCommunity").alongWith(
                     m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))));
 
-        this.chooser.addOption("cone", getSideConeSequence());
+        this.chooser.addOption("cone", getSideConeSequence().andThen(
+            m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
         this.chooser.addOption("nothing", new InstantCommand());
 
