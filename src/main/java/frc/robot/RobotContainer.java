@@ -220,9 +220,9 @@ public class RobotContainer {
         // addToChooser("bot-3-gp");
         addToChooser("rotate");
         this.chooser.addOption("cone-leaveCommunity",
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.OPEN)
-                        /* .andThen(_autoFactory.createAuto("leaveCommunity").alongWith */.andThen(
-                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
+            getSideConeSequence()
+                .andThen(_autoFactory.createAuto("leaveCommunity").alongWith(
+                    m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))));
 
         this.chooser.addOption("cone", getSideConeSequence());
 
@@ -277,7 +277,9 @@ public class RobotContainer {
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
                         new WaitCommand(0.5),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
-                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD))
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.OPEN)
+            
         );
     }
 
