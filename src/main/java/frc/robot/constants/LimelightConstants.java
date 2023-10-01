@@ -14,6 +14,7 @@ public class LimelightConstants {
     public static final double yTol = 0.01; // in meters
     public static final double thetaKp = 0.1; // in rad/degree*sec: 1 degree error moves in 0.1 rad/sec
     public static final double thetaTol = 1; // in degrees
+    public static final double maxVisionVelMpS = 1;
 
     public static class AutoAlignConstants {
         public double xGoal, hDiff;
