@@ -267,14 +267,18 @@ public class RobotContainer {
 
     private CommandBase getSideConeSequence() {
         return Commands.sequence(
+                new InstantCommand(() -> setConeInternalState()),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                new WaitCommand(1),
-                new WaitCommand(1),
-                getCollectSequence(),
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                new WaitCommand(0.5),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                new WaitCommand(0.5),
+                getCollectSequence().withTimeout(1),
+                Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
+                        new WaitCommand(0.5),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.OPEN),
-                new WaitCommand(1),
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
     }
 
