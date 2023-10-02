@@ -219,6 +219,12 @@ public class RobotContainer {
 
         this.chooser.addOption("nothing", new InstantCommand());
 
+        this.chooser.addOption("cone-leaveCommunity",
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.OPEN)
+                        /* .andThen(_autoFactory.createAuto("leaveCommunity").alongWith */.andThen(
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
+
+        this.chooser.addOption("cone", getSideConeSequence());
         // only cube
         this.chooser.addOption("cube", getAutoCubeSequence());
 
@@ -254,6 +260,21 @@ public class RobotContainer {
 
     public void updateTelemetry() {
         m_drivetrain.updateTelemetry();
+    }
+
+    private CommandBase getSideConeSequence() {
+        return Commands.sequence(
+                new InstantCommand(() -> setCubeInternalState()), // TODO:chck if CneeInternalState works
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                new WaitCommand(1),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                new WaitCommand(1),
+                getCollectSequence().withTimeout(1),
+                Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
+                        new WaitCommand(0.5),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
     }
 
     private CommandBase getEngageSequence() {
