@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -136,7 +138,7 @@ public class RobotContainer {
         _operatorController.R2().onTrue(Commands.sequence(
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.EJECT),
-                new WaitCommand(1),
+                new WaitCommand(2),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
 
         _operatorController.R1().onTrue(
@@ -211,7 +213,8 @@ public class RobotContainer {
         // addToChooser("1-gp-engage");
         addToChooser("1-gp-leaveCommunity");
         // addToChooser("bot-2-gp-engage");
-        addToChooser("bot-2-gp");
+        this.chooser.addOption("2-gp", new ConditionalCommand(_autoFactory.createAuto("bot-2-gp-blue"),
+                _autoFactory.createAuto("bot-2-gp-red"), () -> DriverStation.getAlliance() == Alliance.Blue));
         // addToChooser("bot-3-gp-engage");
         // addToChooser("bot-3-gp");
         addToChooser("rotate");
@@ -268,11 +271,20 @@ public class RobotContainer {
 
     private CommandBase getMobilityEngageSequence() {
         return Commands.sequence(_autoFactory.createAuto("engage-gyro-mobility"),
-                new GyroEngage(m_drivetrain, -0.1, 5, false),
-                m_drivetrain.getRotateModulesCommand(),
-                new GyroEngage(m_drivetrain, 0.1, -5, true),
-                m_drivetrain.getRotateModulesCommand(),
-                new WaitCommand(0.8))
+                new ConditionalCommand(Commands.sequence(
+                        new GyroEngage(m_drivetrain, 0.2, -5, true),
+                        // m_drivetrain.getRotateModulesCommand(),
+                        new GyroEngage(m_drivetrain, -0.12, 5, false),
+                        m_drivetrain.getRotateModulesCommand(),
+                        new WaitCommand(0.8)),
+                        Commands.sequence(
+                                new GyroEngage(m_drivetrain, -0.2, 5, false),
+                                // m_drivetrain.getRotateModulesCommand(),
+                                new GyroEngage(m_drivetrain, 0.12, -5, true),
+                                m_drivetrain.getRotateModulesCommand(),
+                                new WaitCommand(0.8)),
+                        () -> m_drivetrain.getPitch() < 0))
+
                 .deadlineWith(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
     }
 
@@ -283,23 +295,35 @@ public class RobotContainer {
          * mid cube node.
          */
         return Commands.sequence(new InstantCommand(() -> this.setCubeInternalState()),
-                m_ArmFunnelSuperStructure.overrideCommand());
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                        FunnelState.COLLECT),
+                new WaitUntilCommand(m_manipulator::isHoldingGamePiece).withTimeout(0.5),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                        FunnelState.READJUST),
+                new WaitCommand(0.5),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                m_ArmFunnelSuperStructure.overrideCommand(),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
+
+    }
+
+    private CommandBase getSuperFastCube() {
+        return Commands.sequence(m_ArmFunnelSuperStructure.overrideCommand());
     }
 
     private CommandBase getCollectSequence() {
         return Commands.sequence(
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
-                new WaitUntilCommand(m_manipulator::isFunnelingGamePiece),
                 new ConditionalCommand(
-                        Commands.sequence(
+                        Commands.sequence(new WaitUntilCommand(m_manipulator::isFunnelingGamePiece),
                                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
                                         FunnelState.KEEPIN),
                                 new WaitUntilCommand(m_manipulator::isHoldingGamePiece), new WaitCommand(3)),
                         Commands.sequence(new WaitUntilCommand(m_manipulator::isHoldingGamePiece),
-                                new WaitCommand(1.5),
                                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
-                                        FunnelState.CLOSED)),
+                                        FunnelState.READJUST)),
                         () -> _scoreMidCube == true),
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
