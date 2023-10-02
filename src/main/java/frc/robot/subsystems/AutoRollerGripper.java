@@ -45,6 +45,7 @@ public class AutoRollerGripper extends SubsystemBase {
     public enum RollersState {
         INTAKE(RollerGripperConstants.rollerRightIntakePercent, RollerGripperConstants.rollerLeftIntakePercent),
         EJECT(RollerGripperConstants.rollerEjectPercent, RollerGripperConstants.rollerEjectPercent),
+        KEEPIN(0.2, 0.2),
         OFF(RollerGripperConstants.rollerOffPercent, RollerGripperConstants.rollerOffPercent);
 
         private final double _rightPrecent;
@@ -107,9 +108,10 @@ public class AutoRollerGripper extends SubsystemBase {
                 new InstantCommand(() -> this.setFolderState(FolderState.OUT)),
                 new InstantCommand(() -> this.setRollersState(RollersState.INTAKE)),
                 new WaitUntilCommand(this::hasCone),
-                new InstantCommand(() -> this.setFolderState(FolderState.IN)),
                 new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds),
-                new InstantCommand(() -> this.setRollersState(RollersState.OFF)));
+                // new InstantCommand(() -> this.setFolderState(FolderState.IN)),
+                new WaitCommand(RollerGripperConstants.intakeSleepDurationSeconds),
+                new InstantCommand(() -> this.setRollersState(RollersState.KEEPIN)));
         intakeSequence.addRequirements(this);
         return intakeSequence;
     }
@@ -117,6 +119,7 @@ public class AutoRollerGripper extends SubsystemBase {
     public CommandBase getEjectCommand() {
         CommandBase ejectSequence = Commands.sequence(
                 new InstantCommand(() -> this.setFolderState(FolderState.OUT)),
+                new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
                 new InstantCommand(() -> this.setRollersState(RollersState.EJECT)),
                 new WaitCommand(RollerGripperConstants.ejectSleepDurationSeconds),
                 new InstantCommand(() -> this.setRollersState(RollersState.OFF)),

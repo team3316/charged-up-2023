@@ -17,7 +17,7 @@ public class RollerGripperConstants {
 
     public final static double switchDebounceTimeSecs = 0.1;
 
-    public final static int currentLimitAmp = 20; // in Amps
+    public final static int currentLimitAmp = 10; // in Amps
 
     public final static int solenoidForwardChannel = 0;
     public final static int solenoidReverseChannel = 1;
