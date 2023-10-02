@@ -211,6 +211,10 @@ public class Drivetrain extends SubsystemBase {
                 && hasTarget) {
             x = vision_xController.calculate(xDistance);
             y = vision_yController.calculate(yDistance);
+            x = Math.min(LimelightConstants.maxVisionVelMpS, x);
+            x = Math.max(-LimelightConstants.maxVisionVelMpS, x);
+            y = Math.min(LimelightConstants.maxVisionVelMpS, y);
+            y = Math.max(-LimelightConstants.maxVisionVelMpS, y);
         }
 
         this.drive(vision_xController.atSetpoint() ? 0 : x, vision_yController.atSetpoint() ? 0 : y, t, true);
