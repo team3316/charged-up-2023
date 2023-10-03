@@ -211,13 +211,13 @@ public class RobotContainer {
         SmartDashboard.putData("autonomous", this.chooser);
         // addToChooser("engage");
         // addToChooser("1-gp-engage");
-        addToChooser("1-gp-leaveCommunity");
+        // addToChooser("1-gp-leaveCommunity");
         // addToChooser("bot-2-gp-engage");
-        addToChooser("bot-2-gp");
-        addToChooser("leaveCommunity");
+        // addToChooser("bot-2-gp");
+        // addToChooser("leaveCommunity");
         // addToChooser("bot-3-gp-engage");
         // addToChooser("bot-3-gp");
-        addToChooser("rotate");
+        // addToChooser("rotate");
 
         this.chooser.addOption("nothing", new InstantCommand());
 
@@ -234,14 +234,15 @@ public class RobotContainer {
         // cube engage
         this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
-        this.chooser.addOption("engage-gyro", getEngageSequence());
+        // this.chooser.addOption("engage-gyro", getEngageSequence());
         this.chooser.addOption("cube-mobility-engage", getAutoCubeSequence().andThen(getMobilityEngageSequence()));
 
         // taxi
-        this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
+        // this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
 
         // cube taxi
-        this.chooser.addOption("cube-taxi", getAutoCubeSequence().andThen(_autoFactory.createAuto("engage-gyro")));
+        // this.chooser.addOption("cube-taxi",
+        // getAutoCubeSequence().andThen(_autoFactory.createAuto("engage-gyro")));
     }
 
     /**
