@@ -155,8 +155,8 @@ public class RobotContainer {
 
         // Go to collect state sequence
         _operatorController.povDown().onTrue(
-                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD).andThen(
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD).andThen(
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
                         .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
 
         _driverController.circle().whileTrue(
@@ -179,19 +179,7 @@ public class RobotContainer {
                         new WaitCommand(0.5),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
-
-        _operatorController.cross()
-                .onTrue(Commands.sequence(
-                        new InstantCommand(() -> m_manipulator.setManipulatorState(ManipulatorState.HOLD)),
-                        m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.MID_CUBE, FunnelState.OPEN).alongWith(
-                        (new WaitCommand(0.5).andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN))))
-                        //.alongWith(
-                       // Commands.waitUntil(
-                           //     () -> m_ArmFunnelSuperStructure.getArmAngle() > SmartDashboard.getNumber("cataAngle",
-                                  //      0))),
-                        //m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)
-                        ));
-
+        
     }
 
     private void setCubeInternalState() {
@@ -273,12 +261,9 @@ public class RobotContainer {
 
     private CommandBase getCatapultSequence() {
         return Commands.sequence(
-              //  new InstantCommand(() -> setCubeInternalState()),
-              m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
-              //getCollectSequence().withTimeout(0.4),
-             m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
-             new WaitCommand(0.2),
-             
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
+                new WaitCommand(0.3),
                 m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.MID_CUBE, FunnelState.COLLECT),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)
 
