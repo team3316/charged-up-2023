@@ -269,8 +269,8 @@ public class RobotContainer {
                 m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
                 new WaitCommand(0.3),
-                m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.MID_CUBE, FunnelState.COLLECT),
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)
+                m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.MID_CUBE, FunnelState.COLLECT)
+    
 
         );
     }
