@@ -232,7 +232,7 @@ public class RobotContainer {
         this.chooser.addOption("cube", getAutoCubeSequence());
 
         // cube engage
-        this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
+        this.chooser.addOption("cube-engage", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
         // this.chooser.addOption("engage-gyro", getEngageSequence());
         this.chooser.addOption("cube-mobility-engage", getAutoCubeSequence().andThen(getMobilityEngageSequence()));
