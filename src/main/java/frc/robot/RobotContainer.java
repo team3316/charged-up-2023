@@ -179,6 +179,23 @@ public class RobotContainer {
                         new WaitCommand(0.5),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+        // catapult
+        _operatorController.povLeft()
+                .onTrue(
+                        m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.MID_CUBE, FunnelState.COLLECT)
+                                .andThen(
+                                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                                FunnelState.CLOSED)));
+
+        // catapult collect
+        _operatorController.triangle()
+                .onTrue(
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD).andThen(
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.OPEN)));
+
+        // close funnle without opening manipulator
+        _operatorController.povRight().onTrue(
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
 
     }
 
@@ -270,7 +287,6 @@ public class RobotContainer {
                 m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
                 new WaitCommand(0.3),
                 m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.MID_CUBE, FunnelState.COLLECT)
-    
 
         );
     }
