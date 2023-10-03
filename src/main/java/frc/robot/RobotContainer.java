@@ -179,7 +179,7 @@ public class RobotContainer {
                         new WaitCommand(0.5),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
-        
+
     }
 
     private void setCubeInternalState() {
@@ -229,7 +229,12 @@ public class RobotContainer {
         this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
         this.chooser.addOption("engage-gyro", getEngageSequence());
+
         this.chooser.addOption("cube-mobility-engage", getAutoCubeSequence().andThen(getMobilityEngageSequence()));
+
+        this.chooser.addOption("catapult-mobility-engage", getCatapultSequence().andThen(getMobilityEngageSequence()));
+
+        this.chooser.addOption("catapult-engage", getCatapultSequence().andThen(getEngageSequence()));
 
         // taxi
         this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
