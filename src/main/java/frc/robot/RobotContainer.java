@@ -155,8 +155,7 @@ public class RobotContainer {
 
         // Go to collect state sequence
         _operatorController.povDown().onTrue(
-                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD).andThen(
-                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)
                         .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
 
         _driverController.circle().whileTrue(
