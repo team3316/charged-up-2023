@@ -3,6 +3,7 @@ package frc.robot.constants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.motors.PIDFGains;
 
 /**
@@ -94,5 +95,12 @@ public class DrivetrainConstants {
 
     public static final Rotation2d installAngle = Rotation2d.fromDegrees(0);
     public static final Rotation2d collectAngle = Rotation2d.fromDegrees(90);
+
+    public static final double goToDirectionKp = 0.01; // in 1/sec
+    private static final double goToMaxSpeed = 300; // in deg/sec
+    private static final double goToMaxAccel = 500; // in deg/sec^2
+    public static final TrapezoidProfile.Constraints goToDirectionConstrains = new TrapezoidProfile.Constraints(goToMaxSpeed, goToMaxAccel);
+    public static final double rightJoystickDeadband = 0.85;
+    public static final double rightJoystickAngleErrorDeg = 25;
 
 }

@@ -4,13 +4,16 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -41,6 +44,22 @@ public class Drivetrain extends SubsystemBase {
     private static PIDController vision_yController;
     private static PIDController thetaController;
 
+    private ProfiledPIDController goToDirectionController;
+    private boolean goingToDirection = false;
+
+    public static enum DIRECTIONS {
+        FORWARD(90),
+        BACKWARD(-90),
+        RIGHT(0),
+        LEFT(180);
+
+        public final double angleDeg;
+
+        private DIRECTIONS(double angleDeg) {
+            this.angleDeg = angleDeg;
+        }
+    }
+
     public Drivetrain() {
         this._modules = new SwerveModule[] {
                 new SwerveModule(DrivetrainConstants.TRModule),
@@ -69,6 +88,9 @@ public class Drivetrain extends SubsystemBase {
         vision_yController.setSetpoint(0);
         thetaController.setSetpoint(DrivetrainConstants.installAngle.getDegrees());
 
+        goToDirectionController = new ProfiledPIDController(DrivetrainConstants.goToDirectionKp, 0, 0,
+                DrivetrainConstants.goToDirectionConstrains);
+
         resetControllers();
     }
 
@@ -82,17 +104,51 @@ public class Drivetrain extends SubsystemBase {
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         fieldRelative = fieldRelative && this._pigeon.getState() == PigeonState.Ready;
         SmartDashboard.putBoolean("Field Relative", fieldRelative);
-
         ChassisSpeeds speeds;
         if (fieldRelative) {
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getPose().getRotation());
         } else {
             speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
         }
-
         var moduleStates = DrivetrainConstants.kinematics.toSwerveModuleStates(speeds);
 
         setDesiredStates(moduleStates);
+    }
+
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, Translation2d rightJoystick) {
+        DIRECTIONS targetDirection = null;
+        double rightJoystickMag = rightJoystick.getNorm();
+        double rightJoystickAngleDeg = rightJoystick.getAngle().getDegrees();
+
+        if (rightJoystickMag >= DrivetrainConstants.rightJoystickDeadband) {
+            for (DIRECTIONS d : DIRECTIONS.values()) {
+                if (d == DIRECTIONS.LEFT) {
+                    rightJoystickAngleDeg = Math.abs(rightJoystickAngleDeg);
+                }
+                if (Math.abs(d.angleDeg - rightJoystickAngleDeg) <= DrivetrainConstants.rightJoystickAngleErrorDeg) {
+                    targetDirection = d;
+                    break;
+                }
+            }
+        }
+
+        SmartDashboard.putNumber("Joystick Mag", rightJoystickMag);
+        SmartDashboard.putNumber("Joystick Angle", rightJoystickAngleDeg);
+
+        if (targetDirection != null) {
+            SmartDashboard.putString("DIRECTION", targetDirection.toString());
+            if (goToDirectionController.getGoal().position != targetDirection.angleDeg) {
+                goToDirectionController.setGoal(targetDirection.angleDeg);
+            }
+
+            rot = goToDirectionController.calculate(getHeading());
+            if (goToDirectionController.atGoal()) {
+                targetDirection = null;
+            }
+        } else {
+            SmartDashboard.putString("DIRECTION", "none");
+        }
+        drive(xSpeed, ySpeed, rot, fieldRelative);
     }
 
     public void setDesiredStates(SwerveModuleState[] moduleStates) {

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -88,7 +89,8 @@ public class RobotContainer {
                         SwerveModuleConstants.freeSpeedMetersPerSecond,
                 _driverController.getCombinedAxis() *
                         DrivetrainConstants.maxRotationSpeedRadPerSec,
-                _fieldRelative), m_drivetrain));
+                _fieldRelative, new Translation2d(-_driverController.getRightX(), _driverController.getRightY())),
+                m_drivetrain));
 
         setCubeInternalState();
 
