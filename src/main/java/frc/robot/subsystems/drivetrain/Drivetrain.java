@@ -45,8 +45,6 @@ public class Drivetrain extends SubsystemBase {
     private static PIDController vision_yController;
     private static PIDController thetaController;
 
-    private SimpleMotorFeedforward goToDirectionFeedForward;
-
     private ProfiledPIDController goToDirectionController;
     private boolean goingToDirection = false;
 
@@ -93,9 +91,8 @@ public class Drivetrain extends SubsystemBase {
 
         goToDirectionController = new ProfiledPIDController(DrivetrainConstants.goToDirectionKp, 0, 0,
                 DrivetrainConstants.goToDirectionConstrains);
-        goToDirectionFeedForward = new SimpleMotorFeedforward(DrivetrainConstants.goToDirectionKs, 
-        DrivetrainConstants.goToDirectionKv, 
-        DrivetrainConstants.goToDirectionKa);
+
+        
 
         resetControllers();
     }
@@ -143,12 +140,12 @@ public class Drivetrain extends SubsystemBase {
 
         if (targetDirection != null) {
             SmartDashboard.putString("DIRECTION", targetDirection.toString());
+
             if (goToDirectionController.getGoal().position != targetDirection.angleDeg) {
                 goToDirectionController.setGoal(targetDirection.angleDeg);
             }
 
-            rot = goToDirectionFeedForward.calculate(goToDirectionController.getSetpoint().position, 
-            goToDirectionController.getSetpoint().velocity) + goToDirectionController.calculate(getHeading());
+            rot = Math.toRadians(goToDirectionController.getSetpoint().velocity + goToDirectionController.calculate(getHeading()));
             if (goToDirectionController.atGoal()) {
                 targetDirection = null;
             }
