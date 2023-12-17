@@ -5,6 +5,7 @@ import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -43,6 +44,8 @@ public class Drivetrain extends SubsystemBase {
     private static PIDController vision_xController;
     private static PIDController vision_yController;
     private static PIDController thetaController;
+
+    private SimpleMotorFeedforward goToDirectionFeedForward;
 
     private ProfiledPIDController goToDirectionController;
     private boolean goingToDirection = false;
@@ -90,6 +93,9 @@ public class Drivetrain extends SubsystemBase {
 
         goToDirectionController = new ProfiledPIDController(DrivetrainConstants.goToDirectionKp, 0, 0,
                 DrivetrainConstants.goToDirectionConstrains);
+        goToDirectionFeedForward = new SimpleMotorFeedforward(DrivetrainConstants.goToDirectionKs, 
+        DrivetrainConstants.goToDirectionKv, 
+        DrivetrainConstants.goToDirectionKa);
 
         resetControllers();
     }
@@ -141,7 +147,8 @@ public class Drivetrain extends SubsystemBase {
                 goToDirectionController.setGoal(targetDirection.angleDeg);
             }
 
-            rot = goToDirectionController.calculate(getHeading());
+            rot = goToDirectionFeedForward.calculate(goToDirectionController.getSetpoint().position, 
+            goToDirectionController.getSetpoint().velocity) + goToDirectionController.calculate(getHeading());
             if (goToDirectionController.atGoal()) {
                 targetDirection = null;
             }

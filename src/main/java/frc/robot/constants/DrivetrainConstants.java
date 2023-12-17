@@ -102,5 +102,8 @@ public class DrivetrainConstants {
     public static final TrapezoidProfile.Constraints goToDirectionConstrains = new TrapezoidProfile.Constraints(goToMaxSpeed, goToMaxAccel);
     public static final double rightJoystickDeadband = 0.85;
     public static final double rightJoystickAngleErrorDeg = 25;
+    public static final double goToDirectionKs = 0; // in deg/sec
+    public static final double goToDirectionKv = 0; // no units
+    public static final double goToDirectionKa = 0; // in sec
 
 }
