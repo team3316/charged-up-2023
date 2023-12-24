@@ -91,8 +91,7 @@ public class Drivetrain extends SubsystemBase {
 
         goToDirectionController = new ProfiledPIDController(DrivetrainConstants.goToDirectionKp, 0, 0,
                 DrivetrainConstants.goToDirectionConstrains);
-
-        
+        goToDirectionController.enableContinuousInput(-180, 180);
 
         resetControllers();
     }
