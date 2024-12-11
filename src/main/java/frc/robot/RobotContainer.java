@@ -209,32 +209,40 @@ public class RobotContainer {
 
     private void initChooser() {
         SmartDashboard.putData("autonomous", this.chooser);
-        // addToChooser("engage");
-        // addToChooser("1-gp-engage");
-        addToChooser("1-gp-leaveCommunity");
-        // addToChooser("bot-2-gp-engage");
-        this.chooser.addOption("2-gp", new ConditionalCommand(_autoFactory.createAuto("bot-2-gp-blue"),
-                _autoFactory.createAuto("bot-2-gp-red"), () -> DriverStation.getAlliance() == Alliance.Blue));
-        // addToChooser("bot-3-gp-engage");
-        // addToChooser("bot-3-gp");
-        addToChooser("rotate");
 
         this.chooser.addOption("nothing", new InstantCommand());
 
+        this.chooser.addOption("cone-leaveCommunity",
+                getSideConeSequence()
+                    .andThen(_autoFactory.createAuto("leaveCommunity").alongWith(
+                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED))));
+
+        this.chooser.addOption("cone", getSideConeSequence().andThen(
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
         // only cube
         this.chooser.addOption("cube", getAutoCubeSequence());
 
         // cube engage
-        this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
+        this.chooser.addOption("cube-engage", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
-        this.chooser.addOption("engage-gyro", getEngageSequence());
         this.chooser.addOption("cube-mobility-engage", getAutoCubeSequence().andThen(getMobilityEngageSequence()));
 
         // taxi
-        this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
-
+        // this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
+        // this.chooser.addOption("engage-gyro", getEngageSequence());
         // cube taxi
-        this.chooser.addOption("cube-taxi", getAutoCubeSequence().andThen(_autoFactory.createAuto("engage-gyro")));
+        // this.chooser.addOption("cube-taxi",
+        // getAutoCubeSequence().andThen(_autoFactory.createAuto("engage-gyro")));
+        // addToChooser("engage");
+        // addToChooser("1-gp-engage");
+        // addToChooser("1-gp-leaveCommunity");
+        // addToChooser("bot-2-gp-engage");
+        // addToChooser("bot-2-gp");
+        // addToChooser("leaveCommunity");
+        // addToChooser("bot-3-gp-engage");
+        // addToChooser("bot-3-gp");
+        // addToChooser("rotate");
+
     }
 
     /**
@@ -256,6 +264,26 @@ public class RobotContainer {
 
     public void updateTelemetry() {
         m_drivetrain.updateTelemetry();
+    }
+
+    private CommandBase getSideConeSequence() {
+        return Commands.sequence(
+                new InstantCommand(() -> setConeInternalState()),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
+                new WaitCommand(0.5),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                new WaitCommand(0.5),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
+                new WaitCommand(0.5),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                new WaitCommand(0.5),
+                Commands.sequence(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.READJUST),
+                        new WaitCommand(0.5),
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.MID_CONE, FunnelState.OPEN),
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN));
     }
 
     private CommandBase getEngageSequence() {
