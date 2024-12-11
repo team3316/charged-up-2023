@@ -95,6 +95,8 @@ public class RobotContainer {
         setCubeInternalState();
 
         m_PDH.setSwitchableChannel(false);
+
+        SmartDashboard.putNumber("cataAngle", SmartDashboard.getNumber("cataAngle", 0));
     }
 
     /**
@@ -153,7 +155,7 @@ public class RobotContainer {
 
         // Go to collect state sequence
         _operatorController.povDown().onTrue(
-                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)
+                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)
                         .andThen(m_manipulator.setManipulatorStateCommand(ManipulatorState.OPEN)));
 
         _driverController.circle().whileTrue(
@@ -176,10 +178,23 @@ public class RobotContainer {
                         new WaitCommand(0.5),
                         m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED),
                         m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD)));
+        // catapult
+        _operatorController.povLeft()
+                .onTrue(
+                        m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.MID_CUBE, FunnelState.COLLECT)
+                                .andThen(
+                                        m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT,
+                                                FunnelState.CLOSED)));
 
-        _operatorController.cross()
-                .onTrue(m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.REJECT, FunnelState.OPEN)
-                        .andThen(this.getCollectSequence()));
+        // catapult collect
+        _operatorController.triangle()
+                .onTrue(
+                        m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD).andThen(
+                                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.OPEN)));
+
+        // close funnle without opening manipulator
+        _operatorController.povRight().onTrue(
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED));
 
     }
 
@@ -209,6 +224,8 @@ public class RobotContainer {
 
     private void initChooser() {
         SmartDashboard.putData("autonomous", this.chooser);
+        this.chooser.addOption("catapult", getCatapultSequence()
+                .andThen(m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.COLLECT, FunnelState.CLOSED)));
         // addToChooser("engage");
         // addToChooser("1-gp-engage");
         addToChooser("1-gp-leaveCommunity");
@@ -228,7 +245,12 @@ public class RobotContainer {
         this.chooser.addOption("cube-engage-gyro", getAutoCubeSequence().andThen(getEngageSequence()));
         // only engage
         this.chooser.addOption("engage-gyro", getEngageSequence());
+
         this.chooser.addOption("cube-mobility-engage", getAutoCubeSequence().andThen(getMobilityEngageSequence()));
+
+        this.chooser.addOption("catapult-mobility-engage", getCatapultSequence().andThen(getMobilityEngageSequence()));
+
+        this.chooser.addOption("catapult-engage", getCatapultSequence().andThen(getEngageSequence()));
 
         // taxi
         this.chooser.addOption("taxi", _autoFactory.createAuto("engage-gyro"));
@@ -256,6 +278,16 @@ public class RobotContainer {
 
     public void updateTelemetry() {
         m_drivetrain.updateTelemetry();
+    }
+
+    private CommandBase getCatapultSequence() {
+        return Commands.sequence(
+                m_manipulator.setManipulatorStateCommand(ManipulatorState.HOLD),
+                m_ArmFunnelSuperStructure.getSetStateCommand(ArmState.COLLECT, FunnelState.COLLECT),
+                new WaitCommand(0.3),
+                m_ArmFunnelSuperStructure.generateSetStateCommand(ArmState.MID_CUBE, FunnelState.COLLECT)
+
+        );
     }
 
     private CommandBase getEngageSequence() {

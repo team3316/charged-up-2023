@@ -100,4 +100,8 @@ public class ArmFunnelSuperStructure {
                 m_arm.getSetStateCommand(ArmState.MID_CONE, ArmTrapProfile.FAST),
                 m_funnel.setFunnelStateCommand(FunnelState.CLOSED));
     }
+
+    public double getArmAngle() {
+        return m_arm.getAngle();
+    }
 }
